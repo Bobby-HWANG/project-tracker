@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>INTOPS FMS 품질팀 업무현황</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◈</text></svg>">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="app-shell" id="app-shell">
+
+<!-- ── 모바일 상단 바 ─────────────────────────── -->
+<header class="mobile-header">
+  <button id="sidebar-toggle" class="menu-btn">☰</button>
+  <button class="mobile-logo-btn" id="mobile-logo-btn" type="button" title="대시보드로 이동">
+    <img src="/logo.png" alt="INTOPS" class="logo-img-mobile" onerror="this.onerror=null;this.src='/logo.svg'">
+  </button>
+  <span class="mobile-title-sub">FMS 품질팀</span>
+  <div class="mobile-model-badge" id="mobile-badge"></div>
+</header>
+
+<!-- ── 화면 우측 상단 (시각 → 네이비즘) ─────────── -->
+<a class="top-clock-box no-print" id="top-clock-box"
+   href="https://time.navyism.com/" target="_blank" rel="noopener noreferrer"
+   title="네이비즘 정확한 시계 - 새 창에서 열기">
+  <span class="top-clock" id="top-clock">--:--:--</span>
+</a>
+
+<!-- ── 화면 우측 상단 (인쇄) ─────────────────── -->
+<div class="top-print-box no-print" id="top-print-box">
+  <button class="top-print-btn" id="btn-print" title="현재 화면 인쇄">
+    <span style="font-size:15px">🖨</span>
+    <span>인쇄</span>
+  </button>
+</div>
+
+<!-- ── 사이드바 ──────────────────────────────── -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <button class="logo-btn" id="logo-btn" type="button" title="대시보드로 이동">
+      <img src="/logo.png" alt="INTOPS" class="logo-img" onerror="this.onerror=null;this.src='/logo.svg'">
+      <span class="logo-sub">FMS 품질팀 업무현황</span>
+    </button>
+    <button class="close-sidebar" id="close-sidebar">✕</button>
+  </div>
+
+  <!-- 대시보드 -->
+  <div class="sidebar-section">
+    <button class="sidebar-dashboard-btn" id="btn-dashboard">
+      <span class="si-icon">⊞</span> 대시보드
+    </button>
+  </div>
+
+  <nav class="model-list" id="model-list"></nav>
+
+  <div class="sidebar-footer">
+    <button class="btn-add-model" id="btn-add-model">＋ 모델 추가</button>
+  </div>
+</aside>
+
+<div class="overlay" id="overlay"></div>
+
+<!-- ── 메인 콘텐츠 ──────────────────────────── -->
+<main class="main" id="main">
+
+  <!-- 대시보드 -->
+  <div id="view-dashboard" class="view hidden">
+    <div class="page-header">
+      <h1 class="page-title">📊 전체 대시보드</h1>
+    </div>
+    <div class="dashboard-grid" id="dashboard-grid"></div>
+  </div>
+
+  <!-- 웰컴 -->
+  <div id="view-welcome" class="view welcome">
+    <div class="welcome-icon">◈</div>
+    <h2>모델을 선택하세요</h2>
+    <p>사이드바에서 모델을 선택하거나<br>새 모델을 추가하세요</p>
+    <button class="btn-primary" id="btn-goto-dashboard">대시보드 보기</button>
+  </div>
+
+  <!-- 모델 상세 -->
+  <div id="view-model" class="view hidden">
+    <div class="page-header">
+      <div class="page-title-row">
+        <span class="model-dot" id="hdr-dot"></span>
+        <h1 class="page-title" id="hdr-title"></h1>
+        <button class="btn-icon-sm" id="btn-edit-model" title="편집">✎</button>
+        <button class="btn-icon-sm danger" id="btn-delete-model" title="삭제">🗑</button>
+      </div>
+      <div class="tabs" id="tabs">
+        <button class="tab active" data-tab="milestone">📅 일정표</button>
+        <button class="tab" data-tab="checklist">✅ 체크시트</button>
+        <button class="tab" data-tab="memo">📝 메모장</button>
+        <button class="tab" data-tab="settings">⚙ 설정</button>
+      </div>
+    </div>
+
+    <div class="tab-body" id="tab-body"></div>
+  </div>
+</main>
+
+</div><!-- /app-shell -->
+
+<!-- ── 모달 ─────────────────────────────────── -->
+<div class="modal-backdrop hidden" id="modal-backdrop">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <h3 id="modal-title">제목</h3>
+      <button class="modal-close" id="modal-close">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer" id="modal-footer"></div>
+  </div>
+</div>
+
+<!-- ── 토스트 ─────────────────────────────── -->
+<div class="toast-container" id="toast-container"></div>
+
+<script src="app.js"></script>
+</body>
+</html>

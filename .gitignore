@@ -1,0 +1,30 @@
+# 의존성
+node_modules/
+package-lock.json
+
+# 사용자 데이터 (각 환경별로 다름)
+data.json
+data.json.bak
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+.idea/
+
+# 로그
+*.log
+npm-debug.log*
+
+# 환경 변수
+.env
+.env.local
+
+# 빌드 산출물
+dist/
+build/
+
+# 임시 파일
+*.tmp
+*.temp
