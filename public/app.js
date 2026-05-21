@@ -273,17 +273,13 @@ function makeDashMemoSection() {
       </button>
     </div>
     <div class="dash-memo-body">
-      <!-- 새 글 작성 -->
-      <div class="memo-new-post">
-        <div class="memo-form-row">
-          <input class="memo-author-input" id="memo-author"
-                 placeholder="작성자 이름 *" value="${escHtml(myName)}" maxlength="40">
-        </div>
-        <textarea class="memo-content-input" id="memo-content"
-                  placeholder="공지·회의록·아이디어를 자유롭게 작성하세요...&#10;Ctrl+Enter로 빠른 저장" maxlength="2000"></textarea>
-        <div class="memo-form-actions">
-          <button class="btn-primary memo-save-btn" id="memo-save-btn">💾 저장</button>
-        </div>
+      <!-- 새 글 작성 — 한 줄 (작성자 / 내용 / 저장) -->
+      <div class="memo-new-post memo-new-post-row">
+        <input class="memo-author-input" id="memo-author"
+               placeholder="작성자" value="${escHtml(myName)}" maxlength="40">
+        <input class="memo-content-input" id="memo-content"
+               placeholder="공지·회의록·아이디어를 자유롭게 작성 (Enter로 저장)" maxlength="2000">
+        <button class="btn-primary memo-save-btn" id="memo-save-btn">💾 저장</button>
       </div>
 
       <!-- 게시글 목록 -->
@@ -329,10 +325,17 @@ function makeDashMemoSection() {
     }
   };
   saveBtn.addEventListener('click', submitPost);
+  // Enter 키로 저장 (입력 input이므로 단순 Enter)
   contentEl.addEventListener('keydown', e => {
-    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+    if (e.key === 'Enter') {
       e.preventDefault();
       submitPost();
+    }
+  });
+  authorEl.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      contentEl.focus();
     }
   });
 
@@ -374,47 +377,44 @@ function buildDashPostHTML(post) {
     }
   });
 
+  // 한 줄 레이아웃: [내용 ────] [작성자] [시간] [✕] [답글]
   const renderComment = (c, isReply = false) => {
     const replies = replyMap[c.id] || [];
     return `
       <div class="memo-cmt${isReply ? ' memo-cmt-reply' : ''}" data-cid="${c.id}">
-        <div class="memo-cmt-head">
-          <a class="memo-author-link" data-author="${escHtml(c.author)}" title="이 작성자 보기">${escHtml(c.author)}</a>
-          <span class="memo-time">${fmtDateTime(c.created_at)}</span>
-          <button class="memo-cmt-del" data-action="del-dcmt" data-id="${c.id}" title="삭제">✕</button>
-        </div>
-        <div class="memo-cmt-body">${escHtml(c.content)}</div>
-        ${isReply ? '' : `
-          <div class="memo-cmt-actions">
-            <button class="memo-reply-toggle" data-action="reply-toggle" data-pid="${c.id}">↪ 답글</button>
-          </div>
-          <div class="memo-reply-form" data-pid="${c.id}" style="display:none">
-            <input class="memo-reply-name" placeholder="이름" value="${escHtml(getCommenterName())}" maxlength="40">
-            <input class="memo-reply-text" placeholder="답글 입력..." maxlength="500">
-            <button class="memo-reply-submit" data-action="submit-reply" data-pid="${c.id}" data-postid="${post.id}">등록</button>
-          </div>
-          ${replies.length ? `<div class="memo-replies">${replies.map(r => renderComment(r, true)).join('')}</div>` : ''}
-        `}
+        <span class="memo-cmt-body">${escHtml(c.content)}</span>
+        <a class="memo-author-link" data-author="${escHtml(c.author)}" title="이 작성자 보기">${escHtml(c.author)}</a>
+        <span class="memo-time">${fmtDateTime(c.created_at)}</span>
+        ${isReply ? '' : `<button class="memo-reply-toggle" data-action="reply-toggle" data-pid="${c.id}" title="답글">↪</button>`}
+        <button class="memo-cmt-del" data-action="del-dcmt" data-id="${c.id}" title="삭제">✕</button>
       </div>
+      ${isReply ? '' : `
+        <div class="memo-reply-form" data-pid="${c.id}" style="display:none">
+          <input class="memo-reply-text" placeholder="↪ 답글 내용" maxlength="500">
+          <input class="memo-reply-name" placeholder="작성자" value="${escHtml(getCommenterName())}" maxlength="40">
+          <button class="memo-reply-submit" data-action="submit-reply" data-pid="${c.id}" data-postid="${post.id}">등록</button>
+        </div>
+        ${replies.length ? `<div class="memo-replies">${replies.map(r => renderComment(r, true)).join('')}</div>` : ''}
+      `}
     `;
   };
 
   return `
     <div class="memo-post" data-pid="${post.id}">
-      <div class="memo-post-head">
+      <div class="memo-post-row">
+        <span class="memo-post-body">${escHtml(post.content)}</span>
         <a class="memo-author-link memo-author-main" data-author="${escHtml(post.author)}" title="이 작성자 보기">👤 ${escHtml(post.author)}</a>
         <span class="memo-time">${fmtDateTime(post.created_at)}</span>
         <button class="memo-post-del" data-action="del-dpost" data-id="${post.id}" title="삭제">✕</button>
       </div>
-      <div class="memo-post-body">${escHtml(post.content)}</div>
       <div class="memo-post-cmts">
         ${topLevel.length === 0
-          ? '<div class="memo-no-cmt">아직 댓글이 없습니다</div>'
+          ? '<div class="memo-no-cmt">댓글 없음</div>'
           : topLevel.map(c => renderComment(c, false)).join('')
         }
         <div class="memo-add-cmt">
-          <input class="memo-cmt-name" placeholder="이름" value="${escHtml(getCommenterName())}" maxlength="40">
-          <input class="memo-cmt-text" placeholder="💬 댓글 입력..." maxlength="500">
+          <input class="memo-cmt-text" placeholder="💬 댓글 내용" maxlength="500">
+          <input class="memo-cmt-name" placeholder="작성자" value="${escHtml(getCommenterName())}" maxlength="40">
           <button class="memo-cmt-submit" data-action="submit-cmt" data-postid="${post.id}">등록</button>
         </div>
       </div>
@@ -562,13 +562,18 @@ function makeDashSection(category, title, list) {
   `;
   const grid = sec.querySelector('.dash-section-grid');
 
-  // 항목 개수에 맞게 컬럼 동적 생성
+  // 컬럼 동적 생성
+  // - 모니터링: 항목 수만큼 가로 + 추가 셀 (1줄)
+  // - 모델: 4열 고정 (8개면 위/아래 4개씩, 추가 셀은 다음 칸)
   const n = list.length;
-  if (n > 0) {
-    grid.style.gridTemplateColumns =
-      `repeat(${n}, minmax(0, 1fr)) var(--add-w)`;
+  if (category === 'monitoring') {
+    grid.style.gridTemplateColumns = n > 0
+      ? `repeat(${n}, minmax(0, 1fr)) var(--add-w)`
+      : 'var(--add-w)';
   } else {
-    grid.style.gridTemplateColumns = 'var(--add-w)';
+    // 모델 — 4열 고정, 항목/추가 셀이 자동 줄바꿈
+    grid.style.gridTemplateColumns = `repeat(4, minmax(0, 1fr))`;
+    grid.style.gridAutoRows = 'minmax(0, 1fr)';
   }
 
   list.forEach(m => grid.appendChild(makeDashCard(m)));

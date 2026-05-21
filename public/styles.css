@@ -724,7 +724,16 @@ body {
 .dash-section.memo {
   background: linear-gradient(180deg, #FEF9C3 0%, #FEFCE8 100%);
   border-color: #FDE68A;
-  flex: 0 0 auto;             /* 메모는 컨텐츠 높이만큼만 */
+  flex: 1 1 0 !important;
+  min-height: 0 !important;
+  overflow: hidden;
+}
+.dash-section.monitoring { flex: 2 1 0 !important; min-height: 0 !important; }
+.dash-section.model      { flex: 4 1 0 !important; min-height: 0 !important; }
+.dash-section.memo .dash-memo-body {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-y: auto;
 }
 .dash-section.memo .dash-section-title { color: #854D0E; }
 
@@ -2379,3 +2388,149 @@ body.eye-care .welcome p { color: var(--text3); }
 /* 일정 카드 내부 본문도 flex:1로 채우기 */
 #view-model .ms-item { display: flex; }
 #view-model .ms-body { flex: 1 1 auto !important; min-width: 0 !important; }
+
+/* ══════════════════════════════════════════════════════════
+   메모장 한 줄 레이아웃 + 모델 4열 카드
+   ══════════════════════════════════════════════════════════ */
+
+/* 새 글 작성 — 한 줄 (작성자 / 내용 / 저장) */
+.memo-new-post-row {
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 10px !important;
+}
+.memo-new-post-row .memo-author-input {
+  width: 140px !important;
+  flex-shrink: 0;
+}
+.memo-new-post-row .memo-content-input {
+  flex: 1 !important;
+  min-width: 0;
+  width: auto !important;
+  min-height: auto !important;
+  max-height: none !important;
+  height: 38px;
+  padding: 8px 12px !important;
+  border: 1px solid #FDE68A;
+  border-radius: 6px;
+  background: #fff;
+  font-size: 13.5px;
+  font-family: inherit;
+  outline: none;
+  box-sizing: border-box;
+  resize: none;
+}
+.memo-new-post-row .memo-save-btn {
+  padding: 8px 18px;
+  flex-shrink: 0;
+}
+
+/* 게시글 본문 — 한 줄 (내용 / 작성자 / 시간 / 삭제) */
+.memo-post {
+  padding: 8px 12px !important;
+}
+.memo-post-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px;
+  padding-bottom: 0 !important;
+  border-bottom: none !important;
+  margin-bottom: 6px !important;
+}
+.memo-post-row .memo-post-body {
+  flex: 1 !important;
+  min-width: 0;
+  padding: 0 !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 600;
+}
+.memo-post-row .memo-author-link {
+  flex-shrink: 0;
+}
+.memo-post-row .memo-time {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.memo-post-row .memo-post-del {
+  flex-shrink: 0;
+}
+/* 기존 .memo-post-head 호환 (사용 안 함) */
+.memo-post-head { display: none; }
+.memo-post-body { white-space: pre-wrap; }  /* 기본은 줄바꿈 유지 */
+.memo-post-row .memo-post-body { white-space: nowrap; }  /* 한 줄에서는 ellipsis */
+
+/* 댓글 한 줄 (내용 / 작성자 / 시간 / 답글 / 삭제) */
+.memo-cmt {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 6px 10px !important;
+}
+.memo-cmt-body {
+  flex: 1 !important;
+  min-width: 0;
+  white-space: nowrap !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 13px !important;
+}
+.memo-cmt .memo-author-link {
+  flex-shrink: 0;
+  font-size: 12px !important;
+}
+.memo-cmt .memo-time {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.memo-cmt .memo-reply-toggle {
+  flex-shrink: 0;
+  padding: 2px 6px;
+}
+.memo-cmt .memo-cmt-del {
+  flex-shrink: 0;
+}
+/* head는 사용 안 함 */
+.memo-cmt-head { display: none; }
+.memo-cmt-actions { display: none; }
+
+/* 답글 form — 한 줄 (이미 그렇지만 정렬 보강) */
+.memo-reply-form {
+  margin-top: 4px;
+  display: flex !important;
+  gap: 6px;
+}
+.memo-reply-form .memo-reply-text {
+  flex: 1 !important;
+  min-width: 0;
+}
+.memo-reply-form .memo-reply-name {
+  width: 100px !important;
+  flex-shrink: 0;
+}
+
+/* 댓글 추가 form — 한 줄 (내용 / 이름 / 등록) */
+.memo-add-cmt {
+  display: flex !important;
+  gap: 6px;
+  margin-top: 6px;
+}
+.memo-add-cmt .memo-cmt-text {
+  flex: 1 !important;
+  min-width: 0;
+}
+.memo-add-cmt .memo-cmt-name {
+  width: 100px !important;
+  flex-shrink: 0;
+}
+
+/* 모델 섹션 4열 카드 — 카드 비율 1:1로 가깝게 */
+.dash-section.model .dash-section-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+}
+.dash-section.model .dashboard-card {
+  min-height: 0;
+}
