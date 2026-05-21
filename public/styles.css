@@ -671,7 +671,13 @@ body {
   flex: 1;
   padding: 24px 28px;
   overflow-y: auto;
+  width: 100%;
+  box-sizing: border-box;
 }
+/* 일정/체크/클레임 등 모든 항목 전폭 사용 */
+.tab-body > * { width: 100%; box-sizing: border-box; }
+.ms-item { width: 100%; box-sizing: border-box; }
+#ms-list, #cl-tbody, #clm-tbody { width: 100%; }
 
 /* ── Dashboard (전체 화면 활용) ─────────────────────── */
 #view-dashboard { display: flex; flex-direction: column; min-height: 0; }
