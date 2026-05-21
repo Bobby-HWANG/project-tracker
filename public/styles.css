@@ -2338,3 +2338,44 @@ body.eye-care .empty-state { color: var(--text3); }
 body.eye-care .welcome { color: var(--text); }
 body.eye-care .welcome h2 { color: var(--text); }
 body.eye-care .welcome p { color: var(--text3); }
+
+/* ══════════════════════════════════════════════════════════
+   🔧 모델 상세 화면 — 대시보드와 동일한 전폭 강제 적용
+   ══════════════════════════════════════════════════════════ */
+#view-model {
+  width: 100% !important;
+  max-width: none !important;
+  align-self: stretch !important;
+  box-sizing: border-box;
+}
+#view-model > .page-header,
+#view-model > .tab-body {
+  width: 100% !important;
+  max-width: none !important;
+  box-sizing: border-box !important;
+  align-self: stretch !important;
+}
+#view-model .tab-body {
+  padding: 16px 20px 24px !important;
+}
+#view-model .tab-body > * {
+  width: 100% !important;
+  max-width: none !important;
+  box-sizing: border-box !important;
+}
+/* 일정/체크/클레임 항목 자체도 전폭 */
+#view-model .ms-item,
+#view-model #ms-list,
+#view-model #cl-tbody,
+#view-model #clm-tbody,
+#view-model .milestone-toolbar,
+#view-model .checklist-overall,
+#view-model .cl-table-wrap,
+#view-model .memo-wrap {
+  width: 100% !important;
+  max-width: none !important;
+  box-sizing: border-box !important;
+}
+/* 일정 카드 내부 본문도 flex:1로 채우기 */
+#view-model .ms-item { display: flex; }
+#view-model .ms-body { flex: 1 1 auto !important; min-width: 0 !important; }
