@@ -1022,13 +1022,24 @@ body {
 .dash-section.monitoring .dash-section-toggle:hover .toggle-icon { color: #1e40af; }
 .dash-section.model      .dash-section-toggle:hover .toggle-icon { color: #6b21a8; }
 
-/* 접힘 상태: 그리드(카드) 숨김, 헤더만 노출 */
-.dash-section.collapsed { flex: 0 0 auto; padding-bottom: 14px; }
-.dash-section.collapsed .dash-section-grid { display: none; }
+/* 접힘 상태: 그리드(카드) 숨김, 헤더만 노출, 섹션 자체도 컨텐츠 높이만큼 축소 */
+.dash-section.collapsed,
+.dash-section.monitoring.collapsed,
+.dash-section.model.collapsed,
+.dash-section.memo.collapsed {
+  flex: 0 0 auto !important;       /* 비율(2/4/1) 무시 — 헤더 높이만 차지 */
+  min-height: 0 !important;
+  max-height: none !important;
+  padding-bottom: 12px !important;
+  padding-top: 12px !important;
+  overflow: hidden !important;
+}
+.dash-section.collapsed .dash-section-grid { display: none !important; }
+.dash-section.collapsed .dash-memo-body    { display: none !important; }
 .dash-section.collapsed .dash-section-header {
-  margin-bottom: 0;
-  padding-bottom: 0;
-  border-bottom: none;
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+  border-bottom: none !important;
 }
 .dash-section-grid {
   flex: 1;
