@@ -686,8 +686,12 @@ function makeDashCard(m) {
       <div class="progress-bar">
         <div class="progress-fill" style="width:${clPct}%;background:${m.color}"></div>
       </div>
-      ${m.milestone_delayed ? `<div class="dc-delayed">⚠ 지연된 일정 ${m.milestone_delayed}건</div>` : ''}
-      ${clmDelay ? `<div class="dc-delayed">🚨 지연된 클레임 ${clmDelay}건</div>` : ''}
+      ${(m.milestone_delayed || clmDelay) ? `
+        <div class="dc-delayed-row">
+          ${m.milestone_delayed ? `<span class="dc-delayed">⚠ 일정 ${m.milestone_delayed}</span>` : '<span></span>'}
+          ${clmDelay ? `<span class="dc-delayed">🚨 클레임 ${clmDelay}</span>` : '<span></span>'}
+        </div>
+      ` : ''}
     `;
   }
 
