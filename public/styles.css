@@ -2522,14 +2522,16 @@ body.eye-care .welcome p { color: var(--text3); }
    ══════════════════════════════════════════════════════════ */
 #view-dashboard .page-header { padding-right: 150px !important; }
 
-/* 카드 그리드 — 갭 넉넉하게 */
+/* 카드 그리드 — 갭 넉넉하게 (겹침 방지) */
 .dash-section-grid {
-  gap: 16px !important;
+  column-gap: 20px !important;
+  row-gap: 26px !important;
 }
 .dash-section.model .dash-section-grid {
-  gap: 16px !important;
-  /* 3열로 변경 — 모니터링과 동일한 카드 너비 (8개는 3+3+2 자동 줄바꿈) */
-  grid-template-columns: repeat(3, minmax(0, 1fr)) var(--add-w) !important;
+  /* 4열 — 위 4개 / 아래 4개 + 추가 셀 컬럼 */
+  grid-template-columns: repeat(4, minmax(0, 1fr)) var(--add-w) !important;
+  column-gap: 20px !important;
+  row-gap: 26px !important;     /* 행 간격 충분히 (카드 겹침 방지) */
 }
 
 /* 모델 카드 — 약간 더 넉넉한 패딩 */

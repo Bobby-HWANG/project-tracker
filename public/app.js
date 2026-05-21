@@ -571,8 +571,8 @@ function makeDashSection(category, title, list) {
       ? `repeat(${n}, minmax(0, 1fr)) var(--add-w)`
       : 'var(--add-w)';
   } else {
-    // 모델 — 모니터링과 같은 카드 너비를 위해 3열 (8개면 3+3+2로 자동 줄바꿈)
-    grid.style.gridTemplateColumns = `repeat(3, minmax(0, 1fr)) var(--add-w)`;
+    // 모델 — 4열 (8개면 위 4개 / 아래 4개) + 추가 셀 컬럼
+    grid.style.gridTemplateColumns = `repeat(4, minmax(0, 1fr)) var(--add-w)`;
     grid.style.gridAutoRows = 'minmax(0, 1fr)';
   }
 
@@ -581,8 +581,8 @@ function makeDashSection(category, title, list) {
   const addCard = makeAddCard(category);
   if (category === 'model') {
     // 카드 우측에 세로로 길게 배치 (모든 행 커버)
-    const rows = Math.max(1, Math.ceil(n / 3));
-    addCard.style.gridColumn = '4';
+    const rows = Math.max(1, Math.ceil(n / 4));
+    addCard.style.gridColumn = '5';
     addCard.style.gridRow = `1 / span ${rows}`;
   }
   grid.appendChild(addCard);
