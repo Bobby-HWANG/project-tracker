@@ -3,8 +3,6 @@ title INTOPS Tracker Watchdog
 cd /d "%~dp0"
 
 :LOOP
-echo Starting server...
 "C:\Program Files\nodejs\node.exe" server.js
-echo Server stopped. Restarting in 3 seconds...
-timeout /t 3 /nobreak >nul
+ping 127.0.0.1 -n 4 >nul 2>&1
 goto LOOP

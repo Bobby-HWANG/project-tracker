@@ -1,10 +1,10 @@
-# 의존성
+# ?섏〈??
 node_modules/
 package-lock.json
 
-# 사용자 데이터 (각 환경별로 다름)
-data.json
-data.json.bak
+# ?ъ슜???곗씠??(媛??섍꼍蹂꾨줈 ?ㅻ쫫)
+# data.json (Railway 동기화 위해 일시 허용)
+# data.json (Railway 동기화 위해 일시 허용).bak
 
 # OS / Editor
 .DS_Store
@@ -13,18 +13,18 @@ Thumbs.db
 .vscode/
 .idea/
 
-# 로그
+# 濡쒓렇
 *.log
 npm-debug.log*
 
-# 환경 변수
+# ?섍꼍 蹂??
 .env
 .env.local
 
-# 빌드 산출물
+# 鍮뚮뱶 ?곗텧臾?
 dist/
 build/
 
-# 임시 파일
+# ?꾩떆 ?뚯씪
 *.tmp
 *.temp

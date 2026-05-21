@@ -595,7 +595,7 @@ app.delete('/api/claims/:id', (req, res) => {
 
 // ── Comments (댓글) ──────────────────────────────────────────
 // 키: `${type}_${itemId}` (예: "milestone_10042")
-const ALLOWED_COMMENT_TYPES = ['milestone', 'checklist', 'claim'];
+const ALLOWED_COMMENT_TYPES = ['milestone', 'checklist', 'claim', 'dpost'];
 
 app.get('/api/comments/:type/:itemId', (req, res) => {
   const type = req.params.type;
@@ -617,6 +617,7 @@ app.post('/api/comments/:type/:itemId', (req, res) => {
     id: nextId(),
     type,
     item_id: Number(req.params.itemId),
+    parent_comment_id: req.body.parent_comment_id ? Number(req.body.parent_comment_id) : null,
     author,
     content,
     created_at: nowISO(),
@@ -699,6 +700,60 @@ app.put('/api/dashboard-memo', (req, res) => {
   DB.dashboardMemoUpdatedBy = req.user?.name || '관리자';
   save();
   res.json({ ok: true, updated_at: DB.dashboardMemoUpdatedAt, updated_by: DB.dashboardMemoUpdatedBy });
+});
+
+// ── 대시보드 게시글 (메모장 - 글 + 댓글 + 대댓글) ─────────────
+(function ensureDashboardPosts(){
+  if (!Array.isArray(DB.dashboardPosts)) {
+    DB.dashboardPosts = [];
+    save();
+  }
+})();
+
+app.get('/api/dashboard-posts', (_, res) => {
+  // 최신순 정렬
+  const posts = (DB.dashboardPosts || []).slice().sort((a,b) => (b.created_at||'').localeCompare(a.created_at||''));
+  res.json(posts);
+});
+
+app.post('/api/dashboard-posts', (req, res) => {
+  const author  = (req.body.author || '').trim();
+  const content = (req.body.content || '').trim();
+  if (!author)  return res.status(400).json({error:'작성자 이름이 필요합니다'});
+  if (!content) return res.status(400).json({error:'내용을 입력해주세요'});
+  if (!Array.isArray(DB.dashboardPosts)) DB.dashboardPosts = [];
+  const post = {
+    id: nextId(),
+    author,
+    content,
+    created_at: nowISO(),
+  };
+  DB.dashboardPosts.push(post);
+  save();
+  res.json(post);
+});
+
+app.put('/api/dashboard-posts/:id', (req, res) => {
+  const id = Number(req.params.id);
+  const idx = (DB.dashboardPosts || []).findIndex(p => p.id === id);
+  if (idx < 0) return res.status(404).json({error:'not found'});
+  const cur = DB.dashboardPosts[idx];
+  DB.dashboardPosts[idx] = {
+    ...cur,
+    content: (req.body.content || '').trim() || cur.content,
+    updated_at: nowISO(),
+  };
+  save();
+  res.json(DB.dashboardPosts[idx]);
+});
+
+app.delete('/api/dashboard-posts/:id', (req, res) => {
+  const id = Number(req.params.id);
+  DB.dashboardPosts = (DB.dashboardPosts || []).filter(p => p.id !== id);
+  // 연관 댓글도 삭제
+  if (DB.comments) delete DB.comments[`dpost_${id}`];
+  save();
+  res.json({ ok: true });
 });
 
 // ── Memo ────────────────────────────────────────────────────

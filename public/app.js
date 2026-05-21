@@ -168,44 +168,97 @@ async function loadDashboard() {
 }
 
 function renderDashboardData(wrap, data) {
-  wrap.innerHTML = '';
+  // 메모장은 절대 DOM에서 떼지 않음 (포커스/커서 보존)
+  // 카드 섹션과 empty-state만 제거 후 메모 앞에 다시 삽입
+  const memo = wrap.querySelector('.dash-section.memo');
+
+  // 메모 외 모든 자식 제거 (메모는 그대로 둠)
+  Array.from(wrap.children).forEach(c => {
+    if (c !== memo) c.remove();
+  });
+
+  const insertBeforeMemo = (sec) => {
+    if (memo) wrap.insertBefore(sec, memo);
+    else wrap.appendChild(sec);
+  };
 
   if (!data.length) {
-    wrap.innerHTML = '<div class="empty-state"><div class="empty-icon">📂</div>등록된 모델이 없습니다</div>';
-    return;
+    const empty = document.createElement('div');
+    empty.className = 'empty-state';
+    empty.innerHTML = '<div class="empty-icon">📂</div>등록된 모델이 없습니다';
+    insertBeforeMemo(empty);
+  } else {
+    // 카테고리별로 분류 + 정렬
+    const monitoring = data.filter(m => m.category === 'monitoring').sort((a,b)=>a.order-b.order);
+    const models     = data.filter(m => m.category !== 'monitoring').sort((a,b)=>a.order-b.order);
+
+    if (monitoring.length) {
+      const sec = makeDashSection('monitoring', '📡 상시 모니터링', monitoring);
+      insertBeforeMemo(sec);
+      enableDashCardDrag(sec);
+    }
+    if (models.length) {
+      const sec = makeDashSection('model', '📦 주요 모델 이벤트 현황', models);
+      insertBeforeMemo(sec);
+      enableDashCardDrag(sec);
+    }
   }
 
-  // 카테고리별로 분류 + 정렬
-  const monitoring = data.filter(m => m.category === 'monitoring').sort((a,b)=>a.order-b.order);
-  const models     = data.filter(m => m.category !== 'monitoring').sort((a,b)=>a.order-b.order);
-
-  // 상시 모니터링 (상단 - 파란 음영)
-  if (monitoring.length) {
-    const sec = makeDashSection('monitoring', '📡 상시 모니터링', monitoring);
-    wrap.appendChild(sec);
-    enableDashCardDrag(sec);
+  // 메모장 — 최초에만 생성
+  if (!memo) {
+    wrap.appendChild(makeDashMemoSection());
   }
-  // 모델별 진행 (중단 - 보라 음영)
-  if (models.length) {
-    const sec = makeDashSection('model', '📦 주요 모델 이벤트 현황', models);
-    wrap.appendChild(sec);
-    enableDashCardDrag(sec);
-  }
+  // 이미 존재하면 절대 건드리지 않음 (입력 중 끊김 방지)
+}
 
-  // 메모장 (하단 - 노란/초록 음영)
-  wrap.appendChild(makeDashMemoSection());
+// 게시글 목록만 새로 페치하되, 진행 중인 모든 input 값을 보존
+async function loadDashMemoPostsKeepInputs(sec) {
+  const postsEl = sec.querySelector('#memo-posts');
+  if (!postsEl) return;
+
+  // 현재 입력 중인 값 백업 (포지션 기반 키)
+  const snapshot = {};
+  postsEl.querySelectorAll('input').forEach(inp => {
+    if (!inp.value) return;
+    const post = inp.closest('.memo-post');
+    const reply = inp.closest('.memo-reply-form');
+    let key = null;
+    if (reply) {
+      key = `r_${post?.dataset?.pid}_${reply.dataset.pid}_${[...inp.classList].join('-')}`;
+    } else {
+      key = `c_${post?.dataset?.pid}_${[...inp.classList].join('-')}`;
+    }
+    snapshot[key] = inp.value;
+  });
+
+  // 게시글 새로 그리기
+  await loadDashMemoPosts(sec);
+
+  // 값 복원
+  postsEl.querySelectorAll('input').forEach(inp => {
+    const post = inp.closest('.memo-post');
+    const reply = inp.closest('.memo-reply-form');
+    let key = null;
+    if (reply) {
+      key = `r_${post?.dataset?.pid}_${reply.dataset.pid}_${[...inp.classList].join('-')}`;
+    } else {
+      key = `c_${post?.dataset?.pid}_${[...inp.classList].join('-')}`;
+    }
+    if (snapshot[key]) inp.value = snapshot[key];
+  });
 }
 
 // ── 대시보드 공용 메모장 섹션 ─────────────────────────────────
-let _dashMemoTimer = null;
 function makeDashMemoSection() {
   const collapsed = isSectionCollapsed('memo');
   const sec = document.createElement('div');
   sec.className = `dash-section memo${collapsed ? ' collapsed' : ''}`;
+  const myName = getCommenterName();
+
   sec.innerHTML = `
     <div class="dash-section-header">
-      <h2 class="dash-section-title">📝 메모장 (공용)</h2>
-      <span class="dash-section-count" id="dash-memo-status">불러오는 중...</span>
+      <h2 class="dash-section-title">📝 메모장 (공용 게시판)</h2>
+      <span class="dash-section-count" id="dash-memo-count">로딩...</span>
       <button class="dash-section-toggle" type="button"
               title="${collapsed ? '펼치기' : '접기'}"
               aria-expanded="${!collapsed}">
@@ -213,8 +266,23 @@ function makeDashMemoSection() {
       </button>
     </div>
     <div class="dash-memo-body">
-      <textarea id="dash-memo-ta" class="dash-memo-ta"
-                placeholder="모든 사용자가 함께 보는 공용 메모입니다.&#10;공지사항, 회의 결정, 알림 등을 자유롭게 작성하세요.&#10;자동 저장됩니다."></textarea>
+      <!-- 새 글 작성 -->
+      <div class="memo-new-post">
+        <div class="memo-form-row">
+          <input class="memo-author-input" id="memo-author"
+                 placeholder="작성자 이름 *" value="${escHtml(myName)}" maxlength="40">
+        </div>
+        <textarea class="memo-content-input" id="memo-content"
+                  placeholder="공지·회의록·아이디어를 자유롭게 작성하세요...&#10;Ctrl+Enter로 빠른 저장" maxlength="2000"></textarea>
+        <div class="memo-form-actions">
+          <button class="btn-primary memo-save-btn" id="memo-save-btn">💾 저장</button>
+        </div>
+      </div>
+
+      <!-- 게시글 목록 -->
+      <div class="memo-posts" id="memo-posts">
+        <div style="text-align:center;padding:20px;color:#94a3b8">불러오는 중...</div>
+      </div>
     </div>
   `;
 
@@ -228,34 +296,238 @@ function makeDashMemoSection() {
     ic.textContent = nowCollapsed ? '＋' : '−';
   });
 
-  // 비동기 로드 + 자동 저장
-  const ta = sec.querySelector('#dash-memo-ta');
-  const statusEl = sec.querySelector('#dash-memo-status');
-  GET('/api/dashboard-memo').then(memo => {
-    ta.value = memo.content || '';
-    if (memo.updated_at) {
-      statusEl.textContent = `마지막 저장: ${fmtDateTime(memo.updated_at)}${memo.updated_by ? ' · ' + memo.updated_by : ''}`;
-    } else {
-      statusEl.textContent = '비어 있음';
-    }
-  }).catch(() => { statusEl.textContent = ''; });
+  // 저장 버튼
+  const authorEl  = sec.querySelector('#memo-author');
+  const contentEl = sec.querySelector('#memo-content');
+  const saveBtn   = sec.querySelector('#memo-save-btn');
 
-  // 자동 저장 (2초 디바운스)
-  ta.addEventListener('input', () => {
-    statusEl.textContent = '입력 중...';
-    clearTimeout(_dashMemoTimer);
-    _dashMemoTimer = setTimeout(async () => {
-      statusEl.textContent = '저장 중...';
-      try {
-        const r = await PUT('/api/dashboard-memo', { content: ta.value });
-        statusEl.textContent = `마지막 저장: ${fmtDateTime(r.updated_at)}${r.updated_by ? ' · ' + r.updated_by : ''}`;
-      } catch (err) {
-        statusEl.textContent = '저장 실패';
-      }
-    }, 2000);
+  const submitPost = async () => {
+    const author  = authorEl.value.trim();
+    const content = contentEl.value.trim();
+    if (!author)  { toast('작성자 이름을 입력하세요', 'error'); authorEl.focus(); return; }
+    if (!content) { toast('내용을 입력하세요', 'error'); contentEl.focus(); return; }
+    setCommenterName(author);
+    saveBtn.disabled = true;
+    saveBtn.textContent = '저장 중...';
+    try {
+      await POST('/api/dashboard-posts', { author, content });
+      contentEl.value = '';
+      toast('저장되었습니다', 'success');
+      await loadDashMemoPosts(sec);
+    } catch (err) {
+      toast(err.message || '저장 실패', 'error');
+    } finally {
+      saveBtn.disabled = false;
+      saveBtn.textContent = '💾 저장';
+    }
+  };
+  saveBtn.addEventListener('click', submitPost);
+  contentEl.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
+      submitPost();
+    }
   });
 
+  // 초기 로드
+  loadDashMemoPosts(sec);
+
+  // 이벤트 위임 (게시글/댓글/대댓글)
+  attachDashMemoHandlers(sec);
+
   return sec;
+}
+
+async function loadDashMemoPosts(sec) {
+  const postsEl = sec.querySelector('#memo-posts');
+  const countEl = sec.querySelector('#dash-memo-count');
+  try {
+    const posts = await GET('/api/dashboard-posts');
+    countEl.textContent = `${posts.length}개 글`;
+    if (!posts.length) {
+      postsEl.innerHTML = `<div class="memo-empty">아직 게시글이 없습니다. 첫 글을 남겨보세요!</div>`;
+      return;
+    }
+    // 모든 글의 댓글 한 번에 페치
+    await batchFetchComments(posts.map(p => ({ type: 'dpost', id: p.id })));
+    postsEl.innerHTML = posts.map(p => buildDashPostHTML(p)).join('');
+  } catch (err) {
+    postsEl.innerHTML = `<div class="memo-empty">불러오기 실패</div>`;
+  }
+}
+
+function buildDashPostHTML(post) {
+  const comments = _commentsCache[`dpost_${post.id}`] || [];
+  const topLevel = comments.filter(c => !c.parent_comment_id);
+  const replyMap = {};
+  comments.forEach(c => {
+    if (c.parent_comment_id) {
+      if (!replyMap[c.parent_comment_id]) replyMap[c.parent_comment_id] = [];
+      replyMap[c.parent_comment_id].push(c);
+    }
+  });
+
+  const renderComment = (c, isReply = false) => {
+    const replies = replyMap[c.id] || [];
+    return `
+      <div class="memo-cmt${isReply ? ' memo-cmt-reply' : ''}" data-cid="${c.id}">
+        <div class="memo-cmt-head">
+          <a class="memo-author-link" data-author="${escHtml(c.author)}" title="이 작성자 보기">${escHtml(c.author)}</a>
+          <span class="memo-time">${fmtDateTime(c.created_at)}</span>
+          <button class="memo-cmt-del" data-action="del-dcmt" data-id="${c.id}" title="삭제">✕</button>
+        </div>
+        <div class="memo-cmt-body">${escHtml(c.content)}</div>
+        ${isReply ? '' : `
+          <div class="memo-cmt-actions">
+            <button class="memo-reply-toggle" data-action="reply-toggle" data-pid="${c.id}">↪ 답글</button>
+          </div>
+          <div class="memo-reply-form" data-pid="${c.id}" style="display:none">
+            <input class="memo-reply-name" placeholder="이름" value="${escHtml(getCommenterName())}" maxlength="40">
+            <input class="memo-reply-text" placeholder="답글 입력..." maxlength="500">
+            <button class="memo-reply-submit" data-action="submit-reply" data-pid="${c.id}" data-postid="${post.id}">등록</button>
+          </div>
+          ${replies.length ? `<div class="memo-replies">${replies.map(r => renderComment(r, true)).join('')}</div>` : ''}
+        `}
+      </div>
+    `;
+  };
+
+  return `
+    <div class="memo-post" data-pid="${post.id}">
+      <div class="memo-post-head">
+        <a class="memo-author-link memo-author-main" data-author="${escHtml(post.author)}" title="이 작성자 보기">👤 ${escHtml(post.author)}</a>
+        <span class="memo-time">${fmtDateTime(post.created_at)}</span>
+        <button class="memo-post-del" data-action="del-dpost" data-id="${post.id}" title="삭제">✕</button>
+      </div>
+      <div class="memo-post-body">${escHtml(post.content)}</div>
+      <div class="memo-post-cmts">
+        ${topLevel.length === 0
+          ? '<div class="memo-no-cmt">아직 댓글이 없습니다</div>'
+          : topLevel.map(c => renderComment(c, false)).join('')
+        }
+        <div class="memo-add-cmt">
+          <input class="memo-cmt-name" placeholder="이름" value="${escHtml(getCommenterName())}" maxlength="40">
+          <input class="memo-cmt-text" placeholder="💬 댓글 입력..." maxlength="500">
+          <button class="memo-cmt-submit" data-action="submit-cmt" data-postid="${post.id}">등록</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function attachDashMemoHandlers(sec) {
+  sec.addEventListener('click', async (e) => {
+    const action = e.target.dataset.action;
+    if (!action) {
+      // 작성자 이름 클릭 → 강조
+      const authorLink = e.target.closest('.memo-author-link');
+      if (authorLink) {
+        const name = authorLink.dataset.author;
+        highlightAuthorPosts(sec, name);
+      }
+      return;
+    }
+
+    // 게시글 삭제
+    if (action === 'del-dpost') {
+      if (!confirm('이 게시글과 모든 댓글을 삭제할까요?')) return;
+      await DEL(`/api/dashboard-posts/${e.target.dataset.id}`);
+      toast('삭제되었습니다');
+      await loadDashMemoPosts(sec);
+      return;
+    }
+
+    // 댓글/답글 삭제
+    if (action === 'del-dcmt') {
+      if (!confirm('이 댓글을 삭제할까요?')) return;
+      await DEL(`/api/comments/${e.target.dataset.id}`);
+      toast('삭제되었습니다');
+      await loadDashMemoPosts(sec);
+      return;
+    }
+
+    // 답글 토글
+    if (action === 'reply-toggle') {
+      const pid = e.target.dataset.pid;
+      const form = sec.querySelector(`.memo-reply-form[data-pid="${pid}"]`);
+      if (form) form.style.display = form.style.display === 'none' ? 'flex' : 'none';
+      return;
+    }
+
+    // 댓글 등록
+    if (action === 'submit-cmt') {
+      const postId = e.target.dataset.postid;
+      const postEl = e.target.closest('.memo-post');
+      const nameEl = postEl.querySelector('.memo-cmt-name');
+      const textEl = postEl.querySelector('.memo-cmt-text');
+      await postDashComment(sec, postId, nameEl, textEl, null);
+      return;
+    }
+
+    // 답글 등록
+    if (action === 'submit-reply') {
+      const postId = e.target.dataset.postid;
+      const parentId = e.target.dataset.pid;
+      const form = e.target.closest('.memo-reply-form');
+      const nameEl = form.querySelector('.memo-reply-name');
+      const textEl = form.querySelector('.memo-reply-text');
+      await postDashComment(sec, postId, nameEl, textEl, parentId);
+      return;
+    }
+  });
+
+  // Enter 키로 댓글/답글 등록
+  sec.addEventListener('keydown', async (e) => {
+    if (e.key !== 'Enter') return;
+    const tgt = e.target;
+    if (tgt.classList?.contains('memo-cmt-text') || tgt.classList?.contains('memo-cmt-name')) {
+      e.preventDefault();
+      const postEl = tgt.closest('.memo-post');
+      const postId = postEl.dataset.pid;
+      const nameEl = postEl.querySelector('.memo-cmt-name');
+      const textEl = postEl.querySelector('.memo-cmt-text');
+      await postDashComment(sec, postId, nameEl, textEl, null);
+    } else if (tgt.classList?.contains('memo-reply-text') || tgt.classList?.contains('memo-reply-name')) {
+      e.preventDefault();
+      const form = tgt.closest('.memo-reply-form');
+      const parentId = form.dataset.pid;
+      const postId = form.querySelector('.memo-reply-submit').dataset.postid;
+      const nameEl = form.querySelector('.memo-reply-name');
+      const textEl = form.querySelector('.memo-reply-text');
+      await postDashComment(sec, postId, nameEl, textEl, parentId);
+    }
+  });
+}
+
+async function postDashComment(sec, postId, nameEl, textEl, parentId) {
+  const author = (nameEl?.value || '').trim();
+  const content = (textEl?.value || '').trim();
+  if (!author)  { toast('이름을 입력하세요', 'error'); nameEl?.focus(); return; }
+  if (!content) { toast('내용을 입력하세요', 'error'); textEl?.focus(); return; }
+  setCommenterName(author);
+  try {
+    const payload = { author, content };
+    if (parentId) payload.parent_comment_id = Number(parentId);
+    await POST(`/api/comments/dpost/${postId}`, payload);
+    toast('등록되었습니다', 'success');
+    await loadDashMemoPosts(sec);
+  } catch (err) {
+    toast(err.message || '등록 실패', 'error');
+  }
+}
+
+function highlightAuthorPosts(sec, name) {
+  // 같은 작성자의 글/댓글에 노란 강조 + 3초 후 사라짐
+  sec.querySelectorAll('.memo-author-link').forEach(el => {
+    const container = el.closest('.memo-post, .memo-cmt');
+    if (!container) return;
+    if (el.dataset.author === name) container.classList.add('memo-highlight');
+    else container.classList.remove('memo-highlight');
+  });
+  toast(`'${name}' 님의 글/댓글을 강조했습니다`, 'success');
+  setTimeout(() => {
+    sec.querySelectorAll('.memo-highlight').forEach(el => el.classList.remove('memo-highlight'));
+  }, 4000);
 }
 
 function isSectionCollapsed(category) {
@@ -1875,8 +2147,29 @@ function attachPrintHandler() {
   document.getElementById('btn-print')?.addEventListener('click', () => window.print());
 }
 
+// 눈 보호 모드 토글
+function attachThemeToggle() {
+  const btn = document.getElementById('btn-theme');
+  if (!btn) return;
+  const icon = btn.querySelector('.theme-icon');
+  const apply = (on) => {
+    document.body.classList.toggle('eye-care', on);
+    if (icon) icon.textContent = on ? '☀' : '🌙';
+    btn.title = on ? '밝은 모드로 전환' : '눈 보호 모드 (어둡고 부드럽게)';
+  };
+  // 초기 상태 로드
+  apply(localStorage.getItem('eye-care') === '1');
+  btn.addEventListener('click', () => {
+    const next = !document.body.classList.contains('eye-care');
+    apply(next);
+    localStorage.setItem('eye-care', next ? '1' : '0');
+    toast(next ? '🌙 눈 보호 모드 활성' : '☀ 밝은 모드', 'success');
+  });
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   startClock();
   attachPrintHandler();
+  attachThemeToggle();
   await init();
 });

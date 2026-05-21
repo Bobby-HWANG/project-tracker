@@ -1,0 +1,954 @@
+{
+  "models": [
+    {
+      "id": 1,
+      "name": "현대차 X-BLE Shoulder",
+      "color": "#8B5CF6",
+      "order": 0,
+      "category": "model",
+      "updated_by": 0,
+      "updated_by_name": "관리자",
+      "updated_at": "2026-05-20T02:12:53.467Z"
+    },
+    {
+      "id": 2,
+      "name": "SEC(S26/R14) PC Slim case",
+      "color": "#A855F7",
+      "order": 1,
+      "category": "model",
+      "updated_by": 0,
+      "updated_by_name": "관리자",
+      "updated_at": "2026-05-20T01:20:38.124Z"
+    },
+    {
+      "id": 3,
+      "name": "BR",
+      "color": "#10B981",
+      "order": 2,
+      "category": "model"
+    },
+    {
+      "id": 4,
+      "name": "프리뉴",
+      "color": "#F59E0B",
+      "order": 3,
+      "category": "model"
+    },
+    {
+      "id": 5,
+      "name": "WI 로보틱스",
+      "color": "#EF4444",
+      "order": 4,
+      "category": "model",
+      "updated_by": 0,
+      "updated_by_name": "관리자",
+      "updated_at": "2026-05-20T01:23:10.676Z"
+    },
+    {
+      "id": 6,
+      "name": "모빌린트 NPU",
+      "color": "#EC4899",
+      "order": 5,
+      "category": "model"
+    },
+    {
+      "id": 10001,
+      "name": "치수 측정 의뢰 현황 및 진행사항",
+      "color": "#0EA5E9",
+      "order": 0,
+      "category": "monitoring"
+    },
+    {
+      "id": 10007,
+      "name": "신뢰성 시험 의뢰 및 진행 사항",
+      "color": "#06B6D4",
+      "order": 1,
+      "category": "monitoring",
+      "updated_by": 0,
+      "updated_by_name": "관리자",
+      "updated_at": "2026-05-20T02:10:14.703Z"
+    },
+    {
+      "id": 10013,
+      "name": "환경 유해물질 관련 진행사항",
+      "color": "#3B82F6",
+      "order": 2,
+      "category": "monitoring"
+    },
+    {
+      "id": 10032,
+      "name": "용산 미러커버",
+      "color": "#3B82F6",
+      "order": 6,
+      "category": "model",
+      "created_by": 0,
+      "created_by_name": "관리자",
+      "created_at": "2026-05-20T01:24:02.742Z",
+      "updated_by": 0,
+      "updated_by_name": "관리자",
+      "updated_at": "2026-05-20T01:24:02.742Z"
+    },
+    {
+      "id": 10040,
+      "name": "OBM A1c",
+      "color": "#3B82F6",
+      "order": 7,
+      "category": "model",
+      "created_by": 0,
+      "created_by_name": "관리자",
+      "created_at": "2026-05-20T01:26:14.885Z",
+      "updated_by": 0,
+      "updated_by_name": "관리자",
+      "updated_at": "2026-05-20T02:12:26.711Z"
+    }
+  ],
+  "subItems": {
+    "1": [
+      {
+        "id": 101,
+        "modelId": 1,
+        "name": "기획",
+        "order": 0
+      },
+      {
+        "id": 102,
+        "modelId": 1,
+        "name": "설계/개발",
+        "order": 1
+      },
+      {
+        "id": 103,
+        "modelId": 1,
+        "name": "검증",
+        "order": 2
+      },
+      {
+        "id": 104,
+        "modelId": 1,
+        "name": "양산준비",
+        "order": 3
+      },
+      {
+        "id": 105,
+        "modelId": 1,
+        "name": "완료",
+        "order": 4
+      }
+    ],
+    "2": [
+      {
+        "id": 201,
+        "modelId": 2,
+        "name": "기획",
+        "order": 0
+      },
+      {
+        "id": 202,
+        "modelId": 2,
+        "name": "설계/개발",
+        "order": 1
+      },
+      {
+        "id": 203,
+        "modelId": 2,
+        "name": "검증",
+        "order": 2
+      },
+      {
+        "id": 204,
+        "modelId": 2,
+        "name": "양산준비",
+        "order": 3
+      },
+      {
+        "id": 205,
+        "modelId": 2,
+        "name": "완료",
+        "order": 4
+      }
+    ],
+    "3": [
+      {
+        "id": 301,
+        "modelId": 3,
+        "name": "기획",
+        "order": 0
+      },
+      {
+        "id": 302,
+        "modelId": 3,
+        "name": "설계/개발",
+        "order": 1
+      },
+      {
+        "id": 303,
+        "modelId": 3,
+        "name": "검증",
+        "order": 2
+      },
+      {
+        "id": 304,
+        "modelId": 3,
+        "name": "양산준비",
+        "order": 3
+      },
+      {
+        "id": 305,
+        "modelId": 3,
+        "name": "완료",
+        "order": 4
+      }
+    ],
+    "4": [
+      {
+        "id": 401,
+        "modelId": 4,
+        "name": "기획",
+        "order": 0
+      },
+      {
+        "id": 402,
+        "modelId": 4,
+        "name": "설계/개발",
+        "order": 1
+      },
+      {
+        "id": 403,
+        "modelId": 4,
+        "name": "검증",
+        "order": 2
+      },
+      {
+        "id": 404,
+        "modelId": 4,
+        "name": "양산준비",
+        "order": 3
+      },
+      {
+        "id": 405,
+        "modelId": 4,
+        "name": "완료",
+        "order": 4
+      }
+    ],
+    "5": [
+      {
+        "id": 501,
+        "modelId": 5,
+        "name": "기획",
+        "order": 0
+      },
+      {
+        "id": 502,
+        "modelId": 5,
+        "name": "설계/개발",
+        "order": 1
+      },
+      {
+        "id": 503,
+        "modelId": 5,
+        "name": "검증",
+        "order": 2
+      },
+      {
+        "id": 504,
+        "modelId": 5,
+        "name": "양산준비",
+        "order": 3
+      },
+      {
+        "id": 505,
+        "modelId": 5,
+        "name": "완료",
+        "order": 4
+      }
+    ],
+    "6": [
+      {
+        "id": 601,
+        "modelId": 6,
+        "name": "기획",
+        "order": 0
+      },
+      {
+        "id": 602,
+        "modelId": 6,
+        "name": "설계/개발",
+        "order": 1
+      },
+      {
+        "id": 603,
+        "modelId": 6,
+        "name": "검증",
+        "order": 2
+      },
+      {
+        "id": 604,
+        "modelId": 6,
+        "name": "양산준비",
+        "order": 3
+      },
+      {
+        "id": 605,
+        "modelId": 6,
+        "name": "완료",
+        "order": 4
+      }
+    ],
+    "10001": [
+      {
+        "id": 10002,
+        "modelId": 10001,
+        "name": "의뢰 접수",
+        "order": 0
+      },
+      {
+        "id": 10003,
+        "modelId": 10001,
+        "name": "진행 중",
+        "order": 1
+      },
+      {
+        "id": 10004,
+        "modelId": 10001,
+        "name": "결과 확인",
+        "order": 2
+      },
+      {
+        "id": 10005,
+        "modelId": 10001,
+        "name": "조치/회신",
+        "order": 3
+      },
+      {
+        "id": 10006,
+        "modelId": 10001,
+        "name": "완료",
+        "order": 4
+      }
+    ],
+    "10007": [
+      {
+        "id": 10008,
+        "modelId": 10007,
+        "name": "의뢰 접수",
+        "order": 0
+      },
+      {
+        "id": 10009,
+        "modelId": 10007,
+        "name": "진행 중",
+        "order": 1
+      },
+      {
+        "id": 10010,
+        "modelId": 10007,
+        "name": "결과 확인",
+        "order": 2
+      },
+      {
+        "id": 10011,
+        "modelId": 10007,
+        "name": "조치/회신",
+        "order": 3
+      },
+      {
+        "id": 10012,
+        "modelId": 10007,
+        "name": "완료",
+        "order": 4
+      }
+    ],
+    "10013": [
+      {
+        "id": 10014,
+        "modelId": 10013,
+        "name": "의뢰 접수",
+        "order": 0
+      },
+      {
+        "id": 10015,
+        "modelId": 10013,
+        "name": "진행 중",
+        "order": 1
+      },
+      {
+        "id": 10016,
+        "modelId": 10013,
+        "name": "결과 확인",
+        "order": 2
+      },
+      {
+        "id": 10017,
+        "modelId": 10013,
+        "name": "조치/회신",
+        "order": 3
+      },
+      {
+        "id": 10018,
+        "modelId": 10013,
+        "name": "완료",
+        "order": 4
+      }
+    ],
+    "10032": [
+      {
+        "id": 10033,
+        "modelId": 10032,
+        "name": "기획",
+        "order": 0
+      },
+      {
+        "id": 10034,
+        "modelId": 10032,
+        "name": "설계/개발",
+        "order": 1
+      },
+      {
+        "id": 10035,
+        "modelId": 10032,
+        "name": "검증",
+        "order": 2
+      },
+      {
+        "id": 10036,
+        "modelId": 10032,
+        "name": "양산준비",
+        "order": 3
+      },
+      {
+        "id": 10037,
+        "modelId": 10032,
+        "name": "완료",
+        "order": 4
+      }
+    ],
+    "10040": [
+      {
+        "id": 10041,
+        "modelId": 10040,
+        "name": "기획",
+        "order": 0
+      },
+      {
+        "id": 10042,
+        "modelId": 10040,
+        "name": "설계/개발",
+        "order": 1
+      },
+      {
+        "id": 10043,
+        "modelId": 10040,
+        "name": "검증",
+        "order": 2
+      },
+      {
+        "id": 10044,
+        "modelId": 10040,
+        "name": "양산준비",
+        "order": 3
+      },
+      {
+        "id": 10045,
+        "modelId": 10040,
+        "name": "완료",
+        "order": 4
+      }
+    ]
+  },
+  "milestones": {
+    "1": [
+      {
+        "id": 10020,
+        "title": "생산계획",
+        "description": "4월: 195대\n5월: 90대\n6월: 100대",
+        "note": "생산계획 참조",
+        "subItemId": null,
+        "dueDate": "2026-04-01",
+        "dueDateEnd": "2026-06-30",
+        "status": "in_progress"
+      },
+      {
+        "id": 10021,
+        "title": "멕시코 시장 크레임 분담율 협의",
+        "description": "고객사(현대차) 요청에 의한 분담율 협의\n(현대차:인탑스 = 65 : 35)",
+        "note": "고객사 내부 사정에 의한 협의 지연",
+        "subItemId": null,
+        "dueDate": "2026-05-06",
+        "dueDateEnd": "2026-06-30",
+        "status": "delayed"
+      },
+      {
+        "id": 10023,
+        "title": "커버  SET시 단차 관련 검증",
+        "description": "단품 사출치수간 편차에 따른 셋트시 단차\n- 욱일 사출 (250 톤) - 5/8 -> 검증결과 양호 (치수/단차 OK)\n- 사내사출 (350 톤) - 5/14 -> 검증결과 양호 (갭/단차 OK)",
+        "note": "",
+        "subItemId": null,
+        "dueDate": "2026-05-08",
+        "dueDateEnd": "2026-05-20",
+        "status": "completed"
+      },
+      {
+        "id": 10076,
+        "title": "X-ble COVER 류 금형 사내이관 4M 변경",
+        "description": "X-BLE SHOULDER COVER 금형 욱일전자 → 사내사출 이관\n사전 사출 및 NC 후 치수 및 조립검증 완료 (도장X)\n이관 관련 고객사 공유 (5/20),4M 신고서 제출 요청\n영업 박종민M 각 100EA 샘플 진행 일정 확인 4M 신고서 제출 예정\n100EA 샘플 도장까지 검증 후 고객사 컨펌 4M 완결 예정",
+        "note": "",
+        "subItemId": null,
+        "dueDate": "2026-05-20",
+        "dueDateEnd": "2026-06-12",
+        "status": "in_progress"
+      }
+    ],
+    "2": [
+      {
+        "id": 10026,
+        "title": "#PV1 검증과제 제출완료",
+        "description": "품질문제점 대책수립 완료",
+        "note": "(4/28 제출)",
+        "subItemId": null,
+        "dueDate": "2026-04-28",
+        "dueDateEnd": null,
+        "status": "completed"
+      },
+      {
+        "id": 10027,
+        "title": "#PV2 검증과제 진행",
+        "description": "1차 고객사 수원 검증",
+        "note": "수원 검증일: 5/27, 5/28",
+        "subItemId": null,
+        "dueDate": "2026-05-19",
+        "dueDateEnd": "2026-05-28",
+        "status": "in_progress"
+      },
+      {
+        "id": 10028,
+        "title": "사출개선 코어 입고",
+        "description": "개선 코어 입고 예정",
+        "note": "",
+        "subItemId": null,
+        "dueDate": "2026-05-28",
+        "dueDateEnd": null,
+        "status": "pending"
+      },
+      {
+        "id": 10029,
+        "title": "SET 내화장품 Test 크랙 개선 SPL Test",
+        "description": ". Set 내화장품 도막두께 줄임 샘플에 대한 내화장품 Test시 얼룩 발생으로 도료 개선",
+        "note": "내화장품 및 Set 내화장품 Test : OK,\n  참고 : Set 내화장품 한계test시 17Hr 후 Crack 발생 ( 기준 4Hr)",
+        "subItemId": null,
+        "dueDate": "2026-05-21",
+        "dueDateEnd": null,
+        "status": "completed"
+      }
+    ],
+    "3": [
+      {
+        "id": 10048,
+        "title": "5/6 계획품 서비플러스 31대 출하완료",
+        "description": "31대 출하",
+        "note": "",
+        "subItemId": null,
+        "dueDate": "2026-05-06",
+        "dueDateEnd": null,
+        "status": "completed"
+      },
+      {
+        "id": 10049,
+        "title": "서비플러스 중 CKD 부품 출하 150 set",
+        "description": "150 set 출하 절차 진행중",
+        "note": "자재 입고 지연 관련 - 출하일정 재협의중",
+        "subItemId": null,
+        "dueDate": null,
+        "dueDateEnd": null,
+        "status": "delayed"
+      }
+    ],
+    "4": [
+      {
+        "id": 10038,
+        "title": "생산 라인 및 검사 라인 SET UP",
+        "description": "고객사 담당 내방",
+        "note": "",
+        "subItemId": null,
+        "dueDate": "2026-05-18",
+        "dueDateEnd": "2026-05-22",
+        "status": "in_progress"
+      },
+      {
+        "id": 10039,
+        "title": "국방부 실사",
+        "description": "국방부 내방 현장 실사",
+        "note": "",
+        "subItemId": null,
+        "dueDate": "2026-05-29",
+        "dueDateEnd": null,
+        "status": "pending"
+      }
+    ],
+    "5": [
+      {
+        "id": 10030,
+        "title": "현장실사",
+        "description": "승인평가 실사 추가 진행 예정",
+        "note": "",
+        "subItemId": null,
+        "dueDate": "2026-05-15",
+        "dueDateEnd": null,
+        "status": "completed"
+      },
+      {
+        "id": 10031,
+        "title": "WIMS 이관 및 신규모델 EX 진행 검토중",
+        "description": "WIMS 이관 및 신규모델 EX 진행 검토중",
+        "note": "",
+        "subItemId": null,
+        "dueDate": "2026-05-19",
+        "dueDateEnd": null,
+        "status": "in_progress"
+      }
+    ],
+    "6": [
+      {
+        "id": 10047,
+        "title": "DV 일정",
+        "description": "금형 제작 후 DV 진행",
+        "note": "",
+        "subItemId": null,
+        "dueDate": "2026-06-30",
+        "dueDateEnd": null,
+        "status": "pending"
+      }
+    ],
+    "10001": [
+      {
+        "id": 10055,
+        "title": "R14 #PV1 전차수 CPK 측정",
+        "description": "측정 완료 - 16 point NG",
+        "note": "금형수리 및 전산화 검토중 → 코어 신작 결정",
+        "subItemId": null,
+        "dueDate": null,
+        "dueDateEnd": null,
+        "status": "in_progress"
+      },
+      {
+        "id": 10056,
+        "title": "NM3·NM4 Cam BRK 변화량 / KMD 치수 측정",
+        "description": "Cam BRK 변화량 및 KMD 치수 측정",
+        "note": "NM4 측정 완료 / NM3 측정중 (~5/22)",
+        "subItemId": null,
+        "dueDate": "2026-05-22",
+        "dueDateEnd": null,
+        "status": "in_progress"
+      },
+      {
+        "id": 10070,
+        "title": "일일/Q7 JELLY COVER 초중종물 치수측정",
+        "description": "Q7 JELLY COVER 초중종물 치수측정",
+        "note": "",
+        "subItemId": null,
+        "dueDate": "2026-05-01",
+        "dueDateEnd": "2026-05-31",
+        "status": "in_progress"
+      },
+      {
+        "id": 10073,
+        "title": "X-BLE SHOULDER DDDDD 측정",
+        "description": "ROQKFDYCJDD",
+        "note": "",
+        "subItemId": null,
+        "dueDate": "2026-05-21",
+        "dueDateEnd": "2026-05-25",
+        "status": "in_progress"
+      }
+    ],
+    "10007": [
+      {
+        "id": 10057,
+        "title": "R14 #PV1 단기 OK / 장기 NG",
+        "description": "단기 시험 OK, 장기 시험 NG",
+        "note": "Mint 단면 내하강 NG (1/5ea) → 도막 축소 개선 검토중",
+        "subItemId": null,
+        "dueDate": null,
+        "dueDateEnd": null,
+        "status": "in_progress"
+      },
+      {
+        "id": 10058,
+        "title": "RS4 Display 고온고습 168Hr",
+        "description": "고온고습 시험 168시간",
+        "note": "5/16 시험 완료",
+        "subItemId": null,
+        "dueDate": "2026-05-16",
+        "dueDateEnd": null,
+        "status": "completed"
+      },
+      {
+        "id": 10059,
+        "title": "R14 신뢰성 개선자재 Test",
+        "description": "신뢰성 개선자재 Test 진행",
+        "note": "내하강도 NG (2/5ea) → 개선 SPL Test (~5/19)",
+        "subItemId": null,
+        "dueDate": "2026-05-19",
+        "dueDateEnd": null,
+        "status": "in_progress"
+      }
+    ],
+    "10013": [
+      {
+        "id": 10054,
+        "title": "R14 #PV1 측정 OK",
+        "description": "R14 #PV1 측정 OK",
+        "note": "",
+        "subItemId": null,
+        "dueDate": "2026-04-30",
+        "dueDateEnd": null,
+        "status": "completed"
+      },
+      {
+        "id": 10074,
+        "title": "[일일] XRF 측정현황",
+        "description": "[일일] XFR , 프탈레이트 측정현황",
+        "note": "",
+        "subItemId": null,
+        "dueDate": "2026-05-01",
+        "dueDateEnd": "2026-05-31",
+        "status": "in_progress"
+      }
+    ],
+    "10032": [
+      {
+        "id": 10050,
+        "title": "GN1 PE 협력 생산 및 INTOPS OQC",
+        "description": "트리코트 1종 / 스페이드 3종",
+        "note": "~5/12 협력생산분까지 용산으로 직납",
+        "subItemId": null,
+        "dueDate": "2026-05-12",
+        "dueDateEnd": null,
+        "status": "in_progress"
+      },
+      {
+        "id": 10051,
+        "title": "정상 납품 & 검사 의뢰",
+        "description": "5/13부터 정상 납품 시작",
+        "note": "",
+        "subItemId": null,
+        "dueDate": "2026-05-13",
+        "dueDateEnd": null,
+        "status": "pending"
+      },
+      {
+        "id": 10052,
+        "title": "미러커버 수정검사 입고 → NG",
+        "description": "5/12(월) 입고, NG 판정 → 재수리 폐기",
+        "note": "입고 및 검증: 5/14",
+        "subItemId": null,
+        "dueDate": "2026-05-12",
+        "dueDateEnd": "2026-05-14",
+        "status": "delayed"
+      },
+      {
+        "id": 10053,
+        "title": "공정 출고",
+        "description": "400 set/일 약 / 출고 ~5/28 계획",
+        "note": "N측 부 길이/폭 증가 & 깊이 깊음 → 신검 결과 대응 추후 수리예정",
+        "subItemId": null,
+        "dueDate": "2026-05-28",
+        "dueDateEnd": null,
+        "status": "in_progress"
+      }
+    ],
+    "10040": [
+      {
+        "id": 10046,
+        "title": "ISO 13485 심사",
+        "description": "ISO 13485 신규심사예정\n(사내:분주 _ 태산:조립)",
+        "note": "",
+        "subItemId": null,
+        "dueDate": "2026-07-24",
+        "dueDateEnd": "2026-07-27",
+        "status": "pending"
+      }
+    ]
+  },
+  "checklists": {
+    "1": [
+      {
+        "id": 10022,
+        "title": "공정/출하 검사 및 COA 작성",
+        "detail": "가동현황 모니터링 및 COA 누락 방지",
+        "dueDate": "2026-12-31",
+        "status": "in_progress",
+        "note": "",
+        "order": 0
+      }
+    ],
+    "2": [],
+    "3": [],
+    "4": [],
+    "5": [],
+    "6": [],
+    "10001": [],
+    "10007": [],
+    "10013": [],
+    "10032": [],
+    "10040": []
+  },
+  "memos": {
+    "1": "",
+    "2": "",
+    "3": "",
+    "4": "",
+    "5": "",
+    "6": "",
+    "10001": "",
+    "10007": "",
+    "10013": "",
+    "10032": "",
+    "10040": ""
+  },
+  "nextId": 10082,
+  "users": [
+    {
+      "id": 10019,
+      "email": "admin@intops.com",
+      "name": "관리자",
+      "dept": "INTOPS",
+      "phone": "",
+      "password_hash": "9c25413d30b17306fcbe7a1a8ba0c4e52e02b98b7a5d022ca721ae73a863235c3aaf9742047827d51992866270a93cfa9cb46e2052525e4327be15d5424943cc",
+      "salt": "057d8e3cdbf4b3282fecbed8ce158243",
+      "role": "admin",
+      "status": "approved",
+      "created_at": "2026-05-20T01:00:52.348Z",
+      "last_login": null
+    }
+  ],
+  "sessions": [],
+  "claims": {
+    "1": [
+      {
+        "id": 10024,
+        "customer": "현대차 전주공장",
+        "content": "마그넷 캐치 마그넷 이탈",
+        "occurredDate": "2026-05-13",
+        "action": "재고 선별완료 : 불량:11/73 (5/14 선별)\n개선안: 본딩 도포구간 확대 (대책)",
+        "status": "in_progress",
+        "note": "",
+        "order": 0,
+        "created_by": 0,
+        "created_by_name": "관리자",
+        "created_at": "2026-05-20T01:14:54.986Z",
+        "updated_by": 0,
+        "updated_by_name": "관리자",
+        "updated_at": "2026-05-20T01:14:54.986Z"
+      },
+      {
+        "id": 10025,
+        "customer": "현대차 로보틱스랩\" (출항지 확인중)",
+        "content": "조끼 허리밸트 재봉선 터짐",
+        "occurredDate": "2026-05-19",
+        "action": "조끼 국내 생산분 (L , XL , 2XL)\n재고 선별결과 동일불량 없음 (50EA)\n- 근본: 구조개선필요 (박음질 개선)",
+        "status": "in_progress",
+        "note": "",
+        "order": 1,
+        "created_by": 0,
+        "created_by_name": "관리자",
+        "created_at": "2026-05-20T01:18:32.500Z",
+        "updated_by": 0,
+        "updated_by_name": "관리자",
+        "updated_at": "2026-05-20T01:18:32.500Z"
+      }
+    ],
+    "2": [],
+    "3": [],
+    "4": [],
+    "5": [],
+    "6": [],
+    "10001": [],
+    "10007": [],
+    "10013": [],
+    "10032": [],
+    "10040": []
+  },
+  "comments": {
+    "milestone_12345": [],
+    "milestone_10023": [
+      {
+        "id": 10061,
+        "type": "milestone",
+        "item_id": 10023,
+        "author": "김현석팀장",
+        "content": "생산이관에 대해 고민해 보고 이관이 맞다고 생각되면 변경점을 진행하는 것일 어떨까요?",
+        "created_at": "2026-05-20T01:55:45.500Z"
+      },
+      {
+        "id": 10063,
+        "type": "milestone",
+        "item_id": 10023,
+        "author": "황인학매니저",
+        "content": "고객사 담당 (이홍렬 책임) 4M변경 관련 내용공유 완료\n200대분 정상가동 (사출-NC-도장-조립) 검증 진행",
+        "created_at": "2026-05-20T02:02:52.204Z"
+      }
+    ],
+    "milestone_10070": [
+      {
+        "id": 10071,
+        "type": "milestone",
+        "item_id": 10070,
+        "author": "김민호M",
+        "content": "26/5/21 측정완료 (양호)",
+        "created_at": "2026-05-21T00:55:55.917Z"
+      },
+      {
+        "id": 10072,
+        "type": "milestone",
+        "item_id": 10070,
+        "author": "김민호M",
+        "content": "26/5/22 측정완료 (양호)",
+        "created_at": "2026-05-21T00:56:07.225Z"
+      }
+    ],
+    "milestone_10074": [
+      {
+        "id": 10075,
+        "type": "milestone",
+        "item_id": 10074,
+        "author": "강도희M",
+        "content": "XRF,프탈레이트(가라 DATA) 총 18건  23~24일",
+        "created_at": "2026-05-21T00:59:11.156Z"
+      }
+    ],
+    "milestone_10029": [
+      {
+        "id": 10080,
+        "type": "milestone",
+        "item_id": 10029,
+        "parent_comment_id": null,
+        "author": "김현석",
+        "content": "PV#2 자재 진행시 상기 도료 및 도막 두께 개선에 대한 유효성 검증 진행 해 봅시다",
+        "created_at": "2026-05-21T01:16:15.027Z"
+      }
+    ],
+    "dpost_10081": [
+      {
+        "id": 10082,
+        "type": "dpost",
+        "item_id": 10081,
+        "parent_comment_id": null,
+        "author": "황인학M",
+        "content": "TEST2",
+        "created_at": "2026-05-21T01:30:47.710Z"
+      }
+    ]
+  },
+  "dashboardMemo": "",
+  "dashboardMemoUpdatedAt": "2026-05-21T01:12:16.397Z",
+  "dashboardMemoUpdatedBy": "관리자",
+  "dashboardPosts": [
+    {
+      "id": 10081,
+      "author": "황인학M",
+      "content": "TEST",
+      "created_at": "2026-05-21T01:30:28.849Z"
+    }
+  ]
+}
