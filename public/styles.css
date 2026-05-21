@@ -2548,7 +2548,8 @@ body.eye-care .welcome p { color: var(--text3); }
 }
 .dash-section.model .dash-section-grid {
   gap: 16px !important;
-  grid-template-columns: repeat(4, minmax(0, 1fr)) var(--add-w) !important;
+  /* 3열로 변경 — 모니터링과 동일한 카드 너비 (8개는 3+3+2 자동 줄바꿈) */
+  grid-template-columns: repeat(3, minmax(0, 1fr)) var(--add-w) !important;
 }
 
 /* 모델 카드 — 약간 더 넉넉한 패딩 */
