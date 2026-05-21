@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: intops-fms-tracker
+    runtime: node
+    region: singapore
+    plan: free
+    branch: main
+    buildCommand: npm install
+    startCommand: npm start
+    autoDeploy: true   # GitHub push 시 자동 재배포
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+    # 데이터 영구 보존을 위한 디스크 (Free 플랜은 disk 미지원 - 유료 전환 시 사용)
+    # disk:
+    #   name: data
+    #   mountPath: /opt/render/project/src
+    #   sizeGB: 1

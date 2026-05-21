@@ -62,6 +62,8 @@ function openModal(title, bodyHTML, footerHTML) {
   document.getElementById('modal-body').innerHTML   = bodyHTML;
   document.getElementById('modal-footer').innerHTML = footerHTML;
   document.getElementById('modal-backdrop').classList.remove('hidden');
+  // 모든 textarea에 OCR 자동 부착
+  setTimeout(autoAttachOcrInModal, 0);
 }
 function closeModal() {
   document.getElementById('modal-backdrop').classList.add('hidden');
@@ -189,6 +191,71 @@ function renderDashboardData(wrap, data) {
     wrap.appendChild(sec);
     enableDashCardDrag(sec);
   }
+
+  // 메모장 (하단 - 노란/초록 음영)
+  wrap.appendChild(makeDashMemoSection());
+}
+
+// ── 대시보드 공용 메모장 섹션 ─────────────────────────────────
+let _dashMemoTimer = null;
+function makeDashMemoSection() {
+  const collapsed = isSectionCollapsed('memo');
+  const sec = document.createElement('div');
+  sec.className = `dash-section memo${collapsed ? ' collapsed' : ''}`;
+  sec.innerHTML = `
+    <div class="dash-section-header">
+      <h2 class="dash-section-title">📝 메모장 (공용)</h2>
+      <span class="dash-section-count" id="dash-memo-status">불러오는 중...</span>
+      <button class="dash-section-toggle" type="button"
+              title="${collapsed ? '펼치기' : '접기'}"
+              aria-expanded="${!collapsed}">
+        <span class="toggle-icon">${collapsed ? '＋' : '−'}</span>
+      </button>
+    </div>
+    <div class="dash-memo-body">
+      <textarea id="dash-memo-ta" class="dash-memo-ta"
+                placeholder="모든 사용자가 함께 보는 공용 메모입니다.&#10;공지사항, 회의 결정, 알림 등을 자유롭게 작성하세요.&#10;자동 저장됩니다."></textarea>
+    </div>
+  `;
+
+  // 토글
+  sec.querySelector('.dash-section-toggle').addEventListener('click', e => {
+    e.stopPropagation();
+    const nowCollapsed = !sec.classList.contains('collapsed');
+    sec.classList.toggle('collapsed', nowCollapsed);
+    setSectionCollapsed('memo', nowCollapsed);
+    const ic = sec.querySelector('.toggle-icon');
+    ic.textContent = nowCollapsed ? '＋' : '−';
+  });
+
+  // 비동기 로드 + 자동 저장
+  const ta = sec.querySelector('#dash-memo-ta');
+  const statusEl = sec.querySelector('#dash-memo-status');
+  GET('/api/dashboard-memo').then(memo => {
+    ta.value = memo.content || '';
+    if (memo.updated_at) {
+      statusEl.textContent = `마지막 저장: ${fmtDateTime(memo.updated_at)}${memo.updated_by ? ' · ' + memo.updated_by : ''}`;
+    } else {
+      statusEl.textContent = '비어 있음';
+    }
+  }).catch(() => { statusEl.textContent = ''; });
+
+  // 자동 저장 (2초 디바운스)
+  ta.addEventListener('input', () => {
+    statusEl.textContent = '입력 중...';
+    clearTimeout(_dashMemoTimer);
+    _dashMemoTimer = setTimeout(async () => {
+      statusEl.textContent = '저장 중...';
+      try {
+        const r = await PUT('/api/dashboard-memo', { content: ta.value });
+        statusEl.textContent = `마지막 저장: ${fmtDateTime(r.updated_at)}${r.updated_by ? ' · ' + r.updated_by : ''}`;
+      } catch (err) {
+        statusEl.textContent = '저장 실패';
+      }
+    }, 2000);
+  });
+
+  return sec;
 }
 
 function isSectionCollapsed(category) {
@@ -298,21 +365,29 @@ function makeDashCard(m) {
       ${m.milestone_delayed ? `<div class="dc-delayed">⚠ 지연 ${m.milestone_delayed}건</div>` : ''}
     `;
   } else {
-    // 모델: 일정 + 체크리스트
+    // 모델: 일정 + 체크리스트 + 클레임 (3열)
     const clPct = m.checklist_total ? Math.round(m.checklist_done / m.checklist_total * 100) : 0;
+    const clmTotal = m.claim_total || 0;
+    const clmOpen  = m.claim_open  || 0;
+    const clmDone  = m.claim_done  || 0;
+    const clmDelay = m.claim_delayed || 0;
     card.innerHTML = `
       <div class="dc-header">
         <div class="dc-dot" style="background:${m.color}"></div>
         <div class="dc-name">${m.name}</div>
       </div>
-      <div class="dc-stats">
+      <div class="dc-stats dc-stats-3">
         <div class="dc-stat">
           <div class="dc-stat-val">${m.milestone_done}/${m.milestone_total}</div>
           <div class="dc-stat-label">일정</div>
         </div>
         <div class="dc-stat">
           <div class="dc-stat-val">${m.checklist_done}/${m.checklist_total}</div>
-          <div class="dc-stat-label">체크리스트</div>
+          <div class="dc-stat-label">체크</div>
+        </div>
+        <div class="dc-stat ${clmOpen ? 'has-open' : ''}">
+          <div class="dc-stat-val" style="${clmOpen ? 'color:#ef4444' : ''}">${clmDone}/${clmTotal}</div>
+          <div class="dc-stat-label">클레임${clmOpen ? ' ('+clmOpen+' 미해결)' : ''}</div>
         </div>
       </div>
       <div class="dc-prog-label">체크리스트 진행률 ${clPct}%</div>
@@ -320,6 +395,7 @@ function makeDashCard(m) {
         <div class="progress-fill" style="width:${clPct}%;background:${m.color}"></div>
       </div>
       ${m.milestone_delayed ? `<div class="dc-delayed">⚠ 지연된 일정 ${m.milestone_delayed}건</div>` : ''}
+      ${clmDelay ? `<div class="dc-delayed">🚨 지연된 클레임 ${clmDelay}건</div>` : ''}
     `;
   }
 
@@ -486,11 +562,12 @@ async function selectModel(id) {
   document.getElementById('hdr-title').textContent    = m.name;
   document.getElementById('mobile-badge').style.background = m.color;
 
-  // 카테고리별 탭 표시 제어 (모니터링은 체크시트 숨김)
+  // 카테고리별 탭 표시 제어 (모니터링은 체크시트/Claim 숨김)
+  const hideForMon = (m.category === 'monitoring') ? 'none' : '';
   const checklistTab = document.querySelector('.tab[data-tab="checklist"]');
-  if (checklistTab) {
-    checklistTab.style.display = (m.category === 'monitoring') ? 'none' : '';
-  }
+  if (checklistTab) checklistTab.style.display = hideForMon;
+  const claimTab = document.querySelector('.tab[data-tab="claim"]');
+  if (claimTab) claimTab.style.display = hideForMon;
 
   // 탭 초기화
   document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === 'milestone'));
@@ -499,8 +576,8 @@ async function selectModel(id) {
 
 // ── Tab Switching ────────────────────────────────────────────
 async function loadTab(tab) {
-  // 모니터링 카테고리는 체크시트 비활성화 → 일정표로 리다이렉트
-  if (tab === 'checklist' && state.activeModel?.category === 'monitoring') {
+  // 모니터링 카테고리는 체크시트/claim 비활성화 → 일정표로 리다이렉트
+  if ((tab === 'checklist' || tab === 'claim') && state.activeModel?.category === 'monitoring') {
     tab = 'milestone';
     document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === 'milestone'));
   }
@@ -511,6 +588,7 @@ async function loadTab(tab) {
 
   if (tab === 'milestone') await renderMilestone(body);
   if (tab === 'checklist') await renderChecklist(body);
+  if (tab === 'claim')     await renderClaim(body);
   if (tab === 'memo')      await renderMemo(body);
   if (tab === 'settings')  await renderSettings(body);
 }
@@ -520,6 +598,9 @@ async function renderMilestone(body) {
   const mid    = state.activeModel.id;
   const items  = await GET(`/api/models/${mid}/milestones`);
   const subs   = []; // 더 이상 그룹 분류 안함
+
+  // 댓글 일괄 페치
+  await batchFetchComments(items.map(it => ({ type: 'milestone', id: it.id })));
 
   const total   = items.length;
   const done    = items.filter(x => x.status === 'completed').length;
@@ -549,6 +630,8 @@ async function renderMilestone(body) {
   }
 
   document.getElementById('btn-add-ms').addEventListener('click', () => openMsModal(null, []));
+  refreshCommentCounts();
+  attachInlineCommentsHandler(document.getElementById('tab-body'));
 }
 
 function makeMsItem(it, today) {
@@ -567,6 +650,7 @@ function makeMsItem(it, today) {
     dateStr = `📅 ${it.due_date}`;
   }
 
+  const cmts = _commentsCache[`milestone_${it.id}`] || [];
   div.innerHTML = `
     <div class="ms-status-dot" style="background:${STATUS_DOT[it.status]}"></div>
     <div class="ms-body">
@@ -577,6 +661,7 @@ function makeMsItem(it, today) {
         <span class="status-badge status-${it.status}">${STATUS_LABELS[it.status]}</span>
       </div>
       ${it.note ? `<div class="ms-note">📝 ${it.note}</div>` : ''}
+      ${buildInlineCommentsHTML('milestone', it.id, cmts)}
     </div>
     <div class="ms-actions">
       <button class="btn-xs" data-action="edit-ms" data-id="${it.id}" title="편집">✎</button>
@@ -587,10 +672,17 @@ function makeMsItem(it, today) {
 }
 
 document.getElementById('tab-body').addEventListener('click', async e => {
-  const action = e.target.dataset.action;
+  // 댓글 버튼은 자식 span(.cmt-count) 클릭이 부모로 위임되도록 closest 사용
+  const actBtn = e.target.closest('[data-action]');
+  const action = actBtn ? actBtn.dataset.action : null;
   if (!action) return;
-  const id = Number(e.target.dataset.id);
+  const id = Number(actBtn.dataset.id);
   const mid = state.activeModel?.id;
+
+  // ── 댓글 모달 열기 ──
+  if (action === 'cmt-ms')    return openCommentsModal('milestone', id, actBtn.dataset.title);
+  if (action === 'cmt-check') return openCommentsModal('checklist', id, actBtn.dataset.title);
+  if (action === 'cmt-clm')   return openCommentsModal('claim',     id, actBtn.dataset.title);
 
   if (action === 'edit-ms') {
     const items = await GET(`/api/models/${mid}/milestones`);
@@ -613,6 +705,17 @@ document.getElementById('tab-body').addEventListener('click', async e => {
   if (action === 'edit-check') {
     const items = await GET(`/api/models/${mid}/checklist`);
     openCheckModal(items.find(x => x.id === id));
+  }
+  if (action === 'del-clm') {
+    if (!confirm('이 클레임을 삭제할까요?')) return;
+    await DEL(`/api/claims/${id}`);
+    toast('삭제되었습니다', 'success');
+    await loadTab('claim');
+    notifyDataChanged();
+  }
+  if (action === 'edit-clm') {
+    const items = await GET(`/api/models/${mid}/claims`);
+    openClaimModal(items.find(x => x.id === id));
   }
 });
 
@@ -717,6 +820,9 @@ async function renderChecklist(body) {
   const mid   = state.activeModel.id;
   const items = await GET(`/api/models/${mid}/checklist`);
 
+  // 댓글 일괄 페치
+  await batchFetchComments(items.map(it => ({ type: 'checklist', id: it.id })));
+
   const total   = items.length;
   const done    = items.filter(x => x.status === 'completed').length;
   const pct     = total ? Math.round(done / total * 100) : 0;
@@ -765,9 +871,12 @@ async function renderChecklist(body) {
   }
 
   document.getElementById('btn-add-cl').addEventListener('click', () => openCheckModal(null));
+  refreshCommentCounts();
+  attachInlineCommentsHandler(document.getElementById('tab-body'));
 }
 
 function makeClRow(it, today) {
+  const frag = document.createDocumentFragment();
   const tr = document.createElement('tr');
   tr.className = 'cl-row';
   if (it.status === 'completed') tr.classList.add('row-done');
@@ -785,7 +894,15 @@ function makeClRow(it, today) {
       <button class="btn-xs danger" data-action="del-check" data-id="${it.id}" title="삭제">✕</button>
     </td>
   `;
-  return tr;
+  frag.appendChild(tr);
+
+  // 댓글 인라인 sub-row
+  const cmts = _commentsCache[`checklist_${it.id}`] || [];
+  const cmtTr = document.createElement('tr');
+  cmtTr.className = 'cl-cmt-row';
+  cmtTr.innerHTML = `<td colspan="7" class="cl-cmt-cell">${buildInlineCommentsHTML('checklist', it.id, cmts)}</td>`;
+  frag.appendChild(cmtTr);
+  return frag;
 }
 
 function escHtml(s) {
@@ -794,6 +911,376 @@ function escHtml(s) {
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
     .replace(/"/g,'&quot;').replace(/'/g,'&#39;')
     .replace(/\n/g,'<br>');
+}
+
+// ══════════════════════════════════════════════════════════
+// 댓글 (Comments)
+// ══════════════════════════════════════════════════════════
+const COMMENTER_KEY = 'pt_commenter_name';
+function getCommenterName() { return localStorage.getItem(COMMENTER_KEY) || ''; }
+function setCommenterName(n) { localStorage.setItem(COMMENTER_KEY, n); }
+
+function fmtDateTime(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  const pad = n => String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+// 인라인 댓글 블록 HTML 생성
+function buildInlineCommentsHTML(type, itemId, comments) {
+  const name = getCommenterName();
+  const list = (comments || []).map(c => `
+    <div class="inline-cmt" data-cid="${c.id}">
+      <div class="inline-cmt-head">
+        <span class="inline-cmt-author">${escHtml(c.author)}</span>
+        <span class="inline-cmt-time">${fmtDateTime(c.created_at)}</span>
+        <button class="inline-cmt-del" data-cmt-del="${c.id}" title="삭제">✕</button>
+      </div>
+      <div class="inline-cmt-content">${escHtml(c.content)}</div>
+    </div>
+  `).join('');
+
+  return `
+    <div class="inline-comments" data-cmt-type="${type}" data-cmt-id="${itemId}">
+      ${list ? `<div class="inline-cmt-list">${list}</div>` : ''}
+      <div class="inline-cmt-form">
+        <input class="inline-cmt-name" placeholder="이름" value="${escHtml(name)}" maxlength="40">
+        <input class="inline-cmt-text" placeholder="💬 댓글 추가 (Enter로 등록)" maxlength="500">
+        <button class="inline-cmt-add" type="button">등록</button>
+      </div>
+    </div>
+  `;
+}
+
+// 댓글 데이터 일괄 페치
+let _commentsCache = {};
+async function batchFetchComments(items) {
+  if (!items.length) return {};
+  try {
+    const r = await fetch('/api/comments/batch', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ items }),
+    });
+    const data = await r.json();
+    _commentsCache = data;
+    return data;
+  } catch { return {}; }
+}
+
+// 인라인 댓글 영역 이벤트 핸들러 (위임)
+function attachInlineCommentsHandler(rootEl) {
+  if (rootEl._cmtHandlerAttached) return;
+  rootEl._cmtHandlerAttached = true;
+
+  rootEl.addEventListener('click', async (e) => {
+    // 삭제
+    const delBtn = e.target.closest('.inline-cmt-del');
+    if (delBtn) {
+      e.preventDefault();
+      e.stopPropagation();
+      const id = delBtn.dataset.cmtDel;
+      if (!confirm('댓글을 삭제할까요?')) return;
+      await DEL(`/api/comments/${id}`);
+      toast('삭제되었습니다');
+      const cmtBlock = delBtn.closest('.inline-comments');
+      await refreshInlineCommentsBlock(cmtBlock);
+      return;
+    }
+
+    // 등록
+    const addBtn = e.target.closest('.inline-cmt-add');
+    if (addBtn) {
+      e.preventDefault();
+      e.stopPropagation();
+      const block = addBtn.closest('.inline-comments');
+      await submitInlineComment(block);
+    }
+  });
+
+  rootEl.addEventListener('keydown', async (e) => {
+    if (e.key !== 'Enter') return;
+    const inputEl = e.target;
+    if (!inputEl.classList) return;
+    if (!inputEl.classList.contains('inline-cmt-text') && !inputEl.classList.contains('inline-cmt-name')) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const block = inputEl.closest('.inline-comments');
+    await submitInlineComment(block);
+  });
+}
+
+async function submitInlineComment(block) {
+  const type = block.dataset.cmtType;
+  const id   = block.dataset.cmtId;
+  const nameEl    = block.querySelector('.inline-cmt-name');
+  const contentEl = block.querySelector('.inline-cmt-text');
+  const author  = (nameEl?.value || '').trim();
+  const content = (contentEl?.value || '').trim();
+  if (!author)  { toast('이름을 입력하세요', 'error'); nameEl?.focus(); return; }
+  if (!content) { toast('내용을 입력하세요', 'error'); contentEl?.focus(); return; }
+  setCommenterName(author);
+  try {
+    await POST(`/api/comments/${type}/${id}`, { author, content });
+    contentEl.value = '';
+    toast('등록되었습니다', 'success');
+    await refreshInlineCommentsBlock(block);
+  } catch (err) {
+    toast(err.message || '등록 실패', 'error');
+  }
+}
+
+async function refreshInlineCommentsBlock(block) {
+  const type = block.dataset.cmtType;
+  const id   = block.dataset.cmtId;
+  const comments = await GET(`/api/comments/${type}/${id}`);
+  // 입력란 값 보존
+  const curName    = block.querySelector('.inline-cmt-name')?.value;
+  const curContent = block.querySelector('.inline-cmt-text')?.value;
+  block.outerHTML = buildInlineCommentsHTML(type, Number(id), comments);
+  // 새 노드에 입력값 복원 (선택)
+  // 동일 부모 안의 동일 위치에 새로 들어간 노드를 다시 찾아 값 채우기는 생략
+}
+
+// 현재 탭 안의 모든 .cmt-count 요소에 댓글 수를 업데이트
+async function refreshCommentCounts() {
+  const els = document.querySelectorAll('.cmt-count[data-cmt-key]');
+  if (!els.length) return;
+  const items = [];
+  els.forEach(el => {
+    const [type, id] = el.dataset.cmtKey.split('_');
+    items.push({ type, id: Number(id) });
+  });
+  const counts = await fetchCommentCounts(items);
+  els.forEach(el => {
+    const c = counts[el.dataset.cmtKey] || 0;
+    el.textContent = c;
+    el.parentElement.classList.toggle('has-comments', c > 0);
+  });
+}
+
+// 댓글 변경 이벤트 수신 → 카운트 갱신
+document.addEventListener('comments-updated', () => refreshCommentCounts());
+
+async function fetchCommentCounts(items) {
+  if (!items.length) return {};
+  try {
+    const r = await fetch('/api/comments/counts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ items }),
+    });
+    return await r.json();
+  } catch { return {}; }
+}
+
+async function openCommentsModal(type, itemId, itemTitle) {
+  const typeLabel = { milestone: '일정', checklist: '체크시트', claim: '클레임' }[type] || type;
+  openModal(`💬 댓글 - ${typeLabel}: ${itemTitle || ''}`, `
+    <div class="comments-list" id="cmt-list">
+      <div style="text-align:center;padding:20px;color:#94a3b8">불러오는 중...</div>
+    </div>
+
+    <div class="cmt-input-wrap">
+      <div class="cmt-input-title">✍ 새 댓글 작성</div>
+      <div class="form-group">
+        <label class="form-label" for="cmt-author">작성자 이름 <span style="color:#ef4444">*</span></label>
+        <input class="form-input" id="cmt-author"
+               value="${escHtml(getCommenterName())}"
+               placeholder="예: 황인학 / 품질팀 김OO"
+               autocomplete="name"
+               style="font-weight:700">
+      </div>
+      <div class="form-group" style="margin-bottom:4px">
+        <label class="form-label" for="cmt-content">댓글 내용 <span style="color:#ef4444">*</span></label>
+        <textarea class="form-textarea" id="cmt-content"
+                  placeholder="의견·검토사항·진행상태 등 자유롭게 작성하세요&#10;Ctrl+Enter로 빠른 등록 가능"
+                  rows="4"></textarea>
+      </div>
+    </div>
+  `, `
+    <button class="btn-secondary" id="modal-cancel">닫기</button>
+    <button class="btn-primary" id="cmt-submit">💬 등록</button>
+  `);
+
+  document.getElementById('modal-cancel').addEventListener('click', closeModal);
+
+  async function reload() {
+    const list = await GET(`/api/comments/${type}/${itemId}`);
+    const listEl = document.getElementById('cmt-list');
+    if (!list.length) {
+      listEl.innerHTML = `<div class="cmt-empty">아직 댓글이 없습니다. 첫 의견을 남겨보세요!</div>`;
+    } else {
+      listEl.innerHTML = list.map(c => `
+        <div class="comment-item" data-cid="${c.id}">
+          <div class="comment-head">
+            <span class="comment-author">${escHtml(c.author)}</span>
+            <span class="comment-time">${fmtDateTime(c.created_at)}</span>
+            <button class="comment-del" data-cmt-del="${c.id}" title="삭제">✕</button>
+          </div>
+          <div class="comment-content">${escHtml(c.content)}</div>
+        </div>
+      `).join('');
+    }
+    // 모달 외부에서 카운트 즉시 반영 위해
+    document.dispatchEvent(new CustomEvent('comments-updated', { detail: { type, itemId } }));
+  }
+
+  document.getElementById('cmt-list').addEventListener('click', async e => {
+    const delId = e.target.dataset.cmtDel;
+    if (!delId) return;
+    if (!confirm('이 댓글을 삭제할까요?')) return;
+    await DEL(`/api/comments/${delId}`);
+    toast('삭제되었습니다');
+    await reload();
+  });
+
+  async function submit() {
+    const author = document.getElementById('cmt-author').value.trim();
+    const content = document.getElementById('cmt-content').value.trim();
+    if (!author) { toast('작성자 이름을 입력하세요', 'error'); return; }
+    if (!content) { toast('댓글 내용을 입력하세요', 'error'); return; }
+    setCommenterName(author);
+    try {
+      await POST(`/api/comments/${type}/${itemId}`, { author, content });
+      document.getElementById('cmt-content').value = '';
+      toast('등록되었습니다', 'success');
+      await reload();
+    } catch (err) {
+      toast(err.message || '등록 실패', 'error');
+    }
+  }
+  document.getElementById('cmt-submit').addEventListener('click', submit);
+  // Ctrl+Enter 단축키
+  document.getElementById('cmt-content').addEventListener('keydown', e => {
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
+      submit();
+    }
+  });
+
+  await reload();
+}
+
+// ══════════════════════════════════════════════════════════
+// 이미지 OCR (Tesseract.js)
+// ══════════════════════════════════════════════════════════
+
+// 텍스트영역에 이미지 OCR 기능 부착 (붙여넣기/드롭/버튼)
+function attachOcrToTextarea(textarea, opts = {}) {
+  if (!textarea) return;
+  const placeholderOriginal = textarea.placeholder || '';
+  textarea.placeholder = (placeholderOriginal ? placeholderOriginal + '\n\n' : '') +
+    '💡 이미지를 붙여넣거나(Ctrl+V) 드래그하면 문자 인식되어 자동 입력됩니다.';
+
+  // 붙여넣기 — 이미지 클립보드 처리
+  textarea.addEventListener('paste', async (e) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+    for (const item of items) {
+      if (item.type.startsWith('image/')) {
+        e.preventDefault();
+        const blob = item.getAsFile();
+        await runOcrIntoTextarea(textarea, blob);
+        return;
+      }
+    }
+  });
+
+  // 드래그-앤-드롭 — 이미지 파일 처리
+  textarea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    textarea.classList.add('drag-over');
+  });
+  textarea.addEventListener('dragleave', () => textarea.classList.remove('drag-over'));
+  textarea.addEventListener('drop', async (e) => {
+    e.preventDefault();
+    textarea.classList.remove('drag-over');
+    const file = e.dataTransfer?.files?.[0];
+    if (file && file.type.startsWith('image/')) {
+      await runOcrIntoTextarea(textarea, file);
+    }
+  });
+}
+
+async function runOcrIntoTextarea(textarea, blob) {
+  if (typeof Tesseract === 'undefined') {
+    toast('OCR 라이브러리 로딩 중... 잠시 후 다시 시도하세요', 'error');
+    return;
+  }
+
+  // 진행률 표시용 오버레이
+  const wrap = textarea.parentElement;
+  let overlay = wrap.querySelector('.ocr-overlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.className = 'ocr-overlay';
+    overlay.innerHTML = `
+      <div class="ocr-spinner"></div>
+      <div class="ocr-msg">이미지 분석 중... <span class="ocr-pct">0%</span></div>
+    `;
+    wrap.style.position = 'relative';
+    wrap.appendChild(overlay);
+  }
+  overlay.classList.add('show');
+  const pctEl = overlay.querySelector('.ocr-pct');
+  const msgEl = overlay.querySelector('.ocr-msg');
+
+  try {
+    const url = URL.createObjectURL(blob);
+    const result = await Tesseract.recognize(url, 'kor+eng', {
+      logger: (m) => {
+        if (m.status === 'loading tesseract core' || m.status === 'initializing tesseract' || m.status === 'initialized tesseract')
+          msgEl.firstChild.nodeValue = 'OCR 엔진 초기화 중... ';
+        else if (m.status === 'loading language traineddata' || m.status === 'loaded language traineddata')
+          msgEl.firstChild.nodeValue = '한글 인식 모델 로딩 중... ';
+        else if (m.status === 'initializing api')
+          msgEl.firstChild.nodeValue = 'API 초기화 중... ';
+        else if (m.status === 'recognizing text')
+          msgEl.firstChild.nodeValue = '문자 인식 중... ';
+        if (typeof m.progress === 'number') pctEl.textContent = Math.round(m.progress * 100) + '%';
+      },
+    });
+    URL.revokeObjectURL(url);
+
+    let text = (result?.data?.text || '').trim();
+    if (!text) {
+      toast('이미지에서 텍스트를 찾지 못했습니다', 'error');
+      return;
+    }
+    // 줄 정리
+    text = text.replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n');
+
+    // 커서 위치에 삽입 (기존 텍스트 보존)
+    const start = textarea.selectionStart ?? textarea.value.length;
+    const end   = textarea.selectionEnd   ?? textarea.value.length;
+    const before = textarea.value.slice(0, start);
+    const after  = textarea.value.slice(end);
+    const sep = before && !before.endsWith('\n') ? '\n' : '';
+    textarea.value = before + sep + text + after;
+
+    // input 이벤트 발생 (자동저장 등 트리거)
+    textarea.dispatchEvent(new Event('input', { bubbles: true }));
+    toast('문자 인식 완료', 'success');
+  } catch (err) {
+    console.error('OCR error', err);
+    toast('OCR 실패: ' + (err.message || err), 'error');
+  } finally {
+    overlay.classList.remove('show');
+  }
+}
+
+// 모달이 열린 직후 모든 textarea에 OCR 자동 부착
+function autoAttachOcrInModal() {
+  const body = document.getElementById('modal-body');
+  if (!body) return;
+  body.querySelectorAll('textarea').forEach(t => {
+    if (!t.dataset.ocrAttached) {
+      attachOcrToTextarea(t);
+      t.dataset.ocrAttached = '1';
+    }
+  });
 }
 
 function openCheckModal(item) {
@@ -853,7 +1340,157 @@ function openCheckModal(item) {
   });
 }
 
-// ── ③ 메모장 ─────────────────────────────────────────────────
+// ── ③ 고객 Claim 현황 ─────────────────────────────────────────
+async function renderClaim(body) {
+  const mid    = state.activeModel.id;
+  const items  = await GET(`/api/models/${mid}/claims`);
+
+  // 댓글 일괄 페치
+  await batchFetchComments(items.map(it => ({ type: 'claim', id: it.id })));
+
+  const total  = items.length;
+  const done   = items.filter(x => x.status === 'completed').length;
+  const today  = new Date().toISOString().slice(0,10);
+
+  body.innerHTML = `
+    <div class="checklist-overall">
+      <div class="checklist-overall-title">고객 Claim 처리 현황</div>
+      <div class="checklist-overall-row">
+        <div class="overall-pct">${total ? Math.round(done/total*100) : 0}%</div>
+        <div class="overall-bar-wrap">
+          <div class="overall-bar-bg">
+            <div class="overall-bar-fill" style="width:${total?Math.round(done/total*100):0}%;background:${state.activeModel.color}"></div>
+          </div>
+          <div class="overall-sub">${done} / ${total} 완료</div>
+        </div>
+      </div>
+    </div>
+    <div class="cl-table-wrap">
+      <table class="cl-table">
+        <thead>
+          <tr>
+            <th style="width:48px">NO</th>
+            <th style="width:14%">고객사</th>
+            <th style="min-width:200px">클레임 내용</th>
+            <th style="width:120px">발생일</th>
+            <th style="min-width:160px">조치 사항</th>
+            <th style="width:100px">상태</th>
+            <th style="min-width:140px">비고</th>
+            <th style="width:60px"></th>
+          </tr>
+        </thead>
+        <tbody id="clm-tbody"></tbody>
+      </table>
+    </div>
+    <div style="margin-top:14px">
+      <button class="btn-primary" id="btn-add-clm">＋ Claim 추가</button>
+    </div>
+  `;
+
+  const tbody = document.getElementById('clm-tbody');
+  if (!items.length) {
+    tbody.innerHTML = `<tr><td colspan="8" class="empty-state" style="padding:30px"><div class="empty-icon">📋</div>등록된 클레임이 없습니다</td></tr>`;
+  } else {
+    items.forEach(it => tbody.appendChild(makeClmRow(it, today)));
+  }
+  document.getElementById('btn-add-clm').addEventListener('click', () => openClaimModal(null));
+  refreshCommentCounts();
+  attachInlineCommentsHandler(document.getElementById('tab-body'));
+}
+
+function makeClmRow(it, today) {
+  const frag = document.createDocumentFragment();
+  const tr = document.createElement('tr');
+  tr.className = 'cl-row';
+  if (it.status === 'completed') tr.classList.add('row-done');
+  const overdue = it.occurred_date && it.occurred_date < today && it.status !== 'completed';
+  tr.innerHTML = `
+    <td class="cl-no">${it.no}</td>
+    <td class="cl-ttl">${escHtml(it.customer) || '-'}</td>
+    <td class="cl-detail">${escHtml(it.content) || '<span style="color:#cbd5e1">-</span>'}</td>
+    <td class="cl-date ${overdue ? 'overdue':''}">${it.occurred_date ? '📅 '+it.occurred_date : '-'}</td>
+    <td class="cl-detail">${escHtml(it.action) || '<span style="color:#cbd5e1">-</span>'}</td>
+    <td><span class="status-badge status-${it.status}">${STATUS_LABELS[it.status]||it.status}</span></td>
+    <td class="cl-note">${escHtml(it.note) || '<span style="color:#cbd5e1">-</span>'}</td>
+    <td class="cl-acts">
+      <button class="btn-xs" data-action="edit-clm" data-id="${it.id}" title="편집">✎</button>
+      <button class="btn-xs danger" data-action="del-clm" data-id="${it.id}" title="삭제">✕</button>
+    </td>
+  `;
+  frag.appendChild(tr);
+
+  // 댓글 인라인 sub-row
+  const cmts = _commentsCache[`claim_${it.id}`] || [];
+  const cmtTr = document.createElement('tr');
+  cmtTr.className = 'cl-cmt-row';
+  cmtTr.innerHTML = `<td colspan="8" class="cl-cmt-cell">${buildInlineCommentsHTML('claim', it.id, cmts)}</td>`;
+  frag.appendChild(cmtTr);
+  return frag;
+}
+
+function openClaimModal(item) {
+  const body = `
+    <div class="form-group">
+      <label class="form-label">고객사 *</label>
+      <input class="form-input" id="clm-customer" value="${escHtml(item?.customer || '')}" placeholder="예: 삼성전자">
+    </div>
+    <div class="form-group">
+      <label class="form-label">클레임 내용</label>
+      <textarea class="form-textarea" id="clm-content" placeholder="클레임 상세 내용">${escHtml(item?.content || '')}</textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">발생일</label>
+      <input class="form-input" type="date" id="clm-date" value="${item?.occurred_date || ''}">
+    </div>
+    <div class="form-group">
+      <label class="form-label">조치 사항</label>
+      <textarea class="form-textarea" id="clm-action" placeholder="대응/조치 사항">${escHtml(item?.action || '')}</textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">상태</label>
+      <select class="form-select" id="clm-status">
+        ${Object.entries(STATUS_LABELS).map(([k,v]) =>
+          `<option value="${k}" ${item?.status === k ? 'selected':''}>${v}</option>`
+        ).join('')}
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">비고</label>
+      <textarea class="form-textarea" id="clm-note" placeholder="추가 메모, 참고사항">${escHtml(item?.note || '')}</textarea>
+    </div>
+  `;
+  const footer = `
+    <button class="btn-secondary" id="modal-cancel">취소</button>
+    <button class="btn-primary" id="modal-confirm">${item ? '수정' : '추가'}</button>
+  `;
+  openModal(item ? '고객 Claim 수정' : '고객 Claim 추가', body, footer);
+
+  document.getElementById('modal-cancel').addEventListener('click', closeModal);
+  document.getElementById('modal-confirm').addEventListener('click', async () => {
+    const customer = document.getElementById('clm-customer').value.trim();
+    if (!customer) { toast('고객사를 입력하세요', 'error'); return; }
+    const payload = {
+      customer,
+      content:       document.getElementById('clm-content').value.trim(),
+      occurred_date: document.getElementById('clm-date').value || null,
+      action:        document.getElementById('clm-action').value.trim(),
+      status:        document.getElementById('clm-status').value,
+      note:          document.getElementById('clm-note').value.trim(),
+    };
+    if (item) {
+      await PUT(`/api/claims/${item.id}`, payload);
+      toast('수정되었습니다', 'success');
+    } else {
+      await POST(`/api/models/${state.activeModel.id}/claims`, payload);
+      toast('추가되었습니다', 'success');
+    }
+    closeModal();
+    await loadTab('claim');
+    notifyDataChanged();
+  });
+}
+
+// ── ④ 메모장 ─────────────────────────────────────────────────
 async function renderMemo(body) {
   const mid  = state.activeModel.id;
   const memo = await GET(`/api/models/${mid}/memo`);
@@ -896,6 +1533,9 @@ async function renderMemo(body) {
   });
 
   document.getElementById('btn-save-memo').addEventListener('click', save);
+
+  // 메모장 textarea에 OCR 부착
+  attachOcrToTextarea(ta);
 }
 
 // ── ④ 설정 ────────────────────────────────────────────────────
@@ -992,8 +1632,11 @@ async function renderSettings(body) {
     renderSidebar();
     document.getElementById('hdr-dot').style.background  = updated.color;
     document.getElementById('hdr-title').textContent     = updated.name;
-    document.getElementById('mobile-badge').style.background = updated.color;
+    const mb = document.getElementById('mobile-badge');
+    if (mb) mb.style.background = updated.color;
     toast('저장되었습니다', 'success');
+    // 대시보드 즉시 갱신 (state.view !== 'dashboard'이라도 다음 진입 시 fresh fetch)
+    notifyDataChanged();
   });
 }
 

@@ -19,7 +19,7 @@ const defaultDB = () => ({
     { id:2, name:'SEC S26',        color:'#A855F7', order:1, category:'model' },
     { id:3, name:'BR',             color:'#10B981', order:2, category:'model' },
     { id:4, name:'프리뉴',         color:'#F59E0B', order:3, category:'model' },
-    { id:5, name:'WEE 로보틱스',   color:'#EF4444', order:4, category:'model' },
+    { id:5, name:'WI 로보틱스',    color:'#EF4444', order:4, category:'model' },
     { id:6, name:'모빌린트 NPU',   color:'#EC4899', order:5, category:'model' },
   ],
   subItems: {
@@ -32,6 +32,7 @@ const defaultDB = () => ({
   },
   milestones: {1:[],2:[],3:[],4:[],5:[],6:[]},
   checklists: {1:[],2:[],3:[],4:[],5:[],6:[]},
+  claims:     {1:[],2:[],3:[],4:[],5:[],6:[]},
   memos: {1:'',2:'',3:'',4:'',5:'',6:''},
   nextId: 10000,
 });
@@ -87,6 +88,7 @@ function migrate() {
     }));
     DB.milestones[id] = [];
     DB.checklists[id] = [];
+    DB.claims[id]     = [];
     DB.memos[id]      = '';
     changed = true;
   });
@@ -134,6 +136,7 @@ function cleanupDuplicates() {
       delete DB.subItems[m.id];
       delete DB.milestones[m.id];
       delete DB.checklists[m.id];
+      delete DB.claims[m.id];
       delete DB.memos[m.id];
       changed = true;
     });
@@ -146,6 +149,31 @@ function cleanupDuplicates() {
   if (changed) save();
 }
 cleanupDuplicates();
+
+// ── claims 키 자동 생성 (모델별 빈 배열 보장) ──
+(function ensureClaims(){
+  if (!DB.claims) DB.claims = {};
+  let changed = false;
+  (DB.models||[]).forEach(m => {
+    if (!Array.isArray(DB.claims[m.id])) { DB.claims[m.id] = []; changed = true; }
+  });
+  if (changed) save();
+})();
+
+// ── comments 키 자동 생성 (`${type}_${itemId}` => 배열) ──
+(function ensureComments(){
+  if (!DB.comments) { DB.comments = {}; save(); }
+})();
+
+// ── 대시보드 공용 메모장 ─────────────────────────────────────
+(function ensureDashboardMemo(){
+  if (typeof DB.dashboardMemo === 'undefined') {
+    DB.dashboardMemo = '';
+    DB.dashboardMemoUpdatedAt = null;
+    DB.dashboardMemoUpdatedBy = null;
+    save();
+  }
+})();
 
 // ══════════════════════════════════════════════════════════
 // 인증/사용자 관리 (Authentication)
@@ -260,6 +288,7 @@ app.post('/api/models', (req, res) => {
   ];
   DB.milestones[id] = [];
   DB.checklists[id] = [];
+  DB.claims[id]     = [];
   DB.memos[id] = '';
   save();
   res.json(DB.models.find(x=>x.id===id));
@@ -286,6 +315,7 @@ app.delete('/api/models/:id', (req, res) => {
   delete DB.subItems[id];
   delete DB.milestones[id];
   delete DB.checklists[id];
+  delete DB.claims[id];
   delete DB.memos[id];
   save();
   res.json({ok:true});
@@ -494,6 +524,183 @@ app.delete('/api/checklist/:id', (req, res) => {
   res.json({ok:true});
 });
 
+// ── Claims (고객 Claim 현황) ─────────────────────────────────
+app.get('/api/models/:id/claims', (req, res) => {
+  const id = Number(req.params.id);
+  const items = (DB.claims[id]||[]).map((it, idx) => ({
+    id:            it.id,
+    no:            idx + 1,
+    customer:      it.customer || '',
+    content:       it.content || '',
+    occurred_date: it.occurredDate || null,
+    action:        it.action || '',
+    status:        it.status || 'pending',
+    note:          it.note || '',
+    order:         it.order ?? idx,
+  })).sort((a,b)=>a.order-b.order);
+  res.json(items);
+});
+
+app.post('/api/models/:id/claims', (req, res) => {
+  const id = Number(req.params.id);
+  if (!DB.claims[id]) DB.claims[id] = [];
+  const maxO = Math.max(-1, ...DB.claims[id].map(x=>x.order ?? 0));
+  const item = {
+    id: nextId(),
+    customer:     req.body.customer || '',
+    content:      req.body.content || '',
+    occurredDate: req.body.occurred_date || null,
+    action:       req.body.action || '',
+    status:       req.body.status || 'pending',
+    note:         req.body.note || '',
+    order:        maxO + 1,
+    ...stampCreate(req),
+  };
+  DB.claims[id].push(item);
+  save();
+  res.json(item);
+});
+
+app.put('/api/claims/:id', (req, res) => {
+  const id = Number(req.params.id);
+  for (const mid in DB.claims) {
+    const idx = DB.claims[mid].findIndex(x=>x.id===id);
+    if (idx >= 0) {
+      const cur = DB.claims[mid][idx];
+      DB.claims[mid][idx] = {
+        ...cur,
+        customer:     req.body.customer     !== undefined ? req.body.customer     : cur.customer,
+        content:      req.body.content      !== undefined ? req.body.content      : cur.content,
+        occurredDate: req.body.occurred_date !== undefined ? req.body.occurred_date : cur.occurredDate,
+        action:       req.body.action       !== undefined ? req.body.action       : cur.action,
+        status:       req.body.status       !== undefined ? req.body.status       : cur.status,
+        note:         req.body.note         !== undefined ? req.body.note         : cur.note,
+        ...stampUpdate(req),
+      };
+      save();
+      return res.json(DB.claims[mid][idx]);
+    }
+  }
+  res.status(404).json({error:'not found'});
+});
+
+app.delete('/api/claims/:id', (req, res) => {
+  const id = Number(req.params.id);
+  for (const mid in DB.claims) {
+    DB.claims[mid] = DB.claims[mid].filter(x=>x.id!==id);
+  }
+  save();
+  res.json({ok:true});
+});
+
+// ── Comments (댓글) ──────────────────────────────────────────
+// 키: `${type}_${itemId}` (예: "milestone_10042")
+const ALLOWED_COMMENT_TYPES = ['milestone', 'checklist', 'claim'];
+
+app.get('/api/comments/:type/:itemId', (req, res) => {
+  const type = req.params.type;
+  if (!ALLOWED_COMMENT_TYPES.includes(type)) return res.status(400).json({error:'invalid type'});
+  const key = `${type}_${req.params.itemId}`;
+  res.json((DB.comments[key] || []).slice().sort((a,b) => (a.created_at||'').localeCompare(b.created_at||'')));
+});
+
+app.post('/api/comments/:type/:itemId', (req, res) => {
+  const type = req.params.type;
+  if (!ALLOWED_COMMENT_TYPES.includes(type)) return res.status(400).json({error:'invalid type'});
+  const key = `${type}_${req.params.itemId}`;
+  const author = (req.body.author || '').trim();
+  const content = (req.body.content || '').trim();
+  if (!author)  return res.status(400).json({error:'작성자 이름이 필요합니다'});
+  if (!content) return res.status(400).json({error:'내용을 입력해주세요'});
+  if (!DB.comments[key]) DB.comments[key] = [];
+  const comment = {
+    id: nextId(),
+    type,
+    item_id: Number(req.params.itemId),
+    author,
+    content,
+    created_at: nowISO(),
+  };
+  DB.comments[key].push(comment);
+  save();
+  res.json(comment);
+});
+
+app.put('/api/comments/:id', (req, res) => {
+  const id = Number(req.params.id);
+  for (const key in DB.comments) {
+    const idx = DB.comments[key].findIndex(c => c.id === id);
+    if (idx >= 0) {
+      const cur = DB.comments[key][idx];
+      DB.comments[key][idx] = {
+        ...cur,
+        content: req.body.content ?? cur.content,
+        updated_at: nowISO(),
+      };
+      save();
+      return res.json(DB.comments[key][idx]);
+    }
+  }
+  res.status(404).json({error:'not found'});
+});
+
+app.delete('/api/comments/:id', (req, res) => {
+  const id = Number(req.params.id);
+  let removed = false;
+  for (const key in DB.comments) {
+    const before = DB.comments[key].length;
+    DB.comments[key] = DB.comments[key].filter(c => c.id !== id);
+    if (DB.comments[key].length < before) removed = true;
+  }
+  if (removed) save();
+  res.json({ ok: removed });
+});
+
+// 항목별 댓글 전체 일괄 조회 (인라인 노출용)
+app.post('/api/comments/batch', (req, res) => {
+  const { items } = req.body;
+  if (!Array.isArray(items)) return res.status(400).json({error:'items array required'});
+  const out = {};
+  items.forEach(({ type, id }) => {
+    if (!ALLOWED_COMMENT_TYPES.includes(type)) return;
+    const key = `${type}_${id}`;
+    out[key] = (DB.comments[key] || [])
+      .slice()
+      .sort((a,b) => (a.created_at||'').localeCompare(b.created_at||''));
+  });
+  res.json(out);
+});
+
+// 항목별 댓글 개수 일괄 조회 (성능)
+app.post('/api/comments/counts', (req, res) => {
+  const { items } = req.body; // [{type, id}, ...]
+  if (!Array.isArray(items)) return res.status(400).json({error:'items array required'});
+  const counts = {};
+  items.forEach(({ type, id }) => {
+    if (!ALLOWED_COMMENT_TYPES.includes(type)) return;
+    const key = `${type}_${id}`;
+    counts[key] = (DB.comments[key] || []).length;
+  });
+  res.json(counts);
+});
+
+// ── 대시보드 공용 메모장 ─────────────────────────────────────
+app.get('/api/dashboard-memo', (_, res) => {
+  res.json({
+    content:    DB.dashboardMemo || '',
+    updated_at: DB.dashboardMemoUpdatedAt || null,
+    updated_by: DB.dashboardMemoUpdatedBy || null,
+  });
+});
+
+app.put('/api/dashboard-memo', (req, res) => {
+  DB.dashboardMemo = req.body.content || '';
+  DB.dashboardMemoUpdatedAt = nowISO();
+  DB.dashboardMemoUpdatedBy = req.user?.name || '관리자';
+  save();
+  res.json({ ok: true, updated_at: DB.dashboardMemoUpdatedAt, updated_by: DB.dashboardMemoUpdatedBy });
+});
+
 // ── Memo ────────────────────────────────────────────────────
 app.get('/api/models/:id/memo', (req, res) => {
   const id = Number(req.params.id);
@@ -523,9 +730,17 @@ app.get('/api/dashboard', (_, res) => {
   };
   const isDone = (it) => it.status === 'completed' || it.checked === true || it.checked === 1;
 
+  // 클레임 지연: occurredDate가 지나도 완료 안 되었으면 지연
+  const isClaimDelayed = (it) => {
+    if (it.status === 'delayed') return true;
+    if (it.status === 'completed') return false;
+    return !!(it.occurredDate && it.occurredDate < today);
+  };
+
   const summary = [...(DB.models||[])].sort((a,b)=>a.order-b.order).map(m => {
     const ms = DB.milestones[m.id]||[];
     const cl = DB.checklists[m.id]||[];
+    const cm = DB.claims[m.id]||[];
     return {
       ...m,
       milestone_total:    ms.length,
@@ -535,6 +750,10 @@ app.get('/api/dashboard', (_, res) => {
       checklist_total:    cl.length,
       checklist_done:     cl.filter(isDone).length,
       checklist_delayed:  cl.filter(isDelayed).length,
+      claim_total:        cm.length,
+      claim_done:         cm.filter(isDone).length,
+      claim_delayed:      cm.filter(isClaimDelayed).length,
+      claim_open:         cm.filter(x => x.status !== 'completed').length,
     };
   });
   res.json(summary);
