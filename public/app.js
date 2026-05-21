@@ -107,15 +107,22 @@ function renderSidebar() {
 // ── Views ────────────────────────────────────────────────────
 function showView(name) {
   state.view = name;
-  ['welcome','dashboard','model'].forEach(v =>
-    document.getElementById(`view-${v}`).classList.toggle('hidden', v !== name)
-  );
+  ['welcome','dashboard','model'].forEach(v => {
+    const el = document.getElementById(`view-${v}`);
+    if (el) el.classList.toggle('hidden', v !== name);
+  });
 
   // 사이드바 버튼 활성화
-  document.getElementById('btn-dashboard').classList.toggle('active', name === 'dashboard');
+  const btnDash = document.getElementById('btn-dashboard');
+  if (btnDash) btnDash.classList.toggle('active', name === 'dashboard');
 
   // 대시보드를 떠나면 자동 갱신 타이머 중단
   if (name !== 'dashboard') stopDashRefresh();
+
+  // 스크롤 맨 위로 (가독성)
+  const main = document.getElementById('main');
+  if (main) main.scrollTop = 0;
+  window.scrollTo(0, 0);
 }
 
 // ── Dashboard ────────────────────────────────────────────────
