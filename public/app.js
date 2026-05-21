@@ -564,20 +564,28 @@ function makeDashSection(category, title, list) {
 
   // 컬럼 동적 생성
   // - 모니터링: 항목 수만큼 가로 + 추가 셀 (1줄)
-  // - 모델: 4열 고정 (8개면 위/아래 4개씩, 추가 셀은 다음 칸)
+  // - 모델: 4열 카드 + 우측에 세로로 긴 추가 셀
   const n = list.length;
   if (category === 'monitoring') {
     grid.style.gridTemplateColumns = n > 0
       ? `repeat(${n}, minmax(0, 1fr)) var(--add-w)`
       : 'var(--add-w)';
   } else {
-    // 모델 — 4열 고정, 항목/추가 셀이 자동 줄바꿈
-    grid.style.gridTemplateColumns = `repeat(4, minmax(0, 1fr))`;
+    // 모델 — 4열 + 추가 셀 컬럼
+    grid.style.gridTemplateColumns = `repeat(4, minmax(0, 1fr)) var(--add-w)`;
     grid.style.gridAutoRows = 'minmax(0, 1fr)';
   }
 
   list.forEach(m => grid.appendChild(makeDashCard(m)));
-  grid.appendChild(makeAddCard(category));
+
+  const addCard = makeAddCard(category);
+  if (category === 'model') {
+    // 8개 카드의 우측에 세로로 길게 배치
+    const rows = Math.max(1, Math.ceil(n / 4));
+    addCard.style.gridColumn = '5';
+    addCard.style.gridRow = `1 / span ${rows}`;
+  }
+  grid.appendChild(addCard);
 
   // 토글 버튼
   const toggleBtn = sec.querySelector('.dash-section-toggle');
