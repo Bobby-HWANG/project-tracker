@@ -726,15 +726,18 @@ body {
 .dash-section.memo {
   background: linear-gradient(180deg, #FEF9C3 0%, #FEFCE8 100%);
   border-color: #FDE68A;
-  flex: 1 1 0 !important;
+  flex: 0 0 auto !important;       /* 컨텐츠 크기 고정 — 다른 섹션 접기에 영향 안 받음 */
   min-height: 0 !important;
-  overflow: hidden;
 }
-.dash-section.monitoring { flex: 2 1 0 !important; min-height: 0 !important; }
-.dash-section.model      { flex: 4 1 0 !important; min-height: 0 !important; }
+/* 모든 섹션 — 컨텐츠 크기 고정
+   → 다른 섹션 접으면 위로 밀착, 나머지는 늘어나지 않음 */
+.dash-section.monitoring,
+.dash-section.model {
+  flex: 0 0 auto !important;
+  min-height: 0 !important;
+}
 .dash-section.memo .dash-memo-body {
-  flex: 1 1 0;
-  min-height: 0;
+  max-height: 320px;
   overflow-y: auto;
 }
 .dash-section.memo .dash-section-title { color: #854D0E; }
