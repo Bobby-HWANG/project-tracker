@@ -54,30 +54,28 @@ const defaultDB = () => ({
 });
 
 let DB;
-function load() {
+function loadLocal() {
   try {
     if (fs.existsSync(DB_FILE)) {
       DB = JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
       console.log(`[DB] Loaded from ${DB_FILE}`);
+      return true;
     } else if (DB_FILE !== DEFAULT_DB_FILE && fs.existsSync(DEFAULT_DB_FILE)) {
-      // 볼륨에 데이터 없음 → GitHub에서 받은 초기 데이터(./data.json)로 시드
       const seed = fs.readFileSync(DEFAULT_DB_FILE, 'utf8');
-      // 볼륨 마운트 디렉토리가 없으면 생성
       const dir = path.dirname(DB_FILE);
       if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
       fs.writeFileSync(DB_FILE, seed, 'utf8');
       DB = JSON.parse(seed);
       console.log(`[DB] Seeded from ${DEFAULT_DB_FILE} → ${DB_FILE}`);
-    } else {
-      DB = defaultDB();
-      save();
-      console.log(`[DB] Created default at ${DB_FILE}`);
+      return true;
     }
   } catch (e) {
-    console.error('DB 로드 오류:', e);
-    DB = defaultDB();
+    console.error('DB 로컬 로드 오류:', e);
   }
+  return false;
 }
+
+// (load는 loadLocal + restoreFromGist 조합으로 대체됨)
 let _lastSaveLog = 0;
 function save() {
   try {
@@ -91,13 +89,100 @@ function save() {
       console.log(`[DB] saved ${(stat.size/1024).toFixed(1)}KB → ${DB_FILE} @ ${new Date().toISOString()}`);
       _lastSaveLog = now;
     }
+    // Gist 자동 백업 (디바운스)
+    scheduleGistBackup();
   } catch (e) {
     console.error('DB 저장 오류:', e);
   }
 }
+
+// ════════════════════════════════════════════════════════════
+//  GitHub Gist 자동 백업 (Railway Volume 없이도 영구 보존)
+//  필요한 환경변수:
+//    GIST_ID       : 비공개 Gist의 ID
+//    GITHUB_TOKEN  : repo/gist 권한 있는 Personal Access Token
+//    (선택) GIST_FILENAME : 기본값 data.json
+// ════════════════════════════════════════════════════════════
+const GIST_ID       = process.env.GIST_ID || '';
+const GITHUB_TOKEN  = process.env.GITHUB_TOKEN || '';
+const GIST_FILENAME = process.env.GIST_FILENAME || 'data.json';
+const GIST_ENABLED  = !!(GIST_ID && GITHUB_TOKEN);
+
+let _gistTimer = null;
+let _gistInFlight = false;
+let _gistPending = false;
+const GIST_DEBOUNCE_MS = 30 * 1000; // 30초
+
+function scheduleGistBackup() {
+  if (!GIST_ENABLED) return;
+  if (_gistTimer) clearTimeout(_gistTimer);
+  _gistTimer = setTimeout(runGistBackup, GIST_DEBOUNCE_MS);
+}
+
+async function runGistBackup() {
+  if (!GIST_ENABLED) return;
+  if (_gistInFlight) { _gistPending = true; return; }
+  _gistInFlight = true;
+  try {
+    const content = JSON.stringify(DB, null, 2);
+    const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${GITHUB_TOKEN}`,
+        'Accept': 'application/vnd.github+json',
+        'Content-Type': 'application/json',
+        'User-Agent': 'intops-fms-tracker',
+      },
+      body: JSON.stringify({ files: { [GIST_FILENAME]: { content } } }),
+    });
+    if (!res.ok) {
+      const txt = await res.text().catch(() => '');
+      console.error(`[Gist] backup failed ${res.status}: ${txt.slice(0,200)}`);
+    } else {
+      console.log(`[Gist] ✓ backup uploaded (${(content.length/1024).toFixed(1)}KB) @ ${new Date().toISOString()}`);
+    }
+  } catch (e) {
+    console.error('[Gist] backup error:', e.message);
+  } finally {
+    _gistInFlight = false;
+    if (_gistPending) { _gistPending = false; scheduleGistBackup(); }
+  }
+}
+
+async function restoreFromGist() {
+  if (!GIST_ENABLED) return null;
+  try {
+    const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+      headers: {
+        'Authorization': `Bearer ${GITHUB_TOKEN}`,
+        'Accept': 'application/vnd.github+json',
+        'User-Agent': 'intops-fms-tracker',
+      },
+    });
+    if (!res.ok) {
+      console.error(`[Gist] restore HTTP ${res.status}`);
+      return null;
+    }
+    const json = await res.json();
+    const file = json.files && json.files[GIST_FILENAME];
+    if (!file) { console.warn(`[Gist] file ${GIST_FILENAME} not found in gist`); return null; }
+    let content = file.content;
+    // truncated 처리 (>1MB)
+    if (file.truncated && file.raw_url) {
+      const r2 = await fetch(file.raw_url, { headers: { 'User-Agent': 'intops-fms-tracker' } });
+      content = await r2.text();
+    }
+    return JSON.parse(content);
+  } catch (e) {
+    console.error('[Gist] restore error:', e.message);
+    return null;
+  }
+}
 const nextId = () => { DB.nextId = (DB.nextId||10000)+1; return DB.nextId; };
 
-load();
+// 초기 부팅: Gist 복원이 비동기이므로 일단 로컬로 먼저 채우고,
+// Gist 복원이 끝나면 덮어쓴다. 그동안 들어오는 요청은 로컬/기본 DB로 응답.
+loadLocal() || (DB = defaultDB());
 
 // ── Migration: 기존 data.json 호환 + 모니터링 항목 추가 ──────
 function migrate() {
@@ -870,6 +955,38 @@ app.post('/api/import', (req, res) => {
 
 // ── Start ───────────────────────────────────────────────────
 const PORT = process.env.PORT || 3000;
+
+// Gist에서 최신 데이터 복원 시도 (비동기, 부팅을 막지 않음)
+if (GIST_ENABLED) {
+  restoreFromGist().then(fromGist => {
+    if (fromGist) {
+      DB = fromGist;
+      console.log(`[DB] ✓ Restored from Gist ${GIST_ID} (post-boot)`);
+      // 로컬에도 즉시 반영
+      try {
+        const dir = path.dirname(DB_FILE);
+        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+        fs.writeFileSync(DB_FILE, JSON.stringify(DB, null, 2), 'utf8');
+      } catch (e) { console.error('Gist 복원 후 로컬 저장 실패:', e); }
+      migrate(); // 복원된 데이터에도 마이그레이션 적용
+    } else {
+      console.warn('[Gist] restore returned nothing; keeping local data');
+    }
+  });
+}
+
+// 종료 시 마지막 저장 보장 (디바운스 타이머 즉시 실행)
+async function gracefulShutdown(sig) {
+  console.log(`\n[shutdown] ${sig} received, flushing Gist backup...`);
+  if (_gistTimer) { clearTimeout(_gistTimer); _gistTimer = null; }
+  if (GIST_ENABLED) {
+    try { await runGistBackup(); } catch(e) {}
+  }
+  process.exit(0);
+}
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT',  () => gracefulShutdown('SIGINT'));
+
 app.listen(PORT, '0.0.0.0', () => {
   console.log('\n┌──────────────────────────────────────────────┐');
   console.log('│   ✅  INTOPS FMS 품질팀 업무현황 서버 실행 중           │');
