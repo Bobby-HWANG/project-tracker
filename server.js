@@ -11,6 +11,51 @@ const crypto = require('crypto');
 
 const app = express();
 
+// ════════════════════════════════════════════════════════════
+//  PostgreSQL 백엔드 (Railway 내장 DB)
+//  DATABASE_URL 환경변수가 있으면 자동 사용 (Railway가 자동 주입)
+//  없으면 기존 파일 방식으로 폴백 (로컬 개발)
+// ════════════════════════════════════════════════════════════
+const PG_URL = process.env.DATABASE_URL || '';
+const PG_ENABLED = !!PG_URL;
+let pgPool = null;
+if (PG_ENABLED) {
+  try {
+    const { Pool } = require('pg');
+    pgPool = new Pool({
+      connectionString: PG_URL,
+      ssl: PG_URL.includes('localhost') ? false : { rejectUnauthorized: false },
+    });
+    console.log('[PG] ✓ PostgreSQL backend enabled');
+  } catch (e) {
+    console.error('[PG] init failed, falling back to file:', e.message);
+  }
+}
+
+async function pgInit() {
+  if (!pgPool) return;
+  await pgPool.query(`
+    CREATE TABLE IF NOT EXISTS kv (
+      k TEXT PRIMARY KEY,
+      v JSONB NOT NULL,
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `);
+}
+async function pgLoad() {
+  if (!pgPool) return null;
+  const r = await pgPool.query(`SELECT v FROM kv WHERE k='main'`);
+  return r.rows[0] ? r.rows[0].v : null;
+}
+async function pgSave(obj) {
+  if (!pgPool) return;
+  await pgPool.query(
+    `INSERT INTO kv (k, v, updated_at) VALUES ('main', $1::jsonb, NOW())
+     ON CONFLICT (k) DO UPDATE SET v = EXCLUDED.v, updated_at = NOW()`,
+    [JSON.stringify(obj)]
+  );
+}
+
 // ── 영구 저장 경로 (Railway/클라우드 볼륨 지원) ──
 // 환경변수 DATA_FILE이 있으면 그 경로 사용 (Railway Volume 마운트 경로)
 // 없으면 프로젝트 폴더의 data.json 사용 (로컬 개발)
@@ -77,19 +122,33 @@ function loadLocal() {
 
 // (load는 loadLocal + restoreFromGist 조합으로 대체됨)
 let _lastSaveLog = 0;
+let _pgSaveTimer = null;
+function schedulePgSave() {
+  if (!pgPool) return;
+  if (_pgSaveTimer) clearTimeout(_pgSaveTimer);
+  _pgSaveTimer = setTimeout(async () => {
+    try {
+      await pgSave(DB);
+      const now = Date.now();
+      if (now - _lastSaveLog > 60000) {
+        console.log(`[PG] ✓ saved to Postgres @ ${new Date().toISOString()}`);
+        _lastSaveLog = now;
+      }
+    } catch (e) {
+      console.error('[PG] save failed:', e.message);
+    }
+  }, 1500); // 1.5초 디바운스 — 연속 변경 합쳐서 1회 write
+}
+
 function save() {
   try {
+    // 1) 로컬 파일에도 항상 기록 (디버깅·로컬 폴백용)
     const dir = path.dirname(DB_FILE);
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
     fs.writeFileSync(DB_FILE, JSON.stringify(DB, null, 2), 'utf8');
-    // 1분에 1회만 로그 (스팸 방지)
-    const now = Date.now();
-    if (now - _lastSaveLog > 60000) {
-      const stat = fs.statSync(DB_FILE);
-      console.log(`[DB] saved ${(stat.size/1024).toFixed(1)}KB → ${DB_FILE} @ ${new Date().toISOString()}`);
-      _lastSaveLog = now;
-    }
-    // Gist 자동 백업 (디바운스)
+    // 2) Postgres에 영구 저장 (Railway 영구 보존의 핵심)
+    schedulePgSave();
+    // 3) Gist 백업 (있을 때만)
     scheduleGistBackup();
   } catch (e) {
     console.error('DB 저장 오류:', e);
@@ -180,8 +239,7 @@ async function restoreFromGist() {
 }
 const nextId = () => { DB.nextId = (DB.nextId||10000)+1; return DB.nextId; };
 
-// 초기 부팅: Gist 복원이 비동기이므로 일단 로컬로 먼저 채우고,
-// Gist 복원이 끝나면 덮어쓴다. 그동안 들어오는 요청은 로컬/기본 DB로 응답.
+// 초기 부팅: 일단 로컬로 채우고, 비동기로 Postgres/Gist에서 최신본 덮어씀
 loadLocal() || (DB = defaultDB());
 
 // ── Migration: 기존 data.json 호환 + 모니터링 항목 추가 ──────
@@ -956,29 +1014,51 @@ app.post('/api/import', (req, res) => {
 // ── Start ───────────────────────────────────────────────────
 const PORT = process.env.PORT || 3000;
 
-// Gist에서 최신 데이터 복원 시도 (비동기, 부팅을 막지 않음)
-if (GIST_ENABLED) {
-  restoreFromGist().then(fromGist => {
+// 부팅 후 비동기 복원: Postgres(최우선) → Gist → 로컬 유지
+(async () => {
+  try {
+    if (PG_ENABLED && pgPool) {
+      await pgInit(); // 테이블 없으면 생성
+      const fromPg = await pgLoad();
+      if (fromPg) {
+        DB = fromPg;
+        console.log('[PG] ✓ Restored from Postgres (persistent)');
+        // 로컬 파일에도 동기화
+        try { fs.writeFileSync(DB_FILE, JSON.stringify(DB, null, 2), 'utf8'); } catch(_) {}
+        migrate();
+        return; // Postgres 성공 → 끝
+      } else {
+        // Postgres 테이블은 있지만 데이터 없음 → 로컬 데이터를 PG에 초기 업로드
+        console.log('[PG] empty DB, seeding from local...');
+        await pgSave(DB);
+        console.log('[PG] ✓ local data seeded to Postgres');
+        return;
+      }
+    }
+  } catch (e) {
+    console.error('[PG] restore error:', e.message);
+  }
+
+  // Postgres 없거나 실패 → Gist 시도
+  if (GIST_ENABLED) {
+    const fromGist = await restoreFromGist();
     if (fromGist) {
       DB = fromGist;
-      console.log(`[DB] ✓ Restored from Gist ${GIST_ID} (post-boot)`);
-      // 로컬에도 즉시 반영
-      try {
-        const dir = path.dirname(DB_FILE);
-        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-        fs.writeFileSync(DB_FILE, JSON.stringify(DB, null, 2), 'utf8');
-      } catch (e) { console.error('Gist 복원 후 로컬 저장 실패:', e); }
-      migrate(); // 복원된 데이터에도 마이그레이션 적용
-    } else {
-      console.warn('[Gist] restore returned nothing; keeping local data');
+      console.log(`[Gist] ✓ Restored from Gist (post-boot)`);
+      try { fs.writeFileSync(DB_FILE, JSON.stringify(DB, null, 2), 'utf8'); } catch(_) {}
+      migrate();
     }
-  });
-}
+  }
+})();
 
 // 종료 시 마지막 저장 보장 (디바운스 타이머 즉시 실행)
 async function gracefulShutdown(sig) {
-  console.log(`\n[shutdown] ${sig} received, flushing Gist backup...`);
-  if (_gistTimer) { clearTimeout(_gistTimer); _gistTimer = null; }
+  console.log(`\n[shutdown] ${sig} received, flushing data...`);
+  if (_pgSaveTimer) { clearTimeout(_pgSaveTimer); _pgSaveTimer = null; }
+  if (_gistTimer)   { clearTimeout(_gistTimer);   _gistTimer   = null; }
+  if (PG_ENABLED && pgPool) {
+    try { await pgSave(DB); console.log('[PG] final save OK'); } catch(e) {}
+  }
   if (GIST_ENABLED) {
     try { await runGistBackup(); } catch(e) {}
   }
