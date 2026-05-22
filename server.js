@@ -10,7 +10,13 @@ const os = require('os');
 const crypto = require('crypto');
 
 const app = express();
-const DB_FILE = path.join(__dirname, 'data.json');
+
+// ── 영구 저장 경로 (Railway/클라우드 볼륨 지원) ──
+// 환경변수 DATA_FILE이 있으면 그 경로 사용 (Railway Volume 마운트 경로)
+// 없으면 프로젝트 폴더의 data.json 사용 (로컬 개발)
+const DEFAULT_DB_FILE = path.join(__dirname, 'data.json');
+const DB_FILE = process.env.DATA_FILE || DEFAULT_DB_FILE;
+console.log(`[DB] Using file: ${DB_FILE}`);
 
 // ── DB Helpers ──────────────────────────────────────────────
 const defaultDB = () => ({
@@ -42,9 +48,20 @@ function load() {
   try {
     if (fs.existsSync(DB_FILE)) {
       DB = JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
+      console.log(`[DB] Loaded from ${DB_FILE}`);
+    } else if (DB_FILE !== DEFAULT_DB_FILE && fs.existsSync(DEFAULT_DB_FILE)) {
+      // 볼륨에 데이터 없음 → GitHub에서 받은 초기 데이터(./data.json)로 시드
+      const seed = fs.readFileSync(DEFAULT_DB_FILE, 'utf8');
+      // 볼륨 마운트 디렉토리가 없으면 생성
+      const dir = path.dirname(DB_FILE);
+      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+      fs.writeFileSync(DB_FILE, seed, 'utf8');
+      DB = JSON.parse(seed);
+      console.log(`[DB] Seeded from ${DEFAULT_DB_FILE} → ${DB_FILE}`);
     } else {
       DB = defaultDB();
       save();
+      console.log(`[DB] Created default at ${DB_FILE}`);
     }
   } catch (e) {
     console.error('DB 로드 오류:', e);
@@ -52,7 +69,13 @@ function load() {
   }
 }
 function save() {
-  fs.writeFileSync(DB_FILE, JSON.stringify(DB, null, 2), 'utf8');
+  try {
+    const dir = path.dirname(DB_FILE);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(DB_FILE, JSON.stringify(DB, null, 2), 'utf8');
+  } catch (e) {
+    console.error('DB 저장 오류:', e);
+  }
 }
 const nextId = () => { DB.nextId = (DB.nextId||10000)+1; return DB.nextId; };
 
