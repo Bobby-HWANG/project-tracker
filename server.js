@@ -16,7 +16,17 @@ const app = express();
 // 없으면 프로젝트 폴더의 data.json 사용 (로컬 개발)
 const DEFAULT_DB_FILE = path.join(__dirname, 'data.json');
 const DB_FILE = process.env.DATA_FILE || DEFAULT_DB_FILE;
+const PERSISTENT = !!process.env.DATA_FILE;
 console.log(`[DB] Using file: ${DB_FILE}`);
+if (!PERSISTENT) {
+  console.warn('╔══════════════════════════════════════════════════════════╗');
+  console.warn('║  ⚠  WARNING: DATA_FILE env var NOT set                   ║');
+  console.warn('║  Data will be LOST on container restart (Railway sleep)  ║');
+  console.warn('║  → Set DATA_FILE=/data/data.json + mount Volume at /data ║');
+  console.warn('╚══════════════════════════════════════════════════════════╝');
+} else {
+  console.log(`[DB] ✓ Persistent storage enabled (${DB_FILE})`);
+}
 
 // ── DB Helpers ──────────────────────────────────────────────
 const defaultDB = () => ({
@@ -68,11 +78,19 @@ function load() {
     DB = defaultDB();
   }
 }
+let _lastSaveLog = 0;
 function save() {
   try {
     const dir = path.dirname(DB_FILE);
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
     fs.writeFileSync(DB_FILE, JSON.stringify(DB, null, 2), 'utf8');
+    // 1분에 1회만 로그 (스팸 방지)
+    const now = Date.now();
+    if (now - _lastSaveLog > 60000) {
+      const stat = fs.statSync(DB_FILE);
+      console.log(`[DB] saved ${(stat.size/1024).toFixed(1)}KB → ${DB_FILE} @ ${new Date().toISOString()}`);
+      _lastSaveLog = now;
+    }
   } catch (e) {
     console.error('DB 저장 오류:', e);
   }
