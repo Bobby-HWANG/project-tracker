@@ -77,6 +77,9 @@ function renderSidebar() {
   const monitoring = state.models.filter(m => m.category === 'monitoring').sort((a,b)=>a.order-b.order);
   const models     = state.models.filter(m => m.category !== 'monitoring').sort((a,b)=>a.order-b.order);
 
+  const isMemo = state.view === 'dashboard' && state._sidebarMemo;
+
+  // 모델 아이템 생성
   const renderItem = m => {
     const div = document.createElement('div');
     div.className = 'model-item' + (state.activeModel?.id === m.id ? ' active' : '');
@@ -88,20 +91,51 @@ function renderSidebar() {
     list.appendChild(div);
   };
 
+  // ── 카테고리 헤더 (클릭 → 대시보드 해당 섹션으로 이동) ──
+  const makeHeader = (cls, icon, label, onClick) => {
+    const btn = document.createElement('button');
+    btn.className = `sb-group-label ${cls}`;
+    btn.innerHTML = `${icon} ${label}<span class="sb-arrow">›</span>`;
+    btn.addEventListener('click', onClick);
+    list.appendChild(btn);
+  };
+
+  // ── 1. 상시 모니터링 ──
   if (monitoring.length) {
-    const lbl = document.createElement('div');
-    lbl.className = 'sb-group-label monitoring';
-    lbl.textContent = '📡 상시 모니터링';
-    list.appendChild(lbl);
+    makeHeader('monitoring', '📡', '상시 모니터링', () => {
+      state._sidebarMemo = false;
+      loadDashboard().then(() => scrollDashSection('monitoring'));
+    });
     monitoring.forEach(renderItem);
   }
+
+  // ── 2. 주요 모델 이벤트 현황 ──
   if (models.length) {
-    const lbl = document.createElement('div');
-    lbl.className = 'sb-group-label model';
-    lbl.textContent = '📦 주요 모델 이벤트 현황';
-    list.appendChild(lbl);
+    makeHeader('model', '📦', '주요 모델 이벤트 현황', () => {
+      state._sidebarMemo = false;
+      loadDashboard().then(() => scrollDashSection('model'));
+    });
     models.forEach(renderItem);
   }
+
+  // ── 3. 메모장 (공용 게시판) ──
+  const memoBtn = document.createElement('button');
+  memoBtn.className = 'sb-group-label memo' + (isMemo ? ' active' : '');
+  memoBtn.innerHTML = `📝 메모장 <span style="font-size:11px;opacity:.7">(공용 게시판)</span><span class="sb-arrow">›</span>`;
+  memoBtn.addEventListener('click', () => {
+    state._sidebarMemo = true;
+    loadDashboard().then(() => scrollDashSection('memo'));
+    renderSidebar();
+  });
+  list.appendChild(memoBtn);
+}
+
+// 대시보드 내 특정 섹션으로 스크롤
+function scrollDashSection(category) {
+  const grid = document.getElementById('dashboard-grid');
+  if (!grid) return;
+  const sec = grid.querySelector(`.dash-section.${category}`);
+  if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 // ── Views ────────────────────────────────────────────────────

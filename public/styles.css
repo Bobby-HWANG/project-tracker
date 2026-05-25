@@ -1084,19 +1084,40 @@ body {
 
 /* 사이드바 그룹 라벨 */
 .sb-group-label {
-  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: -0.2px;
-  padding: 14px 12px 6px;
+  padding: 14px 14px 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: opacity .15s;
+  color: inherit;
 }
+.sb-group-label:hover { opacity: .8; }
+.sb-group-label .sb-arrow {
+  margin-left: auto;
+  font-size: 14px;
+  opacity: .4;
+  transition: opacity .15s, transform .15s;
+}
+.sb-group-label:hover .sb-arrow { opacity: .9; transform: translateX(2px); }
 .sb-group-label.monitoring { color: #60A5FA; }
 .sb-group-label.model      { color: #A78BFA; }
+.sb-group-label.memo       { color: #34D399; }
+.sb-group-label.memo.active { color: #10b981; background: rgba(52,211,153,.08); border-radius: 6px; }
 .sb-group-label:first-child { padding-top: 6px; }
 
-/* 모니터링 그룹과 모델 그룹 사이 간격 확대 (2줄 이상) */
-.sb-group-label.model:not(:first-child) {
-  padding-top: 36px;          /* 기존 14 → 36 (글자 2줄+ 여유) */
-  margin-top: 12px;
+/* 그룹 간 구분선 */
+.sb-group-label.model,
+.sb-group-label.memo {
+  margin-top: 8px;
+  padding-top: 14px;
   border-top: 1px solid rgba(255,255,255,0.06);
 }
 .dashboard-card {
