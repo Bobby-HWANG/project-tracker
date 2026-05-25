@@ -227,6 +227,12 @@ body.eye-care .top-theme-btn:hover { box-shadow: 0 4px 10px rgba(15,23,42,.5); }
   font-size: 12px; color: #94a3b8; text-align: center; margin-top: 4px;
 }
 
+/* app-shell = 전체 화면 컨테이너 (스크롤 없음) */
+#app-shell {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
 .app-shell.hidden { display: none; }
 
 /* ── 사용자 카드 (사이드바 하단) ───────────────────────── */
@@ -381,7 +387,8 @@ body {
                'Segoe UI', sans-serif;
   background: var(--bg);
   color: var(--text);
-  min-height: 100vh;
+  height: 100vh;      /* body 자체는 뷰포트 고정 */
+  overflow: hidden;   /* body 스크롤 차단 → tab-body가 스크롤 담당 */
   display: flex;
   overflow-x: hidden;
 }
@@ -597,12 +604,14 @@ body {
 .main {
   margin-left: var(--sb-w);
   flex: 1;
-  min-height: 100vh;
+  height: 100vh;      /* 고정 높이 — 이 안에서만 레이아웃 */
+  overflow: hidden;   /* main 자체는 스크롤 안 함 */
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
-.view { flex: 1; display: flex; flex-direction: column; }
+.view { flex: 1; display: flex; flex-direction: column; min-height: 0; }
 .view.hidden { display: none !important; }
 
 /* ── Welcome ────────────────────────────────────────────────── */
@@ -671,10 +680,12 @@ body {
 
 .tab-body {
   flex: 1;
+  min-height: 0;      /* flex child가 줄어들 수 있어야 스크롤 작동 */
   padding: 24px 28px;
-  overflow-y: auto;
+  overflow-y: auto;   /* 실제 스크롤 컨테이너 */
   width: 100%;
   box-sizing: border-box;
+  scrollbar-gutter: stable;
 }
 /* 일정/체크/클레임 등 모든 항목 전폭 사용 */
 .tab-body > * { width: 100%; box-sizing: border-box; }
@@ -2081,8 +2092,8 @@ textarea.drag-over {
   }
   .sidebar.open { transform: translateX(0); }
   .close-sidebar { display: block; }
-  .main { margin-left: 0; padding-top: 56px; }
-  .tab-body { padding: 16px; }
+  .main { margin-left: 0; padding-top: 56px; height: calc(100vh); }
+  .tab-body { padding: 16px; min-height: 0; }
   .page-header { padding: 16px 16px 0; }
   .page-title { font-size: 18px; }
   .dashboard-grid { padding: 16px; grid-template-columns: 1fr; }
