@@ -923,6 +923,12 @@ async function loadTab(tab) {
   const body = document.getElementById('tab-body');
   body.innerHTML = '<div style="padding:40px;text-align:center;color:#94a3b8">불러오는 중...</div>';
 
+  // 메모·설정 탭은 filterbar 불필요 → 비움
+  const filterbar = document.getElementById('tab-filterbar');
+  if (tab === 'memo' || tab === 'settings') {
+    if (filterbar) filterbar.innerHTML = '';
+  }
+
   if (tab === 'milestone') await renderMilestone(body);
   if (tab === 'checklist') await renderChecklist(body);
   if (tab === 'claim')     await renderClaim(body);
@@ -946,7 +952,9 @@ async function renderMilestone(body) {
 
   const today = new Date().toISOString().slice(0,10);
 
-  body.innerHTML = `
+  // ── 3번째 행: 필터바를 page-header 안 tab-filterbar에 렌더 ──
+  const filterbar = document.getElementById('tab-filterbar');
+  filterbar.innerHTML = `
     <div class="milestone-toolbar">
       <div class="milestone-summary">
         <button class="ms-pill total active" data-filter="all">전체 ${total}</button>
@@ -956,8 +964,9 @@ async function renderMilestone(body) {
       </div>
       <button class="btn-primary" id="btn-add-ms">＋ 일정 추가</button>
     </div>
-    <div id="ms-list"></div>
   `;
+
+  body.innerHTML = `<div id="ms-list"></div>`;
 
   const msList = document.getElementById('ms-list');
   if (!total) {
@@ -965,21 +974,21 @@ async function renderMilestone(body) {
   } else {
     items.forEach(it => {
       const el = makeMsItem(it, today);
-      el.dataset.status = it.status; // 필터용 status 속성
+      el.dataset.status = it.status;
       msList.appendChild(el);
     });
   }
 
-  // 필터 버튼 클릭 핸들러
-  body.querySelectorAll('.ms-pill[data-filter]').forEach(btn => {
+  // 필터 버튼 클릭 핸들러 (filterbar 안)
+  filterbar.querySelectorAll('.ms-pill[data-filter]').forEach(btn => {
     btn.addEventListener('click', () => {
-      body.querySelectorAll('.ms-pill[data-filter]').forEach(b => b.classList.remove('active'));
+      filterbar.querySelectorAll('.ms-pill[data-filter]').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       applyMsFilter(msList, btn.dataset.filter, total);
     });
   });
 
-  document.getElementById('btn-add-ms').addEventListener('click', () => openMsModal(null, []));
+  filterbar.querySelector('#btn-add-ms').addEventListener('click', () => openMsModal(null, []));
   refreshCommentCounts();
   attachInlineCommentsHandler(document.getElementById('tab-body'));
 }
@@ -1250,9 +1259,10 @@ async function renderChecklist(body) {
   const inProg  = items.filter(x => x.status === 'in_progress').length;
   const delayed = items.filter(x => x.status === 'delayed').length;
 
-  body.innerHTML = `
+  // ── 3번째 행: 요약+필터를 page-header 안 tab-filterbar에 렌더 ──
+  const filterbar = document.getElementById('tab-filterbar');
+  filterbar.innerHTML = `
     <div class="checklist-overall">
-      <div class="checklist-overall-title">전체 진행률</div>
       <div class="checklist-overall-row">
         <div class="overall-pct">${pct}%</div>
         <div class="overall-bar-wrap">
@@ -1261,14 +1271,17 @@ async function renderChecklist(body) {
           </div>
           <div class="overall-sub">${done} / ${total} 완료</div>
         </div>
-      </div>
-      <div class="table-filter-bar">
-        <button class="ms-pill total active" data-filter="all">전체 ${total}</button>
-        <button class="ms-pill done"         data-filter="completed">✓ 완료 ${done}</button>
-        <button class="ms-pill prog"         data-filter="in_progress">◎ 진행중 ${inProg}</button>
-        <button class="ms-pill delayed"      data-filter="delayed">⚠ 지연 ${delayed}</button>
+        <div class="table-filter-bar">
+          <button class="ms-pill total active" data-filter="all">전체 ${total}</button>
+          <button class="ms-pill done"         data-filter="completed">✓ 완료 ${done}</button>
+          <button class="ms-pill prog"         data-filter="in_progress">◎ 진행중 ${inProg}</button>
+          <button class="ms-pill delayed"      data-filter="delayed">⚠ 지연 ${delayed}</button>
+        </div>
       </div>
     </div>
+  `;
+
+  body.innerHTML = `
     <div class="cl-table-wrap">
       <table class="cl-table">
         <thead>
@@ -1303,10 +1316,10 @@ async function renderChecklist(body) {
     });
   }
 
-  // 필터 버튼 핸들러
-  body.querySelectorAll('.table-filter-bar .ms-pill[data-filter]').forEach(btn => {
+  // 필터 버튼 핸들러 (filterbar 안)
+  filterbar.querySelectorAll('.ms-pill[data-filter]').forEach(btn => {
     btn.addEventListener('click', () => {
-      body.querySelectorAll('.table-filter-bar .ms-pill[data-filter]').forEach(b => b.classList.remove('active'));
+      filterbar.querySelectorAll('.ms-pill[data-filter]').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       applyTableFilter(tbody, btn.dataset.filter, 7);
     });
@@ -1315,11 +1328,6 @@ async function renderChecklist(body) {
   document.getElementById('btn-add-cl').addEventListener('click', () => openCheckModal(null));
   refreshCommentCounts();
   attachInlineCommentsHandler(document.getElementById('tab-body'));
-  // 틀고정: checklist-overall 높이 측정 후 thead top 설정
-  requestAnimationFrame(() => {
-    const overall = body.querySelector('.checklist-overall');
-    if (overall) body.style.setProperty('--cl-thead-top', overall.offsetHeight + 'px');
-  });
 }
 
 function makeClRow(it, today) {
@@ -1803,7 +1811,9 @@ async function renderClaim(body) {
   const delayed = items.filter(x => x.status === 'delayed').length;
   const pct     = total ? Math.round(done/total*100) : 0;
 
-  body.innerHTML = `
+  // ── 3번째 행: 요약+필터를 page-header 안 tab-filterbar에 렌더 ──
+  const filterbar = document.getElementById('tab-filterbar');
+  filterbar.innerHTML = `
     <div class="checklist-overall">
       <div class="checklist-overall-title">고객 Claim 처리 현황</div>
       <div class="checklist-overall-row">
@@ -1814,14 +1824,17 @@ async function renderClaim(body) {
           </div>
           <div class="overall-sub">${done} / ${total} 완료</div>
         </div>
-      </div>
-      <div class="table-filter-bar">
-        <button class="ms-pill total active" data-filter="all">전체 ${total}</button>
-        <button class="ms-pill done"         data-filter="completed">✓ 완료 ${done}</button>
-        <button class="ms-pill prog"         data-filter="in_progress">◎ 진행중 ${inProg}</button>
-        <button class="ms-pill delayed"      data-filter="delayed">⚠ 지연 ${delayed}</button>
+        <div class="table-filter-bar">
+          <button class="ms-pill total active" data-filter="all">전체 ${total}</button>
+          <button class="ms-pill done"         data-filter="completed">✓ 완료 ${done}</button>
+          <button class="ms-pill prog"         data-filter="in_progress">◎ 진행중 ${inProg}</button>
+          <button class="ms-pill delayed"      data-filter="delayed">⚠ 지연 ${delayed}</button>
+        </div>
       </div>
     </div>
+  `;
+
+  body.innerHTML = `
     <div class="cl-table-wrap">
       <table class="cl-table">
         <thead>
@@ -1857,10 +1870,10 @@ async function renderClaim(body) {
     });
   }
 
-  // 필터 버튼 핸들러
-  body.querySelectorAll('.table-filter-bar .ms-pill[data-filter]').forEach(btn => {
+  // 필터 버튼 핸들러 (filterbar 안)
+  filterbar.querySelectorAll('.ms-pill[data-filter]').forEach(btn => {
     btn.addEventListener('click', () => {
-      body.querySelectorAll('.table-filter-bar .ms-pill[data-filter]').forEach(b => b.classList.remove('active'));
+      filterbar.querySelectorAll('.ms-pill[data-filter]').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       applyTableFilter(tbody, btn.dataset.filter, 8);
     });
@@ -1869,11 +1882,6 @@ async function renderClaim(body) {
   document.getElementById('btn-add-clm').addEventListener('click', () => openClaimModal(null));
   refreshCommentCounts();
   attachInlineCommentsHandler(document.getElementById('tab-body'));
-  // 틀고정: checklist-overall 높이 측정 후 thead top 설정
-  requestAnimationFrame(() => {
-    const overall = body.querySelector('.checklist-overall');
-    if (overall) body.style.setProperty('--cl-thead-top', overall.offsetHeight + 'px');
-  });
 }
 
 function makeClmRow(it, today) {

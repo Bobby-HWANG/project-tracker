@@ -633,6 +633,13 @@ body {
   padding: 20px 28px 0;
   flex-shrink: 0;
 }
+
+/* 3번째 행: 필터바 / 요약바 — page-header 안에 붙음 */
+#tab-filterbar:not(:empty) {
+  border-top: 1px solid var(--border);
+  margin: 0 -28px;        /* page-header 좌우 패딩 상쇄 → 전체 너비 */
+  padding: 10px 28px;
+}
 .page-title { font-size: 22px; font-weight: 700; color: var(--text); }
 .page-title-row {
   display: flex;
@@ -1289,15 +1296,7 @@ body {
 .milestone-toolbar {
   display: flex; align-items: center; justify-content: space-between;
   flex-wrap: wrap; gap: 10px;
-  /* ── 틀고정: 스크롤 시 상단 고정 ── */
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  background: var(--surface);   /* 흰색 배경 (페이지헤더와 동일) */
-  padding: 12px 20px;
-  margin: -24px -28px 16px -28px; /* tab-body 패딩 상쇄 → 양쪽 끝까지 꽉 채움 */
-  border-bottom: 2px solid var(--border);
-  box-shadow: 0 3px 8px -4px rgba(0,0,0,.12);
+  padding: 10px 0 2px;
 }
 .milestone-summary { display: flex; gap: 10px; flex-wrap: wrap; }
 .ms-pill {
@@ -1405,14 +1404,7 @@ button.ms-pill.active { opacity: 1; box-shadow: 0 0 0 2px currentColor; }
 /* ── Checklist ──────────────────────────────────────────────── */
 .checklist-overall {
   background: var(--surface);
-  padding: 12px 20px;
-  margin: -24px -28px 0 -28px; /* tab-body 패딩 상쇄 → 양쪽 끝까지 꽉 채움 */
-  border-bottom: 2px solid var(--border);
-  /* ── 틀고정: 스크롤 시 상단 고정 ── */
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  box-shadow: 0 3px 8px -4px rgba(0,0,0,.12);
+  padding: 8px 0 4px;
 }
 .checklist-overall-title { font-size: 13px; font-weight: 600; color: var(--text2); margin-bottom: 10px; }
 .checklist-overall-row { display: flex; align-items: center; gap: 12px; }
