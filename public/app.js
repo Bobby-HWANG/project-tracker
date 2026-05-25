@@ -1369,13 +1369,15 @@ function makeClRow(it, today) {
   const tr = document.createElement('tr');
   tr.className = 'cl-row';
   if (it.status === 'completed') tr.classList.add('row-done');
-  const overdue = it.due_date && it.due_date < today && it.status !== 'completed';
+  const effectiveDate = it.due_date_end || it.due_date;
+  const overdue = effectiveDate && effectiveDate < today && it.status !== 'completed';
+  const dateDisplay = formatDateStr(it.due_date, it.due_date_end) + (overdue ? ' ⚠' : '');
 
   tr.innerHTML = `
     <td class="cl-no">${it.no}</td>
     <td class="cl-ttl">${escHtml(it.title) || '-'}</td>
     <td class="cl-detail">${escHtml(it.detail) || '<span style="color:#cbd5e1">-</span>'}</td>
-    <td class="cl-date ${overdue ? 'overdue':''}">${it.due_date ? '📅 '+it.due_date+(overdue?' ⚠':'') : '-'}</td>
+    <td class="cl-date ${overdue ? 'overdue':''}">${dateDisplay}</td>
     <td><span class="status-badge status-${it.status}">${STATUS_LABELS[it.status]||it.status}</span></td>
     <td class="cl-note">${escHtml(it.note) || '<span style="color:#cbd5e1">-</span>'}</td>
     <td class="cl-acts">
@@ -1772,6 +1774,63 @@ function autoAttachOcrInModal() {
   });
 }
 
+// ── 공통: 날짜 입력 UI 생성 (특정일 / 기간 토글) ────────────
+// prefix: 필드 id 접두어 (예: 'cl', 'clm')
+// label : 날짜 필드 레이블
+// startVal, endVal: 기존 값
+function buildDatePickerHTML(prefix, label, startVal, endVal) {
+  const isRange = !!endVal;
+  return `
+    <div class="form-group">
+      <label class="form-label">${label}</label>
+      <div class="date-mode-toggle" id="${prefix}-date-mode">
+        <button type="button" class="dm-btn ${isRange ? '' : 'active'}" data-mode="single">📅 특정일</button>
+        <button type="button" class="dm-btn ${isRange ? 'active' : ''}" data-mode="range">📆 기간</button>
+      </div>
+      <div class="date-inputs" id="${prefix}-date-single" style="${isRange ? 'display:none' : ''}">
+        <input class="form-input" type="date" id="${prefix}-date" value="${startVal || ''}">
+      </div>
+      <div class="date-inputs date-range" id="${prefix}-date-range" style="${isRange ? '' : 'display:none'}">
+        <input class="form-input" type="date" id="${prefix}-date-start" value="${startVal || ''}">
+        <span class="date-tilde">~</span>
+        <input class="form-input" type="date" id="${prefix}-date-end" value="${endVal || ''}">
+      </div>
+    </div>
+  `;
+}
+
+// 날짜 토글 이벤트 연결 + 값 읽기 반환
+function initDatePicker(prefix) {
+  let mode = document.getElementById(`${prefix}-date-end`)?.value ? 'range' : 'single';
+  document.getElementById(`${prefix}-date-mode`)?.addEventListener('click', e => {
+    const btn = e.target.closest('.dm-btn');
+    if (!btn) return;
+    mode = btn.dataset.mode;
+    document.querySelectorAll(`#${prefix}-date-mode .dm-btn`).forEach(b =>
+      b.classList.toggle('active', b.dataset.mode === mode));
+    document.getElementById(`${prefix}-date-single`).style.display = mode === 'single' ? '' : 'none';
+    document.getElementById(`${prefix}-date-range`).style.display  = mode === 'range'  ? '' : 'none';
+  });
+  return {
+    getValues() {
+      if (mode === 'range') {
+        const s = document.getElementById(`${prefix}-date-start`).value || null;
+        const e = document.getElementById(`${prefix}-date-end`).value   || null;
+        if (s && e && s > e) { toast('종료일은 시작일 이후여야 합니다', 'error'); return null; }
+        return { start: s, end: e };
+      }
+      return { start: document.getElementById(`${prefix}-date`).value || null, end: null };
+    }
+  };
+}
+
+// 날짜 문자열 포맷 (표 / 카드 표시용)
+function formatDateStr(start, end) {
+  if (!start && !end) return '-';
+  if (end) return `📆 ${start} ~ ${end}`;
+  return `📅 ${start}`;
+}
+
 function openCheckModal(item) {
   const body = `
     <div class="form-group">
@@ -1782,10 +1841,7 @@ function openCheckModal(item) {
       <label class="form-label">세부 진행사항</label>
       <textarea class="form-textarea" id="cl-detail" placeholder="진행 내용 / 작업 사항">${escHtml(item?.detail || '')}</textarea>
     </div>
-    <div class="form-group">
-      <label class="form-label">목표일</label>
-      <input class="form-input" type="date" id="cl-date" value="${item?.due_date || ''}">
-    </div>
+    ${buildDatePickerHTML('cl', '목표일', item?.due_date, item?.due_date_end)}
     <div class="form-group">
       <label class="form-label">상태</label>
       <select class="form-select" id="cl-status">
@@ -1804,17 +1860,21 @@ function openCheckModal(item) {
     <button class="btn-primary" id="modal-confirm">${item ? '수정' : '추가'}</button>
   `;
   openModal(item ? '항목 수정' : '항목 추가', body, footer);
+  const clDatePicker = initDatePicker('cl');
 
   document.getElementById('modal-cancel').addEventListener('click', closeModal);
   document.getElementById('modal-confirm').addEventListener('click', async () => {
     const title = document.getElementById('cl-title').value.trim();
     if (!title) { toast('대제목을 입력하세요', 'error'); return; }
+    const dateVals = clDatePicker.getValues();
+    if (!dateVals) return;
     const payload = {
       title,
-      detail:   document.getElementById('cl-detail').value.trim(),
-      due_date: document.getElementById('cl-date').value || null,
-      status:   document.getElementById('cl-status').value,
-      note:     document.getElementById('cl-note').value.trim(),
+      detail:       document.getElementById('cl-detail').value.trim(),
+      due_date:     dateVals.start,
+      due_date_end: dateVals.end,
+      status:       document.getElementById('cl-status').value,
+      note:         document.getElementById('cl-note').value.trim(),
     };
     if (item) {
       await PUT(`/api/checklist/${item.id}`, payload);
@@ -1923,12 +1983,14 @@ function makeClmRow(it, today) {
   const tr = document.createElement('tr');
   tr.className = 'cl-row';
   if (it.status === 'completed') tr.classList.add('row-done');
-  const overdue = it.occurred_date && it.occurred_date < today && it.status !== 'completed';
+  const effectiveClmDate = it.occurred_date_end || it.occurred_date;
+  const overdue = effectiveClmDate && effectiveClmDate < today && it.status !== 'completed';
+  const clmDateDisplay = formatDateStr(it.occurred_date, it.occurred_date_end) + (overdue ? ' ⚠' : '');
   tr.innerHTML = `
     <td class="cl-no">${it.no}</td>
     <td class="cl-ttl">${escHtml(it.customer) || '-'}</td>
     <td class="cl-detail">${escHtml(it.content) || '<span style="color:#cbd5e1">-</span>'}</td>
-    <td class="cl-date ${overdue ? 'overdue':''}">${it.occurred_date ? '📅 '+it.occurred_date : '-'}</td>
+    <td class="cl-date ${overdue ? 'overdue':''}">${clmDateDisplay}</td>
     <td class="cl-detail">${escHtml(it.action) || '<span style="color:#cbd5e1">-</span>'}</td>
     <td><span class="status-badge status-${it.status}">${STATUS_LABELS[it.status]||it.status}</span></td>
     <td class="cl-note">${escHtml(it.note) || '<span style="color:#cbd5e1">-</span>'}</td>
@@ -1958,10 +2020,7 @@ function openClaimModal(item) {
       <label class="form-label">클레임 내용</label>
       <textarea class="form-textarea" id="clm-content" placeholder="클레임 상세 내용">${escHtml(item?.content || '')}</textarea>
     </div>
-    <div class="form-group">
-      <label class="form-label">발생일</label>
-      <input class="form-input" type="date" id="clm-date" value="${item?.occurred_date || ''}">
-    </div>
+    ${buildDatePickerHTML('clm', '발생일', item?.occurred_date, item?.occurred_date_end)}
     <div class="form-group">
       <label class="form-label">조치 사항</label>
       <textarea class="form-textarea" id="clm-action" placeholder="대응/조치 사항">${escHtml(item?.action || '')}</textarea>
@@ -1984,18 +2043,22 @@ function openClaimModal(item) {
     <button class="btn-primary" id="modal-confirm">${item ? '수정' : '추가'}</button>
   `;
   openModal(item ? '고객 Claim 수정' : '고객 Claim 추가', body, footer);
+  const clmDatePicker = initDatePicker('clm');
 
   document.getElementById('modal-cancel').addEventListener('click', closeModal);
   document.getElementById('modal-confirm').addEventListener('click', async () => {
     const customer = document.getElementById('clm-customer').value.trim();
     if (!customer) { toast('고객사를 입력하세요', 'error'); return; }
+    const dateVals = clmDatePicker.getValues();
+    if (!dateVals) return;
     const payload = {
       customer,
-      content:       document.getElementById('clm-content').value.trim(),
-      occurred_date: document.getElementById('clm-date').value || null,
-      action:        document.getElementById('clm-action').value.trim(),
-      status:        document.getElementById('clm-status').value,
-      note:          document.getElementById('clm-note').value.trim(),
+      content:            document.getElementById('clm-content').value.trim(),
+      occurred_date:      dateVals.start,
+      occurred_date_end:  dateVals.end,
+      action:             document.getElementById('clm-action').value.trim(),
+      status:             document.getElementById('clm-status').value,
+      note:               document.getElementById('clm-note').value.trim(),
     };
     if (item) {
       await PUT(`/api/claims/${item.id}`, payload);

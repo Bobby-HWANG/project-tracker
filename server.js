@@ -647,15 +647,16 @@ app.delete('/api/milestones/:id', (req, res) => {
 app.get('/api/models/:id/checklist', (req, res) => {
   const id = Number(req.params.id);
   const items = (DB.checklists[id]||[]).map((it, idx) => ({
-    id:       it.id,
-    no:       idx + 1,
-    title:    it.title || '',
-    detail:   it.detail || '',
-    due_date: it.dueDate || null,
-    status:   it.status || 'pending',
-    note:     it.note || '',
-    checked:  it.status === 'completed' ? 1 : 0,  // 호환
-    order:    it.order ?? idx,
+    id:           it.id,
+    no:           idx + 1,
+    title:        it.title || '',
+    detail:       it.detail || '',
+    due_date:     it.dueDate || null,
+    due_date_end: it.dueDateEnd || null,
+    status:       it.status || 'pending',
+    note:         it.note || '',
+    checked:      it.status === 'completed' ? 1 : 0,  // 호환
+    order:        it.order ?? idx,
   })).sort((a,b)=>a.order-b.order);
   res.json(items);
 });
@@ -666,12 +667,13 @@ app.post('/api/models/:id/checklist', (req, res) => {
   const maxO = Math.max(-1, ...DB.checklists[id].map(x=>x.order ?? 0));
   const item = {
     id: nextId(),
-    title:   req.body.title || '',
-    detail:  req.body.detail || '',
-    dueDate: req.body.due_date || null,
-    status:  req.body.status || 'pending',
-    note:    req.body.note || '',
-    order:   maxO + 1,
+    title:      req.body.title || '',
+    detail:     req.body.detail || '',
+    dueDate:    req.body.due_date     || null,
+    dueDateEnd: req.body.due_date_end || null,
+    status:     req.body.status || 'pending',
+    note:       req.body.note || '',
+    order:      maxO + 1,
   };
   DB.checklists[id].push(item);
   save();
@@ -686,11 +688,12 @@ app.put('/api/checklist/:id', (req, res) => {
       const cur = DB.checklists[mid][idx];
       DB.checklists[mid][idx] = {
         ...cur,
-        title:   req.body.title   !== undefined ? req.body.title   : cur.title,
-        detail:  req.body.detail  !== undefined ? req.body.detail  : cur.detail,
-        dueDate: req.body.due_date !== undefined ? req.body.due_date : cur.dueDate,
-        status:  req.body.status  !== undefined ? req.body.status  : cur.status,
-        note:    req.body.note    !== undefined ? req.body.note    : cur.note,
+        title:      req.body.title        !== undefined ? req.body.title        : cur.title,
+        detail:     req.body.detail       !== undefined ? req.body.detail       : cur.detail,
+        dueDate:    req.body.due_date     !== undefined ? req.body.due_date     : cur.dueDate,
+        dueDateEnd: req.body.due_date_end !== undefined ? req.body.due_date_end : cur.dueDateEnd,
+        status:     req.body.status       !== undefined ? req.body.status       : cur.status,
+        note:       req.body.note         !== undefined ? req.body.note         : cur.note,
       };
       save();
       return res.json(DB.checklists[mid][idx]);
@@ -712,15 +715,16 @@ app.delete('/api/checklist/:id', (req, res) => {
 app.get('/api/models/:id/claims', (req, res) => {
   const id = Number(req.params.id);
   const items = (DB.claims[id]||[]).map((it, idx) => ({
-    id:            it.id,
-    no:            idx + 1,
-    customer:      it.customer || '',
-    content:       it.content || '',
-    occurred_date: it.occurredDate || null,
-    action:        it.action || '',
-    status:        it.status || 'pending',
-    note:          it.note || '',
-    order:         it.order ?? idx,
+    id:                 it.id,
+    no:                 idx + 1,
+    customer:           it.customer || '',
+    content:            it.content || '',
+    occurred_date:      it.occurredDate    || null,
+    occurred_date_end:  it.occurredDateEnd || null,
+    action:             it.action || '',
+    status:             it.status || 'pending',
+    note:               it.note || '',
+    order:              it.order ?? idx,
   })).sort((a,b)=>a.order-b.order);
   res.json(items);
 });
@@ -731,13 +735,14 @@ app.post('/api/models/:id/claims', (req, res) => {
   const maxO = Math.max(-1, ...DB.claims[id].map(x=>x.order ?? 0));
   const item = {
     id: nextId(),
-    customer:     req.body.customer || '',
-    content:      req.body.content || '',
-    occurredDate: req.body.occurred_date || null,
-    action:       req.body.action || '',
-    status:       req.body.status || 'pending',
-    note:         req.body.note || '',
-    order:        maxO + 1,
+    customer:        req.body.customer          || '',
+    content:         req.body.content           || '',
+    occurredDate:    req.body.occurred_date     || null,
+    occurredDateEnd: req.body.occurred_date_end || null,
+    action:          req.body.action            || '',
+    status:          req.body.status            || 'pending',
+    note:            req.body.note              || '',
+    order:           maxO + 1,
     ...stampCreate(req),
   };
   DB.claims[id].push(item);
@@ -753,12 +758,13 @@ app.put('/api/claims/:id', (req, res) => {
       const cur = DB.claims[mid][idx];
       DB.claims[mid][idx] = {
         ...cur,
-        customer:     req.body.customer     !== undefined ? req.body.customer     : cur.customer,
-        content:      req.body.content      !== undefined ? req.body.content      : cur.content,
-        occurredDate: req.body.occurred_date !== undefined ? req.body.occurred_date : cur.occurredDate,
-        action:       req.body.action       !== undefined ? req.body.action       : cur.action,
-        status:       req.body.status       !== undefined ? req.body.status       : cur.status,
-        note:         req.body.note         !== undefined ? req.body.note         : cur.note,
+        customer:        req.body.customer          !== undefined ? req.body.customer          : cur.customer,
+        content:         req.body.content           !== undefined ? req.body.content           : cur.content,
+        occurredDate:    req.body.occurred_date     !== undefined ? req.body.occurred_date     : cur.occurredDate,
+        occurredDateEnd: req.body.occurred_date_end !== undefined ? req.body.occurred_date_end : cur.occurredDateEnd,
+        action:          req.body.action            !== undefined ? req.body.action            : cur.action,
+        status:          req.body.status            !== undefined ? req.body.status            : cur.status,
+        note:            req.body.note              !== undefined ? req.body.note              : cur.note,
         ...stampUpdate(req),
       };
       save();
