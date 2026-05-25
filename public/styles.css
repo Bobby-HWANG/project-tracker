@@ -1279,6 +1279,15 @@ body {
   display: flex; align-items: center; justify-content: space-between;
   margin-bottom: 16px;
   flex-wrap: wrap; gap: 10px;
+  /* ── 틀고정: 스크롤 시 상단 고정 ── */
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--bg);
+  padding-top: 6px;
+  padding-bottom: 10px;
+  margin-top: -6px;
+  box-shadow: 0 2px 8px -4px rgba(0,0,0,.10);
 }
 .milestone-summary { display: flex; gap: 10px; flex-wrap: wrap; }
 .ms-pill {
@@ -1363,6 +1372,11 @@ body {
   padding: 16px 20px;
   margin-bottom: 16px;
   box-shadow: var(--shadow);
+  /* ── 틀고정: 스크롤 시 상단 고정 ── */
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  box-shadow: 0 3px 10px -4px rgba(0,0,0,.13), var(--shadow);
 }
 .checklist-overall-title { font-size: 13px; font-weight: 600; color: var(--text2); margin-bottom: 10px; }
 .checklist-overall-row { display: flex; align-items: center; gap: 12px; }
@@ -1449,6 +1463,7 @@ body {
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   overflow-x: auto;
+  overflow-y: clip; /* sticky thead가 tab-body 기준으로 작동하도록 */
   margin-top: 4px;
 }
 .cl-table {
@@ -1467,6 +1482,10 @@ body {
   text-transform: uppercase;
   border-bottom: 2px solid var(--border);
   white-space: nowrap;
+  /* ── 틀고정: 체크시트/Claim 테이블 헤더 고정 ── */
+  position: sticky;
+  top: var(--cl-thead-top, 0px);
+  z-index: 19;
 }
 .cl-table tbody td {
   padding: 11px 12px;
@@ -2354,6 +2373,8 @@ body.eye-care .ms-item { background: var(--surface); border-color: #3a3f4a; }
 body.eye-care .ms-title { color: var(--text); }
 body.eye-care .cl-table-wrap { background: var(--surface); }
 body.eye-care .cl-table thead th { background: #2c313c; color: var(--text2); }
+body.eye-care .milestone-toolbar { background: var(--bg); }
+body.eye-care .checklist-overall  { background: var(--surface); }
 body.eye-care .cl-table tbody td { border-color: #3a3f4a; }
 body.eye-care .cl-table tbody tr:hover { background: #2c313c; }
 body.eye-care .cl-ttl { color: var(--text); }

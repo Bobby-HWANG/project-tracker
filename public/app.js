@@ -1210,6 +1210,11 @@ async function renderChecklist(body) {
   document.getElementById('btn-add-cl').addEventListener('click', () => openCheckModal(null));
   refreshCommentCounts();
   attachInlineCommentsHandler(document.getElementById('tab-body'));
+  // 틀고정: checklist-overall 높이 측정 후 thead top 설정
+  requestAnimationFrame(() => {
+    const overall = body.querySelector('.checklist-overall');
+    if (overall) body.style.setProperty('--cl-thead-top', overall.offsetHeight + 'px');
+  });
 }
 
 function makeClRow(it, today) {
@@ -1733,6 +1738,11 @@ async function renderClaim(body) {
   document.getElementById('btn-add-clm').addEventListener('click', () => openClaimModal(null));
   refreshCommentCounts();
   attachInlineCommentsHandler(document.getElementById('tab-body'));
+  // 틀고정: checklist-overall 높이 측정 후 thead top 설정
+  requestAnimationFrame(() => {
+    const overall = body.querySelector('.checklist-overall');
+    if (overall) body.style.setProperty('--cl-thead-top', overall.offsetHeight + 'px');
+  });
 }
 
 function makeClmRow(it, today) {
