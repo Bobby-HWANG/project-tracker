@@ -1288,17 +1288,16 @@ body {
 /* ── Milestone ──────────────────────────────────────────────── */
 .milestone-toolbar {
   display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 16px;
   flex-wrap: wrap; gap: 10px;
   /* ── 틀고정: 스크롤 시 상단 고정 ── */
   position: sticky;
   top: 0;
   z-index: 20;
-  background: var(--bg);
-  padding-top: 6px;
-  padding-bottom: 10px;
-  margin-top: -6px;
-  box-shadow: 0 2px 8px -4px rgba(0,0,0,.10);
+  background: var(--surface);   /* 흰색 배경 (페이지헤더와 동일) */
+  padding: 12px 20px;
+  margin: -24px -28px 16px -28px; /* tab-body 패딩 상쇄 → 양쪽 끝까지 꽉 채움 */
+  border-bottom: 2px solid var(--border);
+  box-shadow: 0 3px 8px -4px rgba(0,0,0,.12);
 }
 .milestone-summary { display: flex; gap: 10px; flex-wrap: wrap; }
 .ms-pill {
@@ -1364,7 +1363,11 @@ button.ms-pill.active { opacity: 1; box-shadow: 0 0 0 2px currentColor; }
   flex-shrink: 0;
 }
 .ms-body { flex: 1; min-width: 0; }
-.ms-title { font-size: 14px; font-weight: 600; color: var(--text); }
+.ms-title-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.ms-title  { font-size: 14px; font-weight: 600; color: var(--text); }
+.ms-author { font-size: 11px; color: var(--text3); background: var(--bg);
+             border: 1px solid var(--border); border-radius: 20px;
+             padding: 1px 8px; white-space: nowrap; flex-shrink: 0; }
 .ms-desc  { font-size: 12px; color: var(--text3); margin-top: 3px; line-height: 1.5; }
 .ms-meta  { display: flex; align-items: center; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
 .ms-date  { font-size: 11px; color: var(--text3); display: flex; align-items: center; gap: 4px; }
@@ -1402,15 +1405,14 @@ button.ms-pill.active { opacity: 1; box-shadow: 0 0 0 2px currentColor; }
 /* ── Checklist ──────────────────────────────────────────────── */
 .checklist-overall {
   background: var(--surface);
-  border-radius: var(--radius);
-  padding: 16px 20px;
-  margin-bottom: 16px;
-  box-shadow: var(--shadow);
+  padding: 12px 20px;
+  margin: -24px -28px 0 -28px; /* tab-body 패딩 상쇄 → 양쪽 끝까지 꽉 채움 */
+  border-bottom: 2px solid var(--border);
   /* ── 틀고정: 스크롤 시 상단 고정 ── */
   position: sticky;
   top: 0;
   z-index: 20;
-  box-shadow: 0 3px 10px -4px rgba(0,0,0,.13), var(--shadow);
+  box-shadow: 0 3px 8px -4px rgba(0,0,0,.12);
 }
 .checklist-overall-title { font-size: 13px; font-weight: 600; color: var(--text2); margin-bottom: 10px; }
 .checklist-overall-row { display: flex; align-items: center; gap: 12px; }
@@ -2407,7 +2409,7 @@ body.eye-care .ms-item { background: var(--surface); border-color: #3a3f4a; }
 body.eye-care .ms-title { color: var(--text); }
 body.eye-care .cl-table-wrap { background: var(--surface); }
 body.eye-care .cl-table thead th { background: #2c313c; color: var(--text2); }
-body.eye-care .milestone-toolbar { background: var(--bg); }
+body.eye-care .milestone-toolbar { background: var(--surface); }
 body.eye-care .checklist-overall  { background: var(--surface); }
 body.eye-care .cl-table tbody td { border-color: #3a3f4a; }
 body.eye-care .cl-table tbody tr:hover { background: #2c313c; }

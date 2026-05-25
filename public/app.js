@@ -1004,13 +1004,16 @@ function makeMsItem(it, today) {
   div.innerHTML = `
     <div class="ms-status-dot" style="background:${STATUS_DOT[it.status]}"></div>
     <div class="ms-body">
-      <div class="ms-title">${it.title}</div>
-      ${it.description ? `<div class="ms-desc">${it.description}</div>` : ''}
+      <div class="ms-title-row">
+        <span class="ms-title">${escHtml(it.title)}</span>
+        ${it.author ? `<span class="ms-author">👤 ${escHtml(it.author)}</span>` : ''}
+      </div>
+      ${it.description ? `<div class="ms-desc">${escHtml(it.description)}</div>` : ''}
       <div class="ms-meta">
         ${dateStr ? `<div class="ms-date ${overdue ? 'overdue':''}">${dateStr}${overdue ? ' 지연':''}</div>` : ''}
         <span class="status-badge status-${it.status}">${STATUS_LABELS[it.status]}</span>
       </div>
-      ${it.note ? `<div class="ms-note">📝 ${it.note}</div>` : ''}
+      ${it.note ? `<div class="ms-note">📝 ${escHtml(it.note)}</div>` : ''}
       ${buildInlineCommentsHTML('milestone', it.id, cmts)}
     </div>
     <div class="ms-actions">
@@ -1070,14 +1073,21 @@ document.getElementById('tab-body').addEventListener('click', async e => {
 });
 
 function openMsModal(item, subs) {
+  const myName = getCommenterName();
   const body = `
     <div class="form-group">
+      <label class="form-label">작성자 <span style="color:#ef4444">*</span></label>
+      <input class="form-input" id="ms-author"
+             value="${escHtml(item?.author || myName)}"
+             placeholder="이름 입력" maxlength="40">
+    </div>
+    <div class="form-group">
       <label class="form-label">제목 *</label>
-      <input class="form-input" id="ms-title" value="${item?.title || ''}" placeholder="제목 입력">
+      <input class="form-input" id="ms-title" value="${escHtml(item?.title || '')}" placeholder="제목 입력">
     </div>
     <div class="form-group">
       <label class="form-label">설명</label>
-      <textarea class="form-textarea" id="ms-desc" placeholder="상세 내용">${item?.description || ''}</textarea>
+      <textarea class="form-textarea" id="ms-desc" placeholder="상세 내용">${escHtml(item?.description || '')}</textarea>
     </div>
     <div class="form-group">
       <label class="form-label">목표일</label>
@@ -1128,8 +1138,12 @@ function openMsModal(item, subs) {
 
   document.getElementById('modal-cancel').addEventListener('click', closeModal);
   document.getElementById('modal-confirm').addEventListener('click', async () => {
-    const title = document.getElementById('ms-title').value.trim();
-    if (!title) { toast('제목을 입력하세요', 'error'); return; }
+    const author = document.getElementById('ms-author').value.trim();
+    const title  = document.getElementById('ms-title').value.trim();
+    if (!author) { toast('작성자 이름을 입력하세요', 'error'); document.getElementById('ms-author').focus(); return; }
+    if (!title)  { toast('제목을 입력하세요', 'error'); return; }
+
+    setCommenterName(author); // 다음번에도 자동 입력
 
     let due_date, due_date_end;
     if (dateMode === 'range') {
@@ -1145,6 +1159,7 @@ function openMsModal(item, subs) {
     }
 
     const payload = {
+      author,
       title,
       description: document.getElementById('ms-desc').value.trim(),
       note:        document.getElementById('ms-note').value.trim(),
