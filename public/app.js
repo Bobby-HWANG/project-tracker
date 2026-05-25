@@ -722,123 +722,164 @@ function enableDashCardDrag(section) {
   if (!grid) return;
   const category = section.classList.contains('monitoring') ? 'monitoring' : 'model';
 
+  const LONG_PRESS_MS = 2000; // 2초 홀드 후 드래그 활성화
+
   let dragEl = null, placeholder = null, pid = null;
-  let startX = 0, startY = 0, offsetX = 0, offsetY = 0, dragging = false;
+  let startX = 0, startY = 0, offsetX = 0, offsetY = 0;
+  let dragging = false;   // 실제 드래그 이동 중
+  let dragReady = false;  // 2초 홀드 완료 → 드래그 가능 상태
+  let longPressTimer = null;
+
+  function cancelLongPress() {
+    if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; }
+    if (dragEl) {
+      dragEl.classList.remove('drag-pending');
+      dragEl.style.removeProperty('--lp-duration');
+    }
+    dragReady = false;
+  }
+
+  function cleanup(card) {
+    cancelLongPress();
+    try { if (pid != null) card.releasePointerCapture(pid); } catch {}
+    grid.removeEventListener('pointermove', onMove);
+    grid.removeEventListener('pointerup',   onUp);
+    grid.removeEventListener('pointercancel', onUp);
+    dragEl = null; placeholder = null; pid = null;
+    dragging = false; dragReady = false;
+  }
+
+  function startDragMotion(ev) {
+    // dragReady 상태에서 처음 움직일 때 드래그 시작
+    dragging = true;
+    const rect = dragEl.getBoundingClientRect();
+    offsetX = startX - rect.left;
+    offsetY = startY - rect.top;
+
+    placeholder = document.createElement('div');
+    placeholder.className = 'dash-card-placeholder';
+    placeholder.style.cssText = `width:${rect.width}px;height:${rect.height}px;`;
+    dragEl.parentNode.insertBefore(placeholder, dragEl);
+
+    dragEl.classList.add('dragging');
+    dragEl.style.position    = 'fixed';
+    dragEl.style.zIndex      = '9999';
+    dragEl.style.width       = rect.width  + 'px';
+    dragEl.style.height      = rect.height + 'px';
+    dragEl.style.left        = rect.left   + 'px';
+    dragEl.style.top         = rect.top    + 'px';
+    dragEl.style.pointerEvents = 'none';
+    dragEl.style.cursor      = 'grabbing';
+    try { dragEl.setPointerCapture(pid); } catch {}
+  }
+
+  function onMove(ev) {
+    if (!dragEl) return;
+
+    if (!dragReady) {
+      // 2초 전 10px 이상 이동 → 롱프레스 취소 (스크롤 의도)
+      const dx = Math.abs(ev.clientX - startX);
+      const dy = Math.abs(ev.clientY - startY);
+      if (dx > 10 || dy > 10) {
+        const card = dragEl;
+        cleanup(card);
+      }
+      return;
+    }
+
+    // dragReady 상태에서 처음 이동 시 드래그 시작
+    if (!dragging) {
+      const dx = Math.abs(ev.clientX - startX);
+      const dy = Math.abs(ev.clientY - startY);
+      if (dx < 3 && dy < 3) return;
+      startDragMotion(ev);
+    }
+
+    // 드래그 중 위치 업데이트
+    dragEl.style.left = (ev.clientX - offsetX) + 'px';
+    dragEl.style.top  = (ev.clientY - offsetY) + 'px';
+
+    // placeholder 위치 계산
+    const others  = [...grid.querySelectorAll('.dashboard-card:not(.dragging):not(.add-card)')];
+    const addCard = grid.querySelector('.add-card');
+    let inserted  = false;
+    for (const c of others) {
+      const rc  = c.getBoundingClientRect();
+      const midX = rc.left + rc.width  / 2;
+      const midY = rc.top  + rc.height / 2;
+      if (Math.abs(ev.clientY - midY) < rc.height / 2) {
+        if (ev.clientX < midX) { grid.insertBefore(placeholder, c); inserted = true; break; }
+      } else if (ev.clientY < midY) {
+        grid.insertBefore(placeholder, c); inserted = true; break;
+      }
+    }
+    if (!inserted) {
+      if (addCard) grid.insertBefore(placeholder, addCard);
+      else grid.appendChild(placeholder);
+    }
+  }
+
+  async function onUp(ev) {
+    if (!dragEl) return;
+    const card = dragEl;
+
+    if (!dragging) {
+      // 드래그 없이 손을 뗌 (단순 클릭 또는 롱프레스만 하고 이동 없음)
+      cleanup(card);
+      return;
+    }
+
+    // 드래그 종료 - 위치 확정
+    placeholder.parentNode.insertBefore(card, placeholder);
+    placeholder.remove();
+    card.classList.remove('dragging');
+    card.style.cssText = '';
+
+    window._dashDragJustHappened = true;
+    setTimeout(() => { window._dashDragJustHappened = false; }, 100);
+
+    const ids = [...grid.querySelectorAll('.dashboard-card:not(.add-card)')]
+      .map(c => Number(c.dataset.modelId))
+      .filter(n => Number.isFinite(n));
+
+    cleanup(card);
+
+    try {
+      await POST('/api/models/reorder', { category, ids });
+      toast('순서가 변경되었습니다', 'success');
+      state.models = await GET('/api/models');
+    } catch {
+      toast('순서 저장 실패', 'error');
+    }
+  }
 
   grid.addEventListener('pointerdown', e => {
-    // 좌클릭/터치만 처리
     if (e.button !== undefined && e.button !== 0) return;
     const card = e.target.closest('.dashboard-card');
-    if (!card) return;
-    // "추가" 셀은 드래그 대상이 아님
-    if (card.classList.contains('add-card')) return;
+    if (!card || card.classList.contains('add-card')) return;
 
-    pid = e.pointerId;
+    pid    = e.pointerId;
     dragEl = card;
     startX = e.clientX;
     startY = e.clientY;
-    dragging = false;
+    dragging  = false;
+    dragReady = false;
 
-    const onMove = ev => {
-      if (!dragging) {
-        // 5px 이상 이동해야 드래그 시작
-        const dx = Math.abs(ev.clientX - startX);
-        const dy = Math.abs(ev.clientY - startY);
-        if (dx < 5 && dy < 5) return;
+    // CSS 링 애니메이션 시작 (2초 duration)
+    card.style.setProperty('--lp-duration', LONG_PRESS_MS + 'ms');
+    card.classList.add('drag-pending');
 
-        dragging = true;
-        const rect = dragEl.getBoundingClientRect();
-        offsetX = startX - rect.left;
-        offsetY = startY - rect.top;
+    longPressTimer = setTimeout(() => {
+      longPressTimer = null;
+      dragReady = true;
+      card.classList.remove('drag-pending');
+      card.classList.add('drag-ready');
+      if (navigator.vibrate) navigator.vibrate(40); // 모바일 진동 피드백
+      setTimeout(() => card.classList.remove('drag-ready'), 400);
+    }, LONG_PRESS_MS);
 
-        placeholder = document.createElement('div');
-        placeholder.className = 'dash-card-placeholder';
-        placeholder.style.cssText = `width:${rect.width}px;height:${rect.height}px;`;
-        dragEl.parentNode.insertBefore(placeholder, dragEl);
-
-        dragEl.classList.add('dragging');
-        dragEl.style.position = 'fixed';
-        dragEl.style.zIndex = '9999';
-        dragEl.style.width = rect.width + 'px';
-        dragEl.style.height = rect.height + 'px';
-        dragEl.style.left = rect.left + 'px';
-        dragEl.style.top = rect.top + 'px';
-        dragEl.style.pointerEvents = 'none';
-        dragEl.style.cursor = 'grabbing';
-
-        try { card.setPointerCapture(pid); } catch {}
-      }
-
-      // 드래그 중 위치 업데이트
-      dragEl.style.left = (ev.clientX - offsetX) + 'px';
-      dragEl.style.top  = (ev.clientY - offsetY) + 'px';
-
-      // 같은 그리드 내에서만 placeholder 위치 변경 (추가 셀 제외)
-      const others = [...grid.querySelectorAll('.dashboard-card:not(.dragging):not(.add-card)')];
-      const addCard = grid.querySelector('.add-card');
-      let inserted = false;
-      for (const c of others) {
-        const rc = c.getBoundingClientRect();
-        const midX = rc.left + rc.width / 2;
-        const midY = rc.top  + rc.height / 2;
-        if (Math.abs(ev.clientY - midY) < rc.height / 2) {
-          if (ev.clientX < midX) {
-            grid.insertBefore(placeholder, c);
-            inserted = true;
-            break;
-          }
-        } else if (ev.clientY < midY) {
-          grid.insertBefore(placeholder, c);
-          inserted = true;
-          break;
-        }
-      }
-      // "추가" 셀 바로 앞에 삽입 (항상 마지막에 추가 셀 유지)
-      if (!inserted) {
-        if (addCard) grid.insertBefore(placeholder, addCard);
-        else grid.appendChild(placeholder);
-      }
-    };
-
-    const onUp = async ev => {
-      try { card.releasePointerCapture(pid); } catch {}
-      grid.removeEventListener('pointermove', onMove);
-      grid.removeEventListener('pointerup', onUp);
-      grid.removeEventListener('pointercancel', onUp);
-
-      if (!dragging) {
-        // 단순 클릭 - 정상 처리되도록 그냥 종료
-        dragEl = null; pid = null;
-        return;
-      }
-
-      // 드래그 종료 - 위치 확정
-      placeholder.parentNode.insertBefore(dragEl, placeholder);
-      placeholder.remove();
-      dragEl.classList.remove('dragging');
-      dragEl.style.cssText = '';
-
-      // 클릭 이벤트가 직후에 발생하지 않도록 차단
-      window._dashDragJustHappened = true;
-      setTimeout(() => { window._dashDragJustHappened = false; }, 100);
-
-      // 새 순서를 서버에 저장 ("추가" 셀 제외)
-      const ids = [...grid.querySelectorAll('.dashboard-card:not(.add-card)')]
-        .map(c => Number(c.dataset.modelId))
-        .filter(n => Number.isFinite(n));
-      try {
-        await POST('/api/models/reorder', { category, ids });
-        toast('순서가 변경되었습니다', 'success');
-        state.models = await GET('/api/models');
-      } catch (err) {
-        toast('순서 저장 실패', 'error');
-      }
-
-      dragEl = null; placeholder = null; pid = null; dragging = false;
-    };
-
-    grid.addEventListener('pointermove', onMove);
-    grid.addEventListener('pointerup', onUp);
+    grid.addEventListener('pointermove',  onMove);
+    grid.addEventListener('pointerup',    onUp);
     grid.addEventListener('pointercancel', onUp);
   });
 }
