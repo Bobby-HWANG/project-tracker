@@ -1302,6 +1302,29 @@ body {
 .ms-pill.prog    { background: #dbeafe; border-color: #93c5fd; color: #1e40af; }
 .ms-pill.delayed { background: #fee2e2; border-color: #fca5a5; color: #991b1b; }
 
+/* 필터 버튼 — 클릭 가능 */
+button.ms-pill {
+  cursor: pointer;
+  transition: transform .1s, box-shadow .1s, opacity .15s;
+  user-select: none;
+}
+button.ms-pill:hover  { transform: translateY(-1px); box-shadow: 0 2px 6px rgba(0,0,0,.10); }
+button.ms-pill:active { transform: translateY(0); }
+/* 비활성 필터 — 흐리게 */
+button.ms-pill:not(.active) { opacity: .55; }
+/* 활성 필터 — 진하게 + 링 */
+button.ms-pill.active { opacity: 1; box-shadow: 0 0 0 2px currentColor; }
+
+/* 체크시트/Claim 필터 바 */
+.table-filter-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
 .milestone-group { margin-bottom: 20px; }
 .milestone-group-title {
   font-size: 12px; font-weight: 700;

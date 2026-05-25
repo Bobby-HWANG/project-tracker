@@ -949,10 +949,10 @@ async function renderMilestone(body) {
   body.innerHTML = `
     <div class="milestone-toolbar">
       <div class="milestone-summary">
-        <div class="ms-pill total">  전체 ${total}</div>
-        <div class="ms-pill done">  ✓ 완료 ${done}</div>
-        <div class="ms-pill prog">  ◎ 진행중 ${inProg}</div>
-        <div class="ms-pill delayed">⚠ 지연 ${delayed}</div>
+        <button class="ms-pill total active" data-filter="all">전체 ${total}</button>
+        <button class="ms-pill done"         data-filter="completed">✓ 완료 ${done}</button>
+        <button class="ms-pill prog"         data-filter="in_progress">◎ 진행중 ${inProg}</button>
+        <button class="ms-pill delayed"      data-filter="delayed">⚠ 지연 ${delayed}</button>
       </div>
       <button class="btn-primary" id="btn-add-ms">＋ 일정 추가</button>
     </div>
@@ -963,8 +963,21 @@ async function renderMilestone(body) {
   if (!total) {
     msList.innerHTML = `<div class="empty-state"><div class="empty-icon">📅</div>일정을 추가해 진행 상황을 관리하세요</div>`;
   } else {
-    items.forEach(it => msList.appendChild(makeMsItem(it, today)));
+    items.forEach(it => {
+      const el = makeMsItem(it, today);
+      el.dataset.status = it.status; // 필터용 status 속성
+      msList.appendChild(el);
+    });
   }
+
+  // 필터 버튼 클릭 핸들러
+  body.querySelectorAll('.ms-pill[data-filter]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      body.querySelectorAll('.ms-pill[data-filter]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      applyMsFilter(msList, btn.dataset.filter, total);
+    });
+  });
 
   document.getElementById('btn-add-ms').addEventListener('click', () => openMsModal(null, []));
   refreshCommentCounts();
@@ -1152,6 +1165,59 @@ function openMsModal(item, subs) {
   });
 }
 
+// 일정표 필터 적용
+function applyMsFilter(msList, filter, total) {
+  let visible = 0;
+  [...msList.children].forEach(el => {
+    if (el.classList.contains('empty-state')) return;
+    const show = filter === 'all' || el.dataset.status === filter;
+    el.style.display = show ? '' : 'none';
+    if (show) visible++;
+  });
+  // 빈 결과 처리
+  let emptyEl = msList.querySelector('.ms-filter-empty');
+  if (visible === 0 && total > 0) {
+    if (!emptyEl) {
+      emptyEl = document.createElement('div');
+      emptyEl.className = 'empty-state ms-filter-empty';
+    }
+    const labelMap = { all:'전체', completed:'완료', in_progress:'진행중', delayed:'지연' };
+    emptyEl.innerHTML = `<div class="empty-icon">🔍</div>${labelMap[filter] || filter} 항목이 없습니다`;
+    msList.appendChild(emptyEl);
+  } else if (emptyEl) {
+    emptyEl.remove();
+  }
+}
+
+// 테이블(체크시트/Claim) 필터 적용
+function applyTableFilter(tbody, filter, colSpan) {
+  let visible = 0;
+  const rows = [...tbody.querySelectorAll('tr[data-status]')];
+  rows.forEach(tr => {
+    // 댓글 sub-row는 data-parent-status로 연결
+    const show = filter === 'all' || tr.dataset.status === filter;
+    tr.style.display = show ? '' : 'none';
+    if (show) visible++;
+  });
+  // 댓글 행은 부모 행과 동일하게 처리
+  [...tbody.querySelectorAll('tr.cl-cmt-row')].forEach(cmtTr => {
+    const prev = cmtTr.previousElementSibling;
+    if (prev) cmtTr.style.display = prev.style.display;
+  });
+  // 빈 결과 처리
+  let emptyRow = tbody.querySelector('.table-filter-empty');
+  if (visible === 0 && rows.length > 0) {
+    if (!emptyRow) {
+      emptyRow = document.createElement('tr');
+      emptyRow.className = 'table-filter-empty';
+      emptyRow.innerHTML = `<td colspan="${colSpan}" class="empty-state" style="padding:30px"><div class="empty-icon">🔍</div>해당 항목이 없습니다</td>`;
+    }
+    tbody.appendChild(emptyRow);
+  } else if (emptyRow) {
+    emptyRow.remove();
+  }
+}
+
 // ── ② 체크시트 ───────────────────────────────────────────────
 async function renderChecklist(body) {
   const mid   = state.activeModel.id;
@@ -1166,6 +1232,9 @@ async function renderChecklist(body) {
   const color   = state.activeModel.color;
   const today   = new Date().toISOString().slice(0,10);
 
+  const inProg  = items.filter(x => x.status === 'in_progress').length;
+  const delayed = items.filter(x => x.status === 'delayed').length;
+
   body.innerHTML = `
     <div class="checklist-overall">
       <div class="checklist-overall-title">전체 진행률</div>
@@ -1177,6 +1246,12 @@ async function renderChecklist(body) {
           </div>
           <div class="overall-sub">${done} / ${total} 완료</div>
         </div>
+      </div>
+      <div class="table-filter-bar">
+        <button class="ms-pill total active" data-filter="all">전체 ${total}</button>
+        <button class="ms-pill done"         data-filter="completed">✓ 완료 ${done}</button>
+        <button class="ms-pill prog"         data-filter="in_progress">◎ 진행중 ${inProg}</button>
+        <button class="ms-pill delayed"      data-filter="delayed">⚠ 지연 ${delayed}</button>
       </div>
     </div>
     <div class="cl-table-wrap">
@@ -1204,8 +1279,23 @@ async function renderChecklist(body) {
   if (!items.length) {
     tbody.innerHTML = `<tr><td colspan="7" class="empty-state" style="padding:30px"><div class="empty-icon">📋</div>항목이 없습니다</td></tr>`;
   } else {
-    items.forEach(it => tbody.appendChild(makeClRow(it, today)));
+    items.forEach(it => {
+      const frag = makeClRow(it, today);
+      // DocumentFragment에서 첫 번째 tr (data row)에 status 추가
+      const firstTr = frag.firstElementChild;
+      if (firstTr) firstTr.dataset.status = it.status;
+      tbody.appendChild(frag);
+    });
   }
+
+  // 필터 버튼 핸들러
+  body.querySelectorAll('.table-filter-bar .ms-pill[data-filter]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      body.querySelectorAll('.table-filter-bar .ms-pill[data-filter]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      applyTableFilter(tbody, btn.dataset.filter, 7);
+    });
+  });
 
   document.getElementById('btn-add-cl').addEventListener('click', () => openCheckModal(null));
   refreshCommentCounts();
@@ -1694,17 +1784,27 @@ async function renderClaim(body) {
   const done   = items.filter(x => x.status === 'completed').length;
   const today  = new Date().toISOString().slice(0,10);
 
+  const inProg  = items.filter(x => x.status === 'in_progress').length;
+  const delayed = items.filter(x => x.status === 'delayed').length;
+  const pct     = total ? Math.round(done/total*100) : 0;
+
   body.innerHTML = `
     <div class="checklist-overall">
       <div class="checklist-overall-title">고객 Claim 처리 현황</div>
       <div class="checklist-overall-row">
-        <div class="overall-pct">${total ? Math.round(done/total*100) : 0}%</div>
+        <div class="overall-pct">${pct}%</div>
         <div class="overall-bar-wrap">
           <div class="overall-bar-bg">
-            <div class="overall-bar-fill" style="width:${total?Math.round(done/total*100):0}%;background:${state.activeModel.color}"></div>
+            <div class="overall-bar-fill" style="width:${pct}%;background:${state.activeModel.color}"></div>
           </div>
           <div class="overall-sub">${done} / ${total} 완료</div>
         </div>
+      </div>
+      <div class="table-filter-bar">
+        <button class="ms-pill total active" data-filter="all">전체 ${total}</button>
+        <button class="ms-pill done"         data-filter="completed">✓ 완료 ${done}</button>
+        <button class="ms-pill prog"         data-filter="in_progress">◎ 진행중 ${inProg}</button>
+        <button class="ms-pill delayed"      data-filter="delayed">⚠ 지연 ${delayed}</button>
       </div>
     </div>
     <div class="cl-table-wrap">
@@ -1733,8 +1833,24 @@ async function renderClaim(body) {
   if (!items.length) {
     tbody.innerHTML = `<tr><td colspan="8" class="empty-state" style="padding:30px"><div class="empty-icon">📋</div>등록된 클레임이 없습니다</td></tr>`;
   } else {
-    items.forEach(it => tbody.appendChild(makeClmRow(it, today)));
+    items.forEach(it => {
+      const frag = makeClmRow(it, today);
+      // DocumentFragment에서 첫 번째 tr (data row)에 status 추가
+      const firstTr = frag.firstElementChild;
+      if (firstTr) firstTr.dataset.status = it.status;
+      tbody.appendChild(frag);
+    });
   }
+
+  // 필터 버튼 핸들러
+  body.querySelectorAll('.table-filter-bar .ms-pill[data-filter]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      body.querySelectorAll('.table-filter-bar .ms-pill[data-filter]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      applyTableFilter(tbody, btn.dataset.filter, 8);
+    });
+  });
+
   document.getElementById('btn-add-clm').addEventListener('click', () => openClaimModal(null));
   refreshCommentCounts();
   attachInlineCommentsHandler(document.getElementById('tab-body'));
