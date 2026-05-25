@@ -577,6 +577,7 @@ app.get('/api/models/:id/milestones', (req, res) => {
   const subs = DB.subItems[id]||[];
   const items = (DB.milestones[id]||[]).map(it => ({
     id: it.id,
+    author: it.author || null,
     title: it.title,
     description: it.description,
     note: it.note || '',
@@ -599,6 +600,7 @@ app.post('/api/models/:id/milestones', (req, res) => {
   if (!DB.milestones[id]) DB.milestones[id] = [];
   const item = {
     id: nextId(),
+    author: req.body.author || null,
     title: req.body.title,
     description: req.body.description || '',
     note: req.body.note || '',
@@ -617,8 +619,10 @@ app.put('/api/milestones/:id', (req, res) => {
   for (const mid in DB.milestones) {
     const idx = DB.milestones[mid].findIndex(x=>x.id===id);
     if (idx >= 0) {
+      const cur = DB.milestones[mid][idx];
       DB.milestones[mid][idx] = {
-        ...DB.milestones[mid][idx],
+        ...cur,
+        author: req.body.author !== undefined ? req.body.author : cur.author,
         title: req.body.title,
         description: req.body.description || '',
         note: req.body.note || '',
@@ -649,6 +653,7 @@ app.get('/api/models/:id/checklist', (req, res) => {
   const items = (DB.checklists[id]||[]).map((it, idx) => ({
     id:           it.id,
     no:           idx + 1,
+    author:       it.author || null,
     title:        it.title || '',
     detail:       it.detail || '',
     due_date:     it.dueDate || null,
@@ -667,12 +672,13 @@ app.post('/api/models/:id/checklist', (req, res) => {
   const maxO = Math.max(-1, ...DB.checklists[id].map(x=>x.order ?? 0));
   const item = {
     id: nextId(),
-    title:      req.body.title || '',
-    detail:     req.body.detail || '',
+    author:     req.body.author       || null,
+    title:      req.body.title        || '',
+    detail:     req.body.detail       || '',
     dueDate:    req.body.due_date     || null,
     dueDateEnd: req.body.due_date_end || null,
-    status:     req.body.status || 'pending',
-    note:       req.body.note || '',
+    status:     req.body.status       || 'pending',
+    note:       req.body.note         || '',
     order:      maxO + 1,
   };
   DB.checklists[id].push(item);
@@ -688,6 +694,7 @@ app.put('/api/checklist/:id', (req, res) => {
       const cur = DB.checklists[mid][idx];
       DB.checklists[mid][idx] = {
         ...cur,
+        author:     req.body.author       !== undefined ? req.body.author       : cur.author,
         title:      req.body.title        !== undefined ? req.body.title        : cur.title,
         detail:     req.body.detail       !== undefined ? req.body.detail       : cur.detail,
         dueDate:    req.body.due_date     !== undefined ? req.body.due_date     : cur.dueDate,
@@ -730,16 +737,17 @@ app.get('/api/models/:id/claims', (req, res) => {
   const items = (DB.claims[id]||[]).map((it, idx) => ({
     id:                  it.id,
     no:                  idx + 1,
-    customer:            it.customer || '',
-    content:             it.content || '',
+    author:              it.author            || null,
+    customer:            it.customer          || '',
+    content:             it.content           || '',
     occurred_date:       it.occurredDate      || null,
     occurred_date_end:   it.occurredDateEnd   || null,
-    action:              it.action || '',
+    action:              it.action            || '',
     improvement_start:   it.improvementStart  || null,
     improvement_end:     it.improvementEnd    || null,
-    status:              it.status || 'pending',
-    note:                it.note || '',
-    order:               it.order ?? idx,
+    status:              it.status            || 'pending',
+    note:                it.note              || '',
+    order:               it.order             ?? idx,
   })).sort((a,b)=>a.order-b.order);
   res.json(items);
 });
@@ -750,6 +758,7 @@ app.post('/api/models/:id/claims', (req, res) => {
   const maxO = Math.max(-1, ...DB.claims[id].map(x=>x.order ?? 0));
   const item = {
     id: nextId(),
+    author:           req.body.author             || null,
     customer:         req.body.customer           || '',
     content:          req.body.content            || '',
     occurredDate:     req.body.occurred_date      || null,
@@ -775,6 +784,7 @@ app.put('/api/claims/:id', (req, res) => {
       const cur = DB.claims[mid][idx];
       DB.claims[mid][idx] = {
         ...cur,
+        author:           req.body.author             !== undefined ? req.body.author             : cur.author,
         customer:         req.body.customer           !== undefined ? req.body.customer           : cur.customer,
         content:          req.body.content            !== undefined ? req.body.content            : cur.content,
         occurredDate:     req.body.occurred_date      !== undefined ? req.body.occurred_date      : cur.occurredDate,

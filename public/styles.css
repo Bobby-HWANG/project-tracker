@@ -1388,6 +1388,9 @@ button.ms-pill.active { opacity: 1; box-shadow: 0 0 0 2px currentColor; }
 .ms-author { font-size: 11px; color: var(--text3); background: var(--bg);
              border: 1px solid var(--border); border-radius: 20px;
              padding: 1px 8px; white-space: nowrap; flex-shrink: 0; }
+
+/* 체크시트·Claim 테이블 행 내 작성자 배지 */
+.row-author { margin-top: 3px; font-size: 11px; color: var(--text3); }
 .ms-desc  { font-size: 12px; color: var(--text3); margin-top: 3px; line-height: 1.5; }
 .ms-meta  { display: flex; align-items: center; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
 .ms-date  { font-size: 11px; color: var(--text3); display: flex; align-items: center; gap: 4px; }

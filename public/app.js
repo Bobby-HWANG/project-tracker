@@ -1375,7 +1375,10 @@ function makeClRow(it, today) {
 
   tr.innerHTML = `
     <td class="cl-no">${it.no}</td>
-    <td class="cl-ttl">${escHtml(it.title) || '-'}</td>
+    <td class="cl-ttl">
+      ${escHtml(it.title) || '-'}
+      ${it.author ? `<div class="row-author">👤 ${escHtml(it.author)}</div>` : ''}
+    </td>
     <td class="cl-detail">${escHtml(it.detail) || '<span style="color:#cbd5e1">-</span>'}</td>
     <td class="cl-date ${overdue ? 'overdue':''}">${dateDisplay}</td>
     <td><span class="status-badge status-${it.status}">${STATUS_LABELS[it.status]||it.status}</span></td>
@@ -1832,7 +1835,12 @@ function formatDateStr(start, end) {
 }
 
 function openCheckModal(item) {
+  const myName = getCommenterName();
   const body = `
+    <div class="form-group">
+      <label class="form-label">작성자</label>
+      <input class="form-input" id="cl-author" value="${escHtml(item?.author || myName)}" placeholder="이름 입력" maxlength="40">
+    </div>
     <div class="form-group">
       <label class="form-label">대제목 *</label>
       <input class="form-input" id="cl-title" value="${escHtml(item?.title || '')}" placeholder="대제목 입력">
@@ -1864,11 +1872,14 @@ function openCheckModal(item) {
 
   document.getElementById('modal-cancel').addEventListener('click', closeModal);
   document.getElementById('modal-confirm').addEventListener('click', async () => {
-    const title = document.getElementById('cl-title').value.trim();
+    const title  = document.getElementById('cl-title').value.trim();
+    const author = document.getElementById('cl-author').value.trim();
     if (!title) { toast('대제목을 입력하세요', 'error'); return; }
     const dateVals = clDatePicker.getValues();
     if (!dateVals) return;
+    if (author) setCommenterName(author);
     const payload = {
+      author,
       title,
       detail:       document.getElementById('cl-detail').value.trim(),
       due_date:     dateVals.start,
@@ -1997,7 +2008,10 @@ function makeClmRow(it, today) {
 
   tr.innerHTML = `
     <td class="cl-no">${it.no}</td>
-    <td class="cl-ttl">${escHtml(it.customer) || '-'}</td>
+    <td class="cl-ttl">
+      ${escHtml(it.customer) || '-'}
+      ${it.author ? `<div class="row-author">👤 ${escHtml(it.author)}</div>` : ''}
+    </td>
     <td class="cl-detail">${escHtml(it.content) || '<span style="color:#cbd5e1">-</span>'}</td>
     <td class="cl-date">${clmDateDisplay}</td>
     <td class="cl-detail">${escHtml(it.action) || '<span style="color:#cbd5e1">-</span>'}</td>
@@ -2021,7 +2035,12 @@ function makeClmRow(it, today) {
 }
 
 function openClaimModal(item) {
+  const myName = getCommenterName();
   const body = `
+    <div class="form-group">
+      <label class="form-label">작성자</label>
+      <input class="form-input" id="clm-author" value="${escHtml(item?.author || myName)}" placeholder="이름 입력" maxlength="40">
+    </div>
     <div class="form-group">
       <label class="form-label">고객사 *</label>
       <input class="form-input" id="clm-customer" value="${escHtml(item?.customer || '')}" placeholder="예: 삼성전자">
@@ -2060,12 +2079,15 @@ function openClaimModal(item) {
   document.getElementById('modal-cancel').addEventListener('click', closeModal);
   document.getElementById('modal-confirm').addEventListener('click', async () => {
     const customer = document.getElementById('clm-customer').value.trim();
+    const author   = document.getElementById('clm-author').value.trim();
     if (!customer) { toast('고객사를 입력하세요', 'error'); return; }
     const dateVals = clmDatePicker.getValues();
     if (!dateVals) return;
     const impVals = clmImpDatePicker.getValues();
     if (!impVals) return;
+    if (author) setCommenterName(author);
     const payload = {
+      author,
       customer,
       content:            document.getElementById('clm-content').value.trim(),
       occurred_date:      dateVals.start,
