@@ -714,17 +714,32 @@ app.delete('/api/checklist/:id', (req, res) => {
 // ── Claims (고객 Claim 현황) ─────────────────────────────────
 app.get('/api/models/:id/claims', (req, res) => {
   const id = Number(req.params.id);
+  const today = new Date().toISOString().slice(0,10);
+  let dirty = false;
+
+  // 개선일정 종료일이 지났고 완료 아닌 항목 → 자동 지연 분류
+  (DB.claims[id]||[]).forEach(it => {
+    const impEnd = it.improvementEnd || null;
+    if (impEnd && impEnd < today && it.status !== 'completed' && it.status !== 'delayed') {
+      it.status = 'delayed';
+      dirty = true;
+    }
+  });
+  if (dirty) save();
+
   const items = (DB.claims[id]||[]).map((it, idx) => ({
-    id:                 it.id,
-    no:                 idx + 1,
-    customer:           it.customer || '',
-    content:            it.content || '',
-    occurred_date:      it.occurredDate    || null,
-    occurred_date_end:  it.occurredDateEnd || null,
-    action:             it.action || '',
-    status:             it.status || 'pending',
-    note:               it.note || '',
-    order:              it.order ?? idx,
+    id:                  it.id,
+    no:                  idx + 1,
+    customer:            it.customer || '',
+    content:             it.content || '',
+    occurred_date:       it.occurredDate      || null,
+    occurred_date_end:   it.occurredDateEnd   || null,
+    action:              it.action || '',
+    improvement_start:   it.improvementStart  || null,
+    improvement_end:     it.improvementEnd    || null,
+    status:              it.status || 'pending',
+    note:                it.note || '',
+    order:               it.order ?? idx,
   })).sort((a,b)=>a.order-b.order);
   res.json(items);
 });
@@ -735,14 +750,16 @@ app.post('/api/models/:id/claims', (req, res) => {
   const maxO = Math.max(-1, ...DB.claims[id].map(x=>x.order ?? 0));
   const item = {
     id: nextId(),
-    customer:        req.body.customer          || '',
-    content:         req.body.content           || '',
-    occurredDate:    req.body.occurred_date     || null,
-    occurredDateEnd: req.body.occurred_date_end || null,
-    action:          req.body.action            || '',
-    status:          req.body.status            || 'pending',
-    note:            req.body.note              || '',
-    order:           maxO + 1,
+    customer:         req.body.customer           || '',
+    content:          req.body.content            || '',
+    occurredDate:     req.body.occurred_date      || null,
+    occurredDateEnd:  req.body.occurred_date_end  || null,
+    action:           req.body.action             || '',
+    improvementStart: req.body.improvement_start  || null,
+    improvementEnd:   req.body.improvement_end    || null,
+    status:           req.body.status             || 'pending',
+    note:             req.body.note               || '',
+    order:            maxO + 1,
     ...stampCreate(req),
   };
   DB.claims[id].push(item);
@@ -758,13 +775,15 @@ app.put('/api/claims/:id', (req, res) => {
       const cur = DB.claims[mid][idx];
       DB.claims[mid][idx] = {
         ...cur,
-        customer:        req.body.customer          !== undefined ? req.body.customer          : cur.customer,
-        content:         req.body.content           !== undefined ? req.body.content           : cur.content,
-        occurredDate:    req.body.occurred_date     !== undefined ? req.body.occurred_date     : cur.occurredDate,
-        occurredDateEnd: req.body.occurred_date_end !== undefined ? req.body.occurred_date_end : cur.occurredDateEnd,
-        action:          req.body.action            !== undefined ? req.body.action            : cur.action,
-        status:          req.body.status            !== undefined ? req.body.status            : cur.status,
-        note:            req.body.note              !== undefined ? req.body.note              : cur.note,
+        customer:         req.body.customer           !== undefined ? req.body.customer           : cur.customer,
+        content:          req.body.content            !== undefined ? req.body.content            : cur.content,
+        occurredDate:     req.body.occurred_date      !== undefined ? req.body.occurred_date      : cur.occurredDate,
+        occurredDateEnd:  req.body.occurred_date_end  !== undefined ? req.body.occurred_date_end  : cur.occurredDateEnd,
+        action:           req.body.action             !== undefined ? req.body.action             : cur.action,
+        improvementStart: req.body.improvement_start  !== undefined ? req.body.improvement_start  : cur.improvementStart,
+        improvementEnd:   req.body.improvement_end    !== undefined ? req.body.improvement_end    : cur.improvementEnd,
+        status:           req.body.status             !== undefined ? req.body.status             : cur.status,
+        note:             req.body.note               !== undefined ? req.body.note               : cur.note,
         ...stampUpdate(req),
       };
       save();

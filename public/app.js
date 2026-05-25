@@ -1934,12 +1934,13 @@ async function renderClaim(body) {
         <thead>
           <tr>
             <th style="width:48px">NO</th>
-            <th style="width:14%">고객사</th>
-            <th style="min-width:200px">클레임 내용</th>
+            <th style="width:12%">고객사</th>
+            <th style="min-width:180px">클레임 내용</th>
             <th style="width:120px">발생일</th>
-            <th style="min-width:160px">조치 사항</th>
-            <th style="width:100px">상태</th>
-            <th style="min-width:140px">비고</th>
+            <th style="min-width:150px">조치 사항</th>
+            <th style="width:130px">개선일정</th>
+            <th style="width:90px">상태</th>
+            <th style="min-width:120px">비고</th>
             <th style="width:60px"></th>
           </tr>
         </thead>
@@ -1953,7 +1954,7 @@ async function renderClaim(body) {
 
   const tbody = document.getElementById('clm-tbody');
   if (!items.length) {
-    tbody.innerHTML = `<tr><td colspan="8" class="empty-state" style="padding:30px"><div class="empty-icon">📋</div>등록된 클레임이 없습니다</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="9" class="empty-state" style="padding:30px"><div class="empty-icon">📋</div>등록된 클레임이 없습니다</td></tr>`;
   } else {
     items.forEach(it => {
       const frag = makeClmRow(it, today);
@@ -1969,7 +1970,7 @@ async function renderClaim(body) {
     btn.addEventListener('click', () => {
       filterbar.querySelectorAll('.ms-pill[data-filter]').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      applyTableFilter(tbody, btn.dataset.filter, 8);
+      applyTableFilter(tbody, btn.dataset.filter, 9);
     });
   });
 
@@ -1983,15 +1984,24 @@ function makeClmRow(it, today) {
   const tr = document.createElement('tr');
   tr.className = 'cl-row';
   if (it.status === 'completed') tr.classList.add('row-done');
-  const effectiveClmDate = it.occurred_date_end || it.occurred_date;
-  const overdue = effectiveClmDate && effectiveClmDate < today && it.status !== 'completed';
-  const clmDateDisplay = formatDateStr(it.occurred_date, it.occurred_date_end) + (overdue ? ' ⚠' : '');
+
+  // 발생일 표시 (overdue 판정은 개선일정 우선)
+  const clmDateDisplay = formatDateStr(it.occurred_date, it.occurred_date_end);
+
+  // 개선일정: 종료일 기준 지연 판정
+  const impEnd = it.improvement_end || it.improvement_start || null;
+  const impOverdue = impEnd && impEnd < today && it.status !== 'completed';
+  const impDisplay = it.improvement_start || it.improvement_end
+    ? formatDateStr(it.improvement_start, it.improvement_end) + (impOverdue ? ' ⚠' : '')
+    : '-';
+
   tr.innerHTML = `
     <td class="cl-no">${it.no}</td>
     <td class="cl-ttl">${escHtml(it.customer) || '-'}</td>
     <td class="cl-detail">${escHtml(it.content) || '<span style="color:#cbd5e1">-</span>'}</td>
-    <td class="cl-date ${overdue ? 'overdue':''}">${clmDateDisplay}</td>
+    <td class="cl-date">${clmDateDisplay}</td>
     <td class="cl-detail">${escHtml(it.action) || '<span style="color:#cbd5e1">-</span>'}</td>
+    <td class="cl-date ${impOverdue ? 'overdue':''}">${impDisplay}</td>
     <td><span class="status-badge status-${it.status}">${STATUS_LABELS[it.status]||it.status}</span></td>
     <td class="cl-note">${escHtml(it.note) || '<span style="color:#cbd5e1">-</span>'}</td>
     <td class="cl-acts">
@@ -2005,7 +2015,7 @@ function makeClmRow(it, today) {
   const cmts = _commentsCache[`claim_${it.id}`] || [];
   const cmtTr = document.createElement('tr');
   cmtTr.className = 'cl-cmt-row';
-  cmtTr.innerHTML = `<td colspan="8" class="cl-cmt-cell">${buildInlineCommentsHTML('claim', it.id, cmts)}</td>`;
+  cmtTr.innerHTML = `<td colspan="9" class="cl-cmt-cell">${buildInlineCommentsHTML('claim', it.id, cmts)}</td>`;
   frag.appendChild(cmtTr);
   return frag;
 }
@@ -2025,6 +2035,7 @@ function openClaimModal(item) {
       <label class="form-label">조치 사항</label>
       <textarea class="form-textarea" id="clm-action" placeholder="대응/조치 사항">${escHtml(item?.action || '')}</textarea>
     </div>
+    ${buildDatePickerHTML('clm-imp', '개선일정', item?.improvement_start, item?.improvement_end)}
     <div class="form-group">
       <label class="form-label">상태</label>
       <select class="form-select" id="clm-status">
@@ -2043,7 +2054,8 @@ function openClaimModal(item) {
     <button class="btn-primary" id="modal-confirm">${item ? '수정' : '추가'}</button>
   `;
   openModal(item ? '고객 Claim 수정' : '고객 Claim 추가', body, footer);
-  const clmDatePicker = initDatePicker('clm');
+  const clmDatePicker    = initDatePicker('clm');
+  const clmImpDatePicker = initDatePicker('clm-imp');
 
   document.getElementById('modal-cancel').addEventListener('click', closeModal);
   document.getElementById('modal-confirm').addEventListener('click', async () => {
@@ -2051,12 +2063,16 @@ function openClaimModal(item) {
     if (!customer) { toast('고객사를 입력하세요', 'error'); return; }
     const dateVals = clmDatePicker.getValues();
     if (!dateVals) return;
+    const impVals = clmImpDatePicker.getValues();
+    if (!impVals) return;
     const payload = {
       customer,
       content:            document.getElementById('clm-content').value.trim(),
       occurred_date:      dateVals.start,
       occurred_date_end:  dateVals.end,
       action:             document.getElementById('clm-action').value.trim(),
+      improvement_start:  impVals.start,
+      improvement_end:    impVals.end,
       status:             document.getElementById('clm-status').value,
       note:               document.getElementById('clm-note').value.trim(),
     };
