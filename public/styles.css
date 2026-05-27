@@ -2637,10 +2637,10 @@ body.eye-care .memo-post {
 }
 .sched-cal-dow {
   text-align: center;
-  font-size: 14px;
+  font-size: 12px;          /* 14 × 5/6 ≈ 12 */
   font-weight: 700;
   color: var(--text2);
-  padding: 12px 4px;
+  padding: 10px 4px;        /* 12 × 5/6 ≈ 10 */
   letter-spacing: .5px;
 }
 .sched-cal-dow.sun { color: #ef4444; }
@@ -2654,10 +2654,10 @@ body.eye-care .memo-post {
 
 /* 날짜 셀 */
 .sched-cal-cell {
-  min-height: 160px;
+  min-height: 133px;        /* 160 × 5/6 ≈ 133 */
   border-right: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
-  padding: 6px 4px 6px 6px;
+  padding: 5px 3px 5px 5px; /* 6 × 5/6 ≈ 5 */
   background: var(--surface);
   vertical-align: top;
   overflow: hidden;
@@ -2670,7 +2670,7 @@ body.eye-care .memo-post {
   background: color-mix(in srgb, var(--border) 30%, var(--surface));
   border-right: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
-  min-height: 160px;
+  min-height: 133px;        /* 160 × 5/6 ≈ 133 */
 }
 .sched-cal-cell--other:nth-child(7n) { border-right: none; }
 
@@ -2684,24 +2684,24 @@ body.eye-care .memo-post {
 
 /* 날짜 번호 */
 .sched-cal-daynum {
-  font-size: 14px;
+  font-size: 12px;          /* 14 × 5/6 ≈ 12 */
   font-weight: 700;
   color: var(--text2);
-  margin-bottom: 5px;
+  margin-bottom: 4px;       /* 5 × 5/6 ≈ 4 */
   display: inline-block;
   cursor: pointer;
-  padding: 2px 5px;
-  border-radius: 5px;
+  padding: 1px 4px;         /* 2×5/6≈1, 5×5/6≈4 */
+  border-radius: 4px;
   line-height: 1;
   transition: background .1s, color .1s;
 }
 .sched-cal-daynum:hover { background: var(--accent); color: #fff; }
 .sched-cal-daynum.today {
   display: inline-flex; align-items: center; justify-content: center;
-  width: 28px; height: 28px;
+  width: 23px; height: 23px; /* 28 × 5/6 ≈ 23 */
   background: var(--accent); color: #fff;
   border-radius: 50%;
-  font-size: 14px;
+  font-size: 12px;           /* 14 × 5/6 ≈ 12 */
   font-weight: 800;
   padding: 0;
 }
@@ -2713,30 +2713,30 @@ body.eye-care .memo-post {
 .sched-cal-events {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  margin-top: 2px;
+  gap: 1px;                 /* 2 × 5/6 ≈ 1 */
+  margin-top: 1px;
 }
 
-/* 이벤트 바 (스크린샷의 가로 막대) */
+/* 이벤트 바 */
 .sched-cal-bar {
   display: flex;
   align-items: center;
-  gap: 4px;
-  border-radius: 4px;
-  padding: 3px 7px;
-  font-size: 12px;
+  gap: 3px;                 /* 4 × 5/6 ≈ 3 */
+  border-radius: 3px;       /* 4 × 5/6 ≈ 3 */
+  padding: 2px 6px;         /* 3×5/6≈2, 7×5/6≈6 */
+  font-size: 10px;          /* 12 × 5/6 ≈ 10 */
   color: #fff;
   cursor: pointer;
   white-space: nowrap;
   overflow: hidden;
-  line-height: 1.5;
-  box-shadow: 0 1px 3px rgba(0,0,0,.15);
+  line-height: 1.4;
+  box-shadow: 0 1px 2px rgba(0,0,0,.12);
   transition: filter .1s;
   margin-bottom: 1px;
 }
 .sched-cal-bar:hover { filter: brightness(1.12); }
 .sched-cal-bar-time {
-  font-size: 11px;
+  font-size: 9px;           /* 11 × 5/6 ≈ 9 */
   font-weight: 700;
   opacity: .92;
   flex-shrink: 0;
@@ -2751,9 +2751,9 @@ body.eye-care .memo-post {
 
 /* +N개 더 */
 .sched-cal-more {
-  font-size: 11px;
+  font-size: 9px;           /* 11 × 5/6 ≈ 9 */
   color: var(--text3);
-  padding: 1px 5px;
+  padding: 1px 4px;
   cursor: pointer;
   font-weight: 600;
   border-radius: 3px;
