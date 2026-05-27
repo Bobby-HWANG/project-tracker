@@ -599,22 +599,29 @@ function makeDashSection(category, title, list) {
   // 컬럼 동적 생성
   // - 모니터링: 항목 수만큼 가로 + 추가 셀 (1줄)
   // - 모델: 4열 카드 + 우측에 세로로 긴 추가 셀
+  // ※ 모바일(≤900px)에서는 CSS !important 가 이 inline 값을 덮어씀
   const n = list.length;
+  const isMobile = window.innerWidth <= 900;
+
   if (category === 'monitoring') {
-    grid.style.gridTemplateColumns = n > 0
-      ? `repeat(${n}, minmax(0, 1fr)) var(--add-w)`
-      : 'var(--add-w)';
+    if (!isMobile) {
+      grid.style.gridTemplateColumns = n > 0
+        ? `repeat(${n}, minmax(0, 1fr)) var(--add-w)`
+        : 'var(--add-w)';
+    }
   } else {
-    // 모델 — 4열 (8개면 위 4개 / 아래 4개) + 추가 셀 컬럼
-    grid.style.gridTemplateColumns = `repeat(4, minmax(0, 1fr)) var(--add-w)`;
-    grid.style.gridAutoRows = 'minmax(0, 1fr)';
+    // 모델 — 데스크톱: 4열 + 추가 셀 컬럼 / 모바일: CSS가 2열로 대체
+    if (!isMobile) {
+      grid.style.gridTemplateColumns = `repeat(4, minmax(0, 1fr)) var(--add-w)`;
+      grid.style.gridAutoRows = 'minmax(0, 1fr)';
+    }
   }
 
   list.forEach(m => grid.appendChild(makeDashCard(m)));
 
   const addCard = makeAddCard(category);
-  if (category === 'model') {
-    // 카드 우측에 세로로 길게 배치 (모든 행 커버)
+  if (category === 'model' && !isMobile) {
+    // 데스크톱: 추가 카드를 우측에 세로로 길게 배치 (모든 행 커버)
     const rows = Math.max(1, Math.ceil(n / 4));
     addCard.style.gridColumn = '5';
     addCard.style.gridRow = `1 / span ${rows}`;

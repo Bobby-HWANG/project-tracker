@@ -2194,40 +2194,73 @@ textarea.drag-over {
   /* 대시보드 외곽 */
   .dashboard-grid {
     padding: 12px 10px 18px;
-    gap: 24px;                /* 섹션 간격 축소 (44 → 24) */
+    gap: 16px;
   }
   #view-dashboard .page-header {
-    padding: 12px 12px 10px;
+    padding: 10px 12px 8px;
   }
-  #view-dashboard .page-title { font-size: 18px; }
+  #view-dashboard .page-title { font-size: 17px; }
 
   /* 섹션 내부 */
-  .dash-section { padding: 12px 12px 14px; border-radius: 10px; }
-  .dash-section-title { font-size: 14px; }
-  .dash-section-count { font-size: 11px; padding: 3px 8px; }
+  .dash-section { padding: 12px 10px 12px; border-radius: 10px; }
+  .dash-section-title { font-size: 13px; }
+  .dash-section-count { font-size: 10px; padding: 2px 8px; }
 
-  /* 카드 그리드 — 모바일은 auto-fit으로 충분히 큰 카드 */
-  .dash-section-grid {
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)) !important;
-    gap: 12px !important;
-  }
-  .dashboard-card {
-    padding: 12px 12px;
-    min-height: 110px;
-  }
-  .dc-name { font-size: 13px; }
-  .dc-stat-val { font-size: 17px; }
-  .dc-stat-label { font-size: 9.5px; }
-  .dc-stats-3 .dc-stat-val { font-size: 14px; }
+  /* ── 카드 그리드 모바일 핵심 수정 ──────────────────────── */
+  /* JS inline style(gridTemplateColumns·gridAutoRows)을 !important로 덮어씀 */
 
-  /* 추가 셀 모바일 — 더 잘 보이게 */
+  /* 모델 섹션: 2열 배치 */
+  .dash-section.model .dash-section-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    grid-auto-rows: auto !important;      /* inline minmax(0,1fr) 무효화 → 내용 기준 높이 */
+    gap: 10px !important;
+  }
+
+  /* 모니터링 섹션: 2열 배치 */
+  .dash-section.monitoring .dash-section-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    grid-auto-rows: auto !important;
+    gap: 10px !important;
+  }
+
+  /* + 추가 카드: JS의 gridColumn:5 / gridRow 강제 배치 무효화 */
   .dashboard-card.add-card {
-    height: auto !important;
-    min-height: 56px !important;
-    padding: 10px !important;
+    grid-column: auto !important;   /* inline gridColumn:'5' 무효화 */
+    grid-row: auto !important;      /* inline gridRow:'1/span N' 무효화 */
+    height: auto !important;        /* inline 또는 20% 무효화 */
+    min-height: 44px !important;
+    padding: 8px !important;
+    border-radius: 8px !important;
+    flex-direction: row !important;
   }
-  .add-card-icon { font-size: 22px; }
-  .add-card-label { font-size: 13px; }
+
+  /* 카드 크기 */
+  .dashboard-card {
+    padding: 10px 10px;
+    min-height: 0;          /* 내용 기준 — 세로 늘어짐 방지 */
+  }
+
+  /* 카드 내부 텍스트 */
+  .dc-name { font-size: 12px; }
+  .dc-header { margin-bottom: 7px; gap: 5px; }
+  .dc-dot { width: 8px; height: 8px; }
+
+  /* stats 박스 */
+  .dc-stat { padding: 5px 2px; }
+  .dc-stat-val { font-size: 15px; }
+  .dc-stat-label { font-size: 9px; }
+  .dc-stats-3 .dc-stat-val { font-size: 13px; }
+  .dc-stats-3 .dc-stat-label { font-size: 8px; }
+
+  /* 진행률 바 */
+  .dc-prog-label { font-size: 9.5px; margin-bottom: 2px; }
+
+  /* 지연 표시 */
+  .dc-delayed { font-size: 9.5px; margin-top: 4px; }
+  .dc-delayed-row { gap: 6px; }
+
+  .add-card-icon { font-size: 18px; }
+  .add-card-label { font-size: 12px; }
 
   /* 메모장 섹션 */
   .dash-section.memo { padding: 12px; }
@@ -2328,15 +2361,24 @@ textarea.drag-over {
 }
 
 @media (max-width: 480px) {
-  .dashboard-grid { padding: 10px 8px 14px; gap: 20px; }
+  .dashboard-grid { padding: 10px 8px 12px; gap: 14px; }
   .dash-section { padding: 10px 10px 12px; }
-  .dash-section-grid { gap: 10px !important; }
-  .dashboard-card { padding: 10px 10px; min-height: 100px; }
-  .dc-name { font-size: 12px; }
-  .dc-stat-val { font-size: 15px; }
+
+  /* 480px 이하: 2열 유지하되 더 촘촘하게 */
+  .dash-section.model .dash-section-grid,
+  .dash-section.monitoring .dash-section-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    grid-auto-rows: auto !important;
+    gap: 8px !important;
+  }
+
+  .dashboard-card { padding: 9px 8px; min-height: 0; }
+  .dc-name { font-size: 11.5px; }
+  .dc-header { margin-bottom: 6px; }
+  .dc-stat-val { font-size: 14px; }
   .dc-stats-3 { grid-template-columns: 1fr 1fr 1fr; gap: 3px; }
-  .dc-stats-3 .dc-stat-val { font-size: 13px; }
-  .dc-stats-3 .dc-stat-label { font-size: 8px; }
+  .dc-stats-3 .dc-stat-val { font-size: 12px; }
+  .dc-stats-3 .dc-stat-label { font-size: 7.5px; }
   .dc-stat { padding: 5px 2px; }
 
   /* 상단 바 모바일 작게 */
