@@ -1941,7 +1941,7 @@ async function renderClaim(body) {
 
   body.innerHTML = `
     <div class="cl-table-wrap">
-      <table class="cl-table">
+      <table class="cl-table cl-table--claim">
         <thead>
           <tr>
             <th style="width:48px">NO</th>

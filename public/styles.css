@@ -231,6 +231,7 @@ body.eye-care .top-theme-btn:hover { box-shadow: 0 4px 10px rgba(15,23,42,.5); }
 #app-shell {
   display: flex;
   height: 100vh;
+  height: 100dvh;   /* iOS Safari 동적 뷰포트 */
   overflow: hidden;
 }
 .app-shell.hidden { display: none; }
@@ -387,10 +388,15 @@ body {
                'Segoe UI', sans-serif;
   background: var(--bg);
   color: var(--text);
-  height: 100vh;      /* body 자체는 뷰포트 고정 */
-  overflow: hidden;   /* body 스크롤 차단 → tab-body가 스크롤 담당 */
-  display: flex;
+  height: 100vh;           /* 폴백 */
+  height: 100dvh;          /* iOS Safari 주소바 제외한 실제 뷰포트 */
+  overflow: hidden;        /* body 스크롤 차단 → tab-body가 스크롤 담당 */
   overflow-x: hidden;
+  display: flex;
+  overscroll-behavior: none;          /* iOS 바운스 효과 방지 */
+  -webkit-overflow-scrolling: touch;  /* iOS 관성 스크롤 */
+  -webkit-tap-highlight-color: transparent; /* 터치 파란 하이라이트 제거 */
+  touch-action: pan-x pan-y;         /* 기본 터치 스크롤 허용 */
 }
 
 /* ── Sidebar ────────────────────────────────────────────────── */
@@ -566,13 +572,18 @@ body {
   display: none;
   position: fixed;
   top: 0; left: 0; right: 0;
-  height: 56px;
+  height: calc(56px + env(safe-area-inset-top));  /* 노치 영역 포함 */
+  min-height: 56px;
   background: var(--sb-bg);
   z-index: 150;
-  align-items: center;
+  align-items: flex-end; /* 노치 아래쪽에 버튼 배치 */
   padding: 0 16px;
+  padding-top: env(safe-area-inset-top);
+  padding-left: calc(16px + env(safe-area-inset-left));
+  padding-right: calc(16px + env(safe-area-inset-right));
   gap: 12px;
   border-bottom: 1px solid var(--sb-border);
+  padding-bottom: 0;  /* flex 정렬로 처리 */
 }
 .menu-btn {
   background: none; border: none;
@@ -604,7 +615,8 @@ body {
 .main {
   margin-left: var(--sb-w);
   flex: 1;
-  height: 100vh;      /* 고정 높이 — 이 안에서만 레이아웃 */
+  height: 100vh;      /* 폴백 */
+  height: 100dvh;     /* iOS Safari 동적 뷰포트 */
   overflow: hidden;   /* main 자체는 스크롤 안 함 */
   display: flex;
   flex-direction: column;
@@ -690,6 +702,8 @@ body {
   min-height: 0;      /* flex child가 줄어들 수 있어야 스크롤 작동 */
   padding: 24px 28px;
   overflow-y: auto;   /* 실제 스크롤 컨테이너 */
+  -webkit-overflow-scrolling: touch; /* iOS 관성 스크롤 */
+  overscroll-behavior-y: contain;    /* 상/하단 도달 시 body로 전파 안 됨 */
   width: 100%;
   box-sizing: border-box;
   scrollbar-gutter: stable;
@@ -1155,8 +1169,11 @@ body {
 .dashboard-card:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
 /* 카드 내부 요소가 클릭/드래그를 가로채지 않도록 */
 .dashboard-card > * { pointer-events: none; }
-/* 드래그 가능 표시 */
-.dashboard-card { touch-action: none; }
+/* 드래그: 2초 홀드 후 JS에서 처리하므로 기본은 스크롤 허용, 드래그 활성화 시 none으로 전환 */
+.dashboard-card { touch-action: pan-y; }  /* 세로 스크롤은 항상 허용 */
+.dashboard-card.drag-pending,
+.dashboard-card.drag-ready,
+.dashboard-card.dragging { touch-action: none; } /* 드래그 모드에서만 차단 */
 /* ── 롱프레스 링 애니메이션 ──────────────────────────────── */
 @keyframes lp-ring {
   from { stroke-dashoffset: 157; }   /* 2πr ≈ 157 (r=25) */
@@ -2000,6 +2017,8 @@ textarea.drag-over {
   z-index: 400;
   display: flex; align-items: center; justify-content: center;
   padding: 20px;
+  backdrop-filter: blur(2px); /* 배경 블러로 가독성 향상 */
+  -webkit-backdrop-filter: blur(2px);
 }
 .modal-backdrop.hidden { display: none; }
 .modal {
@@ -2007,10 +2026,14 @@ textarea.drag-over {
   border-radius: var(--radius);
   width: 100%;
   max-width: 480px;
+  max-height: 90dvh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   box-shadow: 0 20px 60px rgba(0,0,0,.3);
   animation: slide-up .18s ease;
 }
 @keyframes slide-up { from { opacity:0; transform: translateY(16px); } to { opacity:1; transform: translateY(0); } }
+@keyframes slide-up-bottom { from { opacity:0; transform: translateY(40px); } to { opacity:1; transform: translateY(0); } }
 .modal-header {
   display: flex; align-items: center; justify-content: space-between;
   padding: 18px 20px 14px;
@@ -2107,10 +2130,17 @@ textarea.drag-over {
   .sidebar {
     transform: translateX(-100%);
     top: 0;
+    /* 사이드바도 safe-area 적용 */
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
   }
   .sidebar.open { transform: translateX(0); }
   .close-sidebar { display: block; }
-  .main { margin-left: 0; padding-top: 56px; height: calc(100vh); }
+  .main {
+    margin-left: 0;
+    padding-top: calc(56px + env(safe-area-inset-top)); /* 헤더 높이 + 노치 */
+    height: 100dvh;
+  }
   .tab-body { padding: 16px; min-height: 0; }
   .page-header { padding: 16px 16px 0; }
   .page-title { font-size: 18px; }
@@ -2156,6 +2186,11 @@ textarea.drag-over {
    모바일 반응형 종합 보완
    ══════════════════════════════════════════════════════════ */
 @media (max-width: 900px) {
+  /* iOS/Android 홈바 영역 아래 여백 */
+  .tab-body {
+    padding-bottom: calc(16px + env(safe-area-inset-bottom));
+  }
+
   /* 대시보드 외곽 */
   .dashboard-grid {
     padding: 12px 10px 18px;
@@ -2245,9 +2280,12 @@ textarea.drag-over {
   .cl-table-wrap {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    /* 테이블 가로 스크롤 시 끝에서 바운스 방지 */
+    overscroll-behavior-x: contain;
   }
   .cl-table { font-size: 12px; min-width: 720px; }
-  .cl-table thead th, .cl-table tbody td { padding: 8px 8px; }
+  .cl-table.cl-table--claim { min-width: 960px; } /* Claim: 개선일정 열 추가 */
+  .cl-table thead th, .cl-table tbody td { padding: 8px 6px; }
 
   /* 인라인 댓글 - 입력 폼 세로 배치 */
   .inline-cmt-form { flex-wrap: wrap; gap: 5px; }
@@ -2260,18 +2298,29 @@ textarea.drag-over {
   .inline-cmt-author { font-size: 11.5px; }
   .inline-cmt-time { font-size: 10px; }
 
-  /* 모달 - 모바일 풀폭 */
+  /* 모달 - 모바일 바텀시트 스타일 */
+  .modal-backdrop {
+    align-items: flex-end;   /* 모달을 화면 아래에서 올라오게 */
+    padding: 0;
+  }
   .modal {
+    width: 100%;
     max-width: 100%;
-    margin: 0 8px;
-    max-height: 92vh;
-    overflow-y: auto;
+    margin: 0;
+    max-height: 88dvh;
+    border-radius: 16px 16px 0 0;   /* 바텀시트 스타일 */
+    animation: slide-up-bottom .2s ease;
+    padding-bottom: env(safe-area-inset-bottom);
   }
   .modal-header { padding: 14px 16px 10px; }
   .modal-header h3 { font-size: 15px; }
   .modal-body { padding: 14px 16px; }
-  .modal-footer { padding: 12px 16px; }
-  .form-input, .form-select, .form-textarea { font-size: 16px; /* iOS 줌인 방지 */ }
+  .modal-footer {
+    padding: 12px 16px;
+    padding-bottom: calc(12px + env(safe-area-inset-bottom));
+  }
+  /* iOS 폼 자동 줌인 방지 (16px 미만이면 줌인됨) */
+  .form-input, .form-select, .form-textarea { font-size: 16px; }
 
   /* 사이드바 - 모바일 풀스크린에 가깝게 */
   .sidebar { width: 84vw; max-width: 320px; }
