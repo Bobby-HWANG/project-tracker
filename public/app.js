@@ -711,26 +711,28 @@ function makeDashCard(m) {
       </div>
       <div class="dc-stats dc-stats-3">
         <div class="dc-stat">
-          <div class="dc-stat-val">${m.milestone_done}/${m.milestone_total}</div>
+          <div class="dc-stat-val">${m.milestone_done}<span class="dc-stat-denom">/${m.milestone_total}</span></div>
           <div class="dc-stat-label">일정</div>
         </div>
         <div class="dc-stat">
-          <div class="dc-stat-val">${m.checklist_done}/${m.checklist_total}</div>
+          <div class="dc-stat-val">${m.checklist_done}<span class="dc-stat-denom">/${m.checklist_total}</span></div>
           <div class="dc-stat-label">체크</div>
         </div>
         <div class="dc-stat ${clmOpen ? 'has-open' : ''}">
-          <div class="dc-stat-val" style="${clmOpen ? 'color:#ef4444' : ''}">${clmDone}/${clmTotal}</div>
-          <div class="dc-stat-label">클레임${clmOpen ? ' ('+clmOpen+' 미해결)' : ''}</div>
+          <div class="dc-stat-val" style="${clmOpen ? 'color:#ef4444' : ''}">${clmDone}<span class="dc-stat-denom">/${clmTotal}</span></div>
+          <div class="dc-stat-label">클레임${clmOpen ? `<span class="dc-open-badge">${clmOpen}</span>` : ''}</div>
         </div>
       </div>
-      <div class="dc-prog-label">체크리스트 진행률 ${clPct}%</div>
-      <div class="progress-bar">
-        <div class="progress-fill" style="width:${clPct}%;background:${m.color}"></div>
+      <div class="dc-prog-wrap">
+        <div class="dc-prog-label">진행률 ${clPct}%</div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width:${clPct}%;background:${m.color}"></div>
+        </div>
       </div>
       ${(m.milestone_delayed || clmDelay) ? `
         <div class="dc-delayed-row">
-          ${m.milestone_delayed ? `<span class="dc-delayed">⚠ 일정 ${m.milestone_delayed}</span>` : '<span></span>'}
-          ${clmDelay ? `<span class="dc-delayed">🚨 클레임 ${clmDelay}</span>` : '<span></span>'}
+          ${m.milestone_delayed ? `<span class="dc-delayed">⚠ ${m.milestone_delayed}</span>` : '<span></span>'}
+          ${clmDelay ? `<span class="dc-delayed dc-delayed--clm">🚨 ${clmDelay}</span>` : '<span></span>'}
         </div>
       ` : ''}
     `;
