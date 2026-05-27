@@ -722,8 +722,8 @@ body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 28px;                /* 섹션 간 여백 */
-  padding: 12px 12px 18px;  /* 좌우 패딩 최소화 → 카드가 최대한 넓게 */
+  gap: 20px;                /* 섹션 간 여백 */
+  padding: 16px 16px 24px;  /* 좌우 패딩 최소화 → 카드가 최대한 넓게 */
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;       /* 가로 스크롤 차단 */
@@ -754,6 +754,12 @@ body {
 .dash-section.model {
   background: linear-gradient(180deg, #EDE9FE 0%, #F5F3FF 100%);
   border-color: #C4B5FD;
+}
+.dash-section.schedule {
+  background: linear-gradient(180deg, #E0F2FE 0%, #F0F9FF 100%);
+  border-color: #7DD3FC;
+  flex: 0 0 auto !important;
+  min-height: 0 !important;
 }
 .dash-section.memo {
   background: linear-gradient(180deg, #FEF9C3 0%, #FEFCE8 100%);
@@ -1022,6 +1028,7 @@ body {
   letter-spacing: -0.3px;
   color: #1e293b;
 }
+.dash-section.schedule   .dash-section-title { color: #0369a1; }
 .dash-section.monitoring .dash-section-title { color: #1e40af; }
 .dash-section.model      .dash-section-title { color: #6b21a8; }
 .dash-section-count {
