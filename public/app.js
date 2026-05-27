@@ -3133,14 +3133,56 @@ function findConflicts(items, startAt, endAt, excludeId) {
   });
 }
 
-// ── 일정 추가/수정 모달 ──────────────────────────────────────
+// ── 일정 추가/수정 모달 (커스텀 24H / 30분 단위 피커) ─────────
 function openScheduleModal(item, allItems) {
   const isEdit = !!item;
   const myName = getCommenterName();
 
-  // 기본 시작/종료 (현재 시각 기준 1시간)
-  const defStart = new Date(); defStart.setSeconds(0,0);
-  const defEnd   = new Date(defStart); defEnd.setHours(defEnd.getHours()+1);
+  // 현재 시각을 30분 단위로 반올림
+  const roundTo30 = (d) => {
+    const r = new Date(d);
+    r.setSeconds(0, 0);
+    r.setMinutes(r.getMinutes() < 30 ? 30 : 0);
+    if (d.getMinutes() >= 30) r.setHours(r.getHours() + 1);
+    return r;
+  };
+
+  // datetime 문자열 파싱 → { date, h, m }
+  const parseForPicker = (dtStr) => {
+    if (!dtStr) return null;
+    const s = (dtStr || '').slice(0, 16);
+    const [date, time] = s.includes('T') ? s.split('T') : [s, '00:00'];
+    const [hh, mm] = (time || '00:00').split(':');
+    return { date: date || '', h: parseInt(hh)||0, m: parseInt(mm) >= 30 ? 30 : 0 };
+  };
+
+  // 날짜 + 1일
+  const addOneDay = (dateStr) => {
+    const d = new Date(dateStr + 'T00:00');
+    d.setDate(d.getDate() + 1);
+    return d.toISOString().slice(0, 10);
+  };
+
+  // 기본값
+  const nowRnd  = roundTo30(new Date());
+  const defSDate = nowRnd.toISOString().slice(0, 10);
+  const defSH   = nowRnd.getHours();
+  const defSM   = nowRnd.getMinutes();
+
+  let defEH = defSH, defEM = defSM + 30, defEDate = defSDate;
+  if (defEM >= 60) { defEM = 0; defEH++; }
+  if (defEH >= 24) { defEH = 0; defEDate = addOneDay(defSDate); }
+
+  const sp = item?.startAt ? parseForPicker(item.startAt) : { date: defSDate, h: defSH, m: defSM };
+  const ep = item?.endAt   ? parseForPicker(item.endAt)   : { date: defEDate, h: defEH, m: defEM };
+
+  // 옵션 생성 헬퍼
+  const hourOpts = (sel) => Array.from({length:24}, (_,i) =>
+    `<option value="${i}"${i===sel?' selected':''}>${String(i).padStart(2,'0')}</option>`
+  ).join('');
+  const minOpts = (sel) => [0, 30].map(m =>
+    `<option value="${m}"${m===sel?' selected':''}>${String(m).padStart(2,'0')}</option>`
+  ).join('');
 
   const colorOpts = ['#3B82F6','#8B5CF6','#10B981','#F59E0B','#EF4444','#14B8A6','#F97316','#EC4899'];
 
@@ -3155,21 +3197,39 @@ function openScheduleModal(item, allItems) {
     </div>
     <div class="form-group">
       <label class="form-label">내용 / 메모</label>
-      <textarea class="form-textarea" id="sc-desc" rows="3" placeholder="상세 내용을 입력하세요">${escHtml(item?.description||'')}</textarea>
+      <textarea class="form-textarea" id="sc-desc" rows="2" placeholder="상세 내용을 입력하세요">${escHtml(item?.description||'')}</textarea>
     </div>
-    <div class="form-row">
-      <div class="form-group" style="flex:1">
-        <label class="form-label">시작 일시 *</label>
-        <input class="form-input" id="sc-start" type="datetime-local"
-          value="${item?.startAt ? item.startAt.slice(0,16) : toLocalDatetime(defStart)}">
-      </div>
-      <div class="form-group" style="flex:1">
-        <label class="form-label">종료 일시 *</label>
-        <input class="form-input" id="sc-end" type="datetime-local"
-          value="${item?.endAt ? item.endAt.slice(0,16) : toLocalDatetime(defEnd)}">
-      </div>
-    </div>
+
+    <!-- ▼ 시작 일시 (날짜 + 시 + 분) -->
     <div class="form-group">
+      <label class="form-label">시작 일시 *</label>
+      <div class="dt-pick-row">
+        <input class="form-input dt-date" type="date" id="sc-sd" value="${sp.date}">
+        <select class="form-input dt-hour" id="sc-sh">${hourOpts(sp.h)}</select>
+        <span class="dt-sep">:</span>
+        <select class="form-input dt-min" id="sc-sm">${minOpts(sp.m)}</select>
+      </div>
+    </div>
+
+    <!-- ▼ 종료 일시 (자동 +30분) -->
+    <div class="form-group">
+      <label class="form-label">종료 일시 * <span class="dt-auto-hint">시작 변경 시 자동 +30분</span></label>
+      <div class="dt-pick-row">
+        <input class="form-input dt-date" type="date" id="sc-ed" value="${ep.date}">
+        <select class="form-input dt-hour" id="sc-eh">${hourOpts(ep.h)}</select>
+        <span class="dt-sep">:</span>
+        <select class="form-input dt-min" id="sc-em">${minOpts(ep.m)}</select>
+      </div>
+    </div>
+
+    <!-- ▼ 시간 확인 버튼 -->
+    <div class="dt-confirm-zone" id="dt-confirm-zone">
+      <button type="button" class="dt-confirm-btn" id="dt-confirm-btn">✓ 시간 확인</button>
+      <div class="dt-confirm-result hidden" id="dt-confirm-result"></div>
+    </div>
+
+    <!-- ▼ 색상 -->
+    <div class="form-group" style="margin-top:4px">
       <label class="form-label">색상</label>
       <div class="sched-color-row">
         ${colorOpts.map(c => `<button type="button" class="sched-color-btn${(item?.color||'#3B82F6')===c?' selected':''}" data-color="${c}" style="background:${c}"></button>`).join('')}
@@ -3180,12 +3240,48 @@ function openScheduleModal(item, allItems) {
   const footer = `
     <button class="btn-secondary" id="sc-cancel">취소</button>
     ${isEdit ? `<button class="btn-danger" id="sc-delete">삭제</button>` : ''}
-    <button class="btn-primary" id="sc-confirm">${isEdit ? '수정' : '추가'}</button>
+    <button class="btn-primary" id="sc-confirm">${isEdit ? '수정 저장' : '일정 추가'}</button>
   `;
 
   openModal(isEdit ? '일정 수정' : '일정 추가', body, footer);
 
-  // 색상 선택
+  // ── 헬퍼: 현재 선택값 읽기 ──
+  const getVal = (id) => document.getElementById(id)?.value ?? '';
+  const fmtPicked = (d, h, m) => `${d} ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+
+  // ── 시작 변경 → 종료 자동 +30분 ──
+  const autoFillEnd = () => {
+    const sd = getVal('sc-sd');
+    const sh = parseInt(getVal('sc-sh'));
+    const sm = parseInt(getVal('sc-sm'));
+    if (!sd) return;
+    let eh = sh, em = sm + 30, ed = sd;
+    if (em >= 60) { em = 0; eh++; }
+    if (eh >= 24) { eh = 0; ed = addOneDay(sd); }
+    document.getElementById('sc-ed').value = ed;
+    document.getElementById('sc-eh').value = String(eh);
+    document.getElementById('sc-em').value = String(em);
+  };
+  ['sc-sd','sc-sh','sc-sm'].forEach(id =>
+    document.getElementById(id).addEventListener('change', autoFillEnd)
+  );
+
+  // ── 시간 확인 버튼 ──
+  document.getElementById('dt-confirm-btn').addEventListener('click', () => {
+    const sd = getVal('sc-sd'), sh = parseInt(getVal('sc-sh')), sm = parseInt(getVal('sc-sm'));
+    const ed = getVal('sc-ed'), eh = parseInt(getVal('sc-eh')), em = parseInt(getVal('sc-em'));
+    if (!sd || !ed) { toast('날짜를 먼저 선택하세요', 'error'); return; }
+    const startStr = fmtPicked(sd, sh, sm);
+    const endStr   = fmtPicked(ed, eh, em);
+    const result = document.getElementById('dt-confirm-result');
+    result.innerHTML = `<span class="dt-ok-icon">✅</span> <strong>${startStr}</strong> → <strong>${endStr}</strong>`;
+    result.classList.remove('hidden');
+    const btn = document.getElementById('dt-confirm-btn');
+    btn.textContent = '✓ 확인됨';
+    btn.classList.add('confirmed');
+  });
+
+  // ── 색상 선택 ──
   let selectedColor = item?.color || '#3B82F6';
   document.querySelectorAll('.sched-color-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -3195,10 +3291,10 @@ function openScheduleModal(item, allItems) {
     });
   });
 
-  // 취소
+  // ── 취소 ──
   document.getElementById('sc-cancel').addEventListener('click', closeModal);
 
-  // 삭제
+  // ── 삭제 ──
   if (isEdit) {
     document.getElementById('sc-delete').addEventListener('click', async () => {
       if (!confirm(`"${item.title}" 일정을 삭제하시겠습니까?`)) return;
@@ -3209,30 +3305,28 @@ function openScheduleModal(item, allItems) {
     });
   }
 
-  // 확인
+  // ── 저장 ──
   document.getElementById('sc-confirm').addEventListener('click', async () => {
-    const author = document.getElementById('sc-author').value.trim();
-    const title  = document.getElementById('sc-title').value.trim();
-    const desc   = document.getElementById('sc-desc').value.trim();
-    const startAt = document.getElementById('sc-start').value;
-    const endAt   = document.getElementById('sc-end').value;
+    const author  = getVal('sc-author').trim();
+    const title   = getVal('sc-title').trim();
+    const desc    = getVal('sc-desc').trim();
+    const sd = getVal('sc-sd'), sh = getVal('sc-sh'), sm = getVal('sc-sm');
+    const ed = getVal('sc-ed'), eh = getVal('sc-eh'), em = getVal('sc-em');
 
-    if (!title)   { toast('일정 제목을 입력하세요', 'error'); return; }
-    if (!startAt) { toast('시작 일시를 입력하세요', 'error'); return; }
-    if (!endAt)   { toast('종료 일시를 입력하세요', 'error'); return; }
+    if (!title) { toast('일정 제목을 입력하세요', 'error'); return; }
+    if (!sd)    { toast('시작 날짜를 선택하세요', 'error'); return; }
+    if (!ed)    { toast('종료 날짜를 선택하세요', 'error'); return; }
+
+    const startAt = `${sd}T${String(sh).padStart(2,'0')}:${String(sm).padStart(2,'0')}`;
+    const endAt   = `${ed}T${String(eh).padStart(2,'0')}:${String(em).padStart(2,'0')}`;
+
     if (endAt <= startAt) { toast('종료 일시는 시작 일시 이후여야 합니다', 'error'); return; }
-
     if (author) setCommenterName(author);
 
     const payload = { title, description: desc, startAt, endAt, color: selectedColor, author };
-
     try {
-      let result;
-      if (isEdit) {
-        result = await PUT(`/api/schedules/${item.id}`, payload);
-      } else {
-        result = await POST('/api/schedules', payload);
-      }
+      if (isEdit) await PUT(`/api/schedules/${item.id}`, payload);
+      else        await POST('/api/schedules', payload);
       closeModal();
       toast(isEdit ? '일정 수정됨' : '일정 추가됨', 'success');
       renderScheduleMain();

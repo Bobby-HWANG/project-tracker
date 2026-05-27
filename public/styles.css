@@ -2897,6 +2897,86 @@ body.eye-care .sched-conflict-warn {
   color: #fca5a5;
 }
 
+/* ── 커스텀 날짜+시간 피커 ── */
+.dt-pick-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.dt-date {
+  flex: 1;
+  min-width: 0;
+}
+.dt-hour {
+  width: 62px;
+  flex-shrink: 0;
+  padding: 6px 4px;
+  text-align: center;
+}
+.dt-min {
+  width: 58px;
+  flex-shrink: 0;
+  padding: 6px 4px;
+  text-align: center;
+}
+.dt-sep {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text2);
+  flex-shrink: 0;
+}
+.dt-auto-hint {
+  font-size: 10px;
+  color: var(--text3);
+  font-weight: 400;
+  margin-left: 4px;
+}
+
+/* 시간 확인 영역 */
+.dt-confirm-zone {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 6px 0 10px;
+  flex-wrap: wrap;
+}
+.dt-confirm-btn {
+  padding: 6px 16px;
+  border-radius: 8px;
+  border: 1.5px solid var(--accent);
+  background: var(--surface);
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+  flex-shrink: 0;
+}
+.dt-confirm-btn:hover { background: var(--accent); color: #fff; }
+.dt-confirm-btn.confirmed {
+  background: #10b981;
+  border-color: #10b981;
+  color: #fff;
+  cursor: default;
+}
+.dt-confirm-result {
+  font-size: 13px;
+  color: var(--text);
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  border-radius: 6px;
+  padding: 5px 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.dt-ok-icon { font-size: 14px; }
+body.eye-care .dt-confirm-result {
+  background: #14291e;
+  border-color: #166534;
+  color: #86efac;
+}
+
 /* 색상 선택 */
 .sched-color-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
 .sched-color-btn {
