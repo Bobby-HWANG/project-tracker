@@ -281,13 +281,13 @@ function makeSchedDashSection(thisMonth, total) {
   card.setAttribute('role', 'button');
   card.setAttribute('tabindex', '0');
   card.innerHTML = `
-    <div class="dc-header">
-      <div class="dc-dot" style="background:#3B82F6"></div>
-      <div class="dc-name">${now.getFullYear()}년 ${now.getMonth()+1}월</div>
+    <div class="dc-header" style="gap:5px">
+      <div class="dc-dot" style="background:#3B82F6;width:8px;height:8px;flex-shrink:0"></div>
+      <div class="dc-name" style="font-size:11px">${now.getMonth()+1}월 일정</div>
     </div>
     <div class="sched-dash-count-wrap">
       <div class="sched-dash-count">${thisMonth}</div>
-      <div class="sched-dash-count-label">이달 일정</div>
+      <div class="sched-dash-count-label">건</div>
     </div>
     <div class="sched-dash-total">전체 ${total}건</div>
   `;
@@ -300,7 +300,7 @@ function makeSchedDashSection(thisMonth, total) {
   goCard.className = 'dashboard-card add-card sched-go-card';
   goCard.setAttribute('role', 'button');
   goCard.setAttribute('tabindex', '0');
-  goCard.innerHTML = `<div class="add-card-icon">📅</div><div class="add-card-label">일정 보기</div>`;
+  goCard.innerHTML = `<div class="add-card-icon">📋</div><div class="add-card-label">세부 일정 목록</div>`;
   goCard.addEventListener('click', () => { closeSidebar(); loadScheduleView(); });
   grid.appendChild(goCard);
 
