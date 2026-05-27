@@ -3175,7 +3175,6 @@ function openScheduleModal(item, allItems) {
         ${colorOpts.map(c => `<button type="button" class="sched-color-btn${(item?.color||'#3B82F6')===c?' selected':''}" data-color="${c}" style="background:${c}"></button>`).join('')}
       </div>
     </div>
-    <div id="sc-conflict-warn" class="sched-conflict-warn hidden"></div>
   `;
 
   const footer = `
@@ -3195,24 +3194,6 @@ function openScheduleModal(item, allItems) {
       selectedColor = btn.dataset.color;
     });
   });
-
-  // 실시간 충돌 체크
-  const checkConflict = () => {
-    const s = document.getElementById('sc-start').value;
-    const e = document.getElementById('sc-end').value;
-    const warn = document.getElementById('sc-conflict-warn');
-    if (!s || !e || e <= s) { warn.classList.add('hidden'); return; }
-    const conflicts = findConflicts(allItems, s, e, item?.id);
-    if (conflicts.length) {
-      warn.classList.remove('hidden');
-      warn.innerHTML = `⚠ <strong>시간 충돌 ${conflicts.length}건</strong>: ${conflicts.map(c=>`"${escHtml(c.title)}" (${fmtTime(c.startAt)}~${fmtTime(c.endAt)})`).join(', ')}`;
-    } else {
-      warn.classList.add('hidden');
-    }
-  };
-  document.getElementById('sc-start').addEventListener('change', checkConflict);
-  document.getElementById('sc-end').addEventListener('change', checkConflict);
-  checkConflict();
 
   // 취소
   document.getElementById('sc-cancel').addEventListener('click', closeModal);
@@ -3253,11 +3234,7 @@ function openScheduleModal(item, allItems) {
         result = await POST('/api/schedules', payload);
       }
       closeModal();
-      if (result.conflicts && result.conflicts.length) {
-        toast(`일정 저장됨 (충돌 ${result.conflicts.length}건 있음)`, 'success');
-      } else {
-        toast(isEdit ? '일정 수정됨' : '일정 추가됨', 'success');
-      }
+      toast(isEdit ? '일정 수정됨' : '일정 추가됨', 'success');
       renderScheduleMain();
     } catch(e) {
       toast(e.message || '저장 실패', 'error');
