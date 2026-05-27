@@ -3004,33 +3004,48 @@ body.eye-care .dt-confirm-result {
 }
 
 /* ── 주요 일정 점검 대시보드 섹션 카드 ── */
+/* ── 주요 일정 점검 대시보드 섹션 — 컴팩트 한 줄 레이아웃 ── */
+.dash-section.schedule {
+  padding: 10px 14px !important;   /* 섹션 자체 패딩 최소화 */
+}
+.dash-section.schedule .dash-section-header {
+  margin-bottom: 6px;
+}
+
 .sched-dash-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  padding: 4px 0;
+  gap: 6px;
+  padding: 0;
 }
-/* 이달 일정 수 카드 — 기존 절반 크기 */
+
+/* 이달 일정 수 카드 — 가로 한 줄, 높이 최소화 */
 .sched-dash-card {
-  min-width: 100px;
-  max-width: 130px;
   flex: 0 0 auto;
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  flex-direction: row !important;  /* 세로 → 가로 배치 */
+  align-items: center;
+  gap: 8px;
   cursor: pointer;
-  padding: 8px 10px !important;  /* dashboard-card 기본 패딩 축소 */
+  padding: 5px 12px !important;
+  min-width: 140px;
+  max-width: 200px;
+}
+.sched-dash-card .dc-header {
+  margin-bottom: 0;         /* 세로 여백 제거 */
+  flex-shrink: 0;
+  gap: 4px;
 }
 .sched-dash-count-wrap {
   display: flex;
-  flex-direction: row;   /* 숫자 + 레이블 가로 배치 */
+  flex-direction: row;
   align-items: baseline;
-  justify-content: center;
-  gap: 4px;
-  padding: 4px 0;
+  gap: 3px;
+  padding: 0;
+  flex-shrink: 0;
 }
 .sched-dash-count {
-  font-size: 26px;       /* 40 → 26 */
+  font-size: 18px;           /* 26 → 18 */
   font-weight: 800;
   color: #3B82F6;
   line-height: 1;
@@ -3043,24 +3058,33 @@ body.eye-care .dt-confirm-result {
 .sched-dash-total {
   font-size: 10px;
   color: var(--text3);
-  text-align: right;
-  padding-top: 3px;
-  border-top: 1px solid var(--border);
+  padding-top: 0;
+  padding-left: 8px;
+  border-top: none;
+  border-left: 1px solid var(--border);  /* 세로 구분선 */
+  margin-left: auto;
+  white-space: nowrap;
 }
-/* 세부 일정 목록 카드 — 절반 크기 */
+
+/* 세부 일정 목록 카드 — 가로 한 줄 */
 .sched-go-card {
-  min-width: 68px;
-  max-width: 90px;
   flex: 0 0 auto;
-  align-self: stretch;
-  padding: 8px 6px !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px !important;
+  min-width: 100px;
+  max-width: 160px;
+  align-self: auto;
 }
-.sched-go-card .add-card-icon { font-size: 18px; }
+.sched-go-card .add-card-icon { font-size: 15px; }
 .sched-go-card .add-card-label {
-  font-size: 10px;
-  line-height: 1.3;
+  font-size: 11px;
+  font-weight: 600;
   word-break: keep-all;
-  text-align: center;
+  text-align: left;
+  white-space: nowrap;
 }
 
 /* 모바일 */
