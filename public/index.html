@@ -5,7 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>INTOPS FMS 품질팀 업무현황</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◈</text></svg>">
-  <link rel="stylesheet" href="styles.css">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <link rel="stylesheet" href="styles.css?v=20260528f">
   <!-- Tesseract.js: 이미지 OCR (한글+영문). 첫 사용 시 모델 파일 다운로드(~10MB) -->
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 </head>
@@ -55,6 +58,9 @@
     <button class="sidebar-dashboard-btn" id="btn-dashboard">
       <span class="si-icon">⊞</span> 대시보드
     </button>
+    <button class="sidebar-dashboard-btn" id="btn-schedule">
+      <span class="si-icon">📅</span> 주요 일정 점검
+    </button>
   </div>
 
   <nav class="model-list" id="model-list"></nav>
@@ -85,6 +91,15 @@
     <button class="btn-primary" id="btn-goto-dashboard">대시보드 보기</button>
   </div>
 
+  <!-- 주요 일정 점검 -->
+  <div id="view-schedule" class="view hidden">
+    <div class="page-header sched-page-header">
+      <h1 class="page-title">📅 주요 일정 점검</h1>
+      <div class="sched-toolbar" id="sched-toolbar"></div>
+    </div>
+    <div class="sched-body" id="sched-body"></div>
+  </div>
+
   <!-- 모델 상세 -->
   <div id="view-model" class="view hidden">
     <div class="page-header">
@@ -96,6 +111,7 @@
       </div>
       <div class="tabs" id="tabs">
         <button class="tab active" data-tab="milestone">📅 일정표</button>
+        <button class="tab" data-tab="ms-status" style="display:none">📂 일정 현황</button>
         <button class="tab" data-tab="checklist">✅ 체크시트</button>
         <button class="tab" data-tab="claim">📋 고객 Claim 현황</button>
         <button class="tab" data-tab="memo">📝 메모장</button>
@@ -126,6 +142,6 @@
 <!-- ── 토스트 ─────────────────────────────── -->
 <div class="toast-container" id="toast-container"></div>
 
-<script src="app.js"></script>
+<script src="app.js?v=20260528f"></script>
 </body>
 </html>

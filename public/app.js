@@ -75,7 +75,7 @@ function renderSidebar() {
   list.innerHTML = '';
 
   const monitoring = state.models.filter(m => m.category === 'monitoring').sort((a,b)=>a.order-b.order);
-  const models     = state.models.filter(m => m.category !== 'monitoring').sort((a,b)=>a.order-b.order);
+  const models     = state.models.filter(m => m.category !== 'monitoring' && m.category !== 'schedule').sort((a,b)=>a.order-b.order);
 
   const isMemo = state.view === 'dashboard' && state._sidebarMemo;
 
@@ -141,7 +141,7 @@ function scrollDashSection(category) {
 // ── Views ────────────────────────────────────────────────────
 function showView(name) {
   state.view = name;
-  ['welcome','dashboard','model'].forEach(v => {
+  ['welcome','dashboard','model','schedule'].forEach(v => {
     const el = document.getElementById(`view-${v}`);
     if (el) el.classList.toggle('hidden', v !== name);
   });
@@ -149,6 +149,8 @@ function showView(name) {
   // 사이드바 버튼 활성화
   const btnDash = document.getElementById('btn-dashboard');
   if (btnDash) btnDash.classList.toggle('active', name === 'dashboard');
+  const btnSched = document.getElementById('btn-schedule');
+  if (btnSched) btnSched.classList.toggle('active', name === 'schedule');
 
   // 대시보드를 떠나면 자동 갱신 타이머 중단
   if (name !== 'dashboard') stopDashRefresh();
@@ -176,9 +178,11 @@ function startDashRefresh() {
 async function refreshDashboard() {
   if (state.view !== 'dashboard') return;
   try {
-    const data = await GET('/api/dashboard');
+    const res  = await GET('/api/dashboard');
     const wrap = document.getElementById('dashboard-grid');
     if (!wrap) return;
+    // 구 배열 형식 호환 (서버 업데이트 전 캐시 등)
+    const data = Array.isArray(res) ? { models: res, schedThisMonth: 0, schedTotal: 0 } : res;
     renderDashboardData(wrap, data);
   } catch (err) {
     // silent
@@ -203,25 +207,28 @@ async function loadDashboard() {
   // 기존 카드는 일단 흐리게 처리만 → 새 데이터로 즉시 교체 (전체 깜빡임 회피)
   wrap.style.opacity = '0.5';
 
-  const data = await GET('/api/dashboard');
+  const res  = await GET('/api/dashboard');
+  const data = Array.isArray(res) ? { models: res, schedThisMonth: 0, schedTotal: 0 } : res;
   renderDashboardData(wrap, data);
   wrap.style.opacity = '';
 }
 
-function renderDashboardData(wrap, data) {
-  // 메모장은 절대 DOM에서 떼지 않음 (포커스/커서 보존)
-  // 카드 섹션과 empty-state만 제거 후 메모 앞에 다시 삽입
-  const memo = wrap.querySelector('.dash-section.memo');
+function renderDashboardData(wrap, res) {
+  const data            = Array.isArray(res) ? res : (res.models || []);
+  const schedThisMonth  = res.schedThisMonth ?? 0;
+  const schedTotal      = res.schedTotal     ?? 0;
 
-  // 메모 외 모든 자식 제거 (메모는 그대로 둠)
-  Array.from(wrap.children).forEach(c => {
-    if (c !== memo) c.remove();
-  });
+  // 메모장은 절대 DOM에서 떼지 않음 (포커스/커서 보존)
+  const memo = wrap.querySelector('.dash-section.memo');
+  Array.from(wrap.children).forEach(c => { if (c !== memo) c.remove(); });
 
   const insertBeforeMemo = (sec) => {
     if (memo) wrap.insertBefore(sec, memo);
     else wrap.appendChild(sec);
   };
+
+  // ── 주요 일정 점검 섹션 (항상 최상단) ──
+  insertBeforeMemo(makeSchedDashSection(schedThisMonth, schedTotal));
 
   if (!data.length) {
     const empty = document.createElement('div');
@@ -229,9 +236,9 @@ function renderDashboardData(wrap, data) {
     empty.innerHTML = '<div class="empty-icon">📂</div>등록된 모델이 없습니다';
     insertBeforeMemo(empty);
   } else {
-    // 카테고리별로 분류 + 정렬
+    // schedule 카테고리 모델은 전용 섹션에서 표시하므로 여기서 제외
     const monitoring = data.filter(m => m.category === 'monitoring').sort((a,b)=>a.order-b.order);
-    const models     = data.filter(m => m.category !== 'monitoring').sort((a,b)=>a.order-b.order);
+    const models     = data.filter(m => m.category !== 'monitoring' && m.category !== 'schedule').sort((a,b)=>a.order-b.order);
 
     if (monitoring.length) {
       const sec = makeDashSection('monitoring', '📡 상시 모니터링', monitoring);
@@ -245,11 +252,71 @@ function renderDashboardData(wrap, data) {
     }
   }
 
-  // 메모장 — 최초에만 생성
-  if (!memo) {
-    wrap.appendChild(makeDashMemoSection());
-  }
-  // 이미 존재하면 절대 건드리지 않음 (입력 중 끊김 방지)
+  if (!memo) wrap.appendChild(makeDashMemoSection());
+}
+
+// ── 주요 일정 점검 대시보드 섹션 ─────────────────────────────
+function makeSchedDashSection(thisMonth, total) {
+  const now = new Date();
+  const collapsed = isSectionCollapsed('schedule');
+  const sec = document.createElement('div');
+  sec.className = `dash-section schedule${collapsed ? ' collapsed' : ''}`;
+
+  sec.innerHTML = `
+    <div class="dash-section-header">
+      <h2 class="dash-section-title">📅 주요 일정 점검</h2>
+      <span class="dash-section-count">${total}개 일정</span>
+      <button class="dash-section-toggle" type="button" title="${collapsed ? '펼치기' : '접기'}" aria-expanded="${!collapsed}">
+        <span class="toggle-icon">${collapsed ? '＋' : '−'}</span>
+      </button>
+    </div>
+    <div class="dash-section-grid sched-dash-grid"></div>
+  `;
+
+  const grid = sec.querySelector('.sched-dash-grid');
+
+  // 카드 한 장: 이달 일정 수
+  const card = document.createElement('div');
+  card.className = 'dashboard-card sched-dash-card';
+  card.setAttribute('role', 'button');
+  card.setAttribute('tabindex', '0');
+  card.innerHTML = `
+    <div class="dc-header">
+      <div class="dc-dot" style="background:#3B82F6"></div>
+      <div class="dc-name">${now.getFullYear()}년 ${now.getMonth()+1}월</div>
+    </div>
+    <div class="sched-dash-count-wrap">
+      <div class="sched-dash-count">${thisMonth}</div>
+      <div class="sched-dash-count-label">이달 일정</div>
+    </div>
+    <div class="sched-dash-total">전체 ${total}건</div>
+  `;
+  card.addEventListener('click', () => { closeSidebar(); loadScheduleView(); });
+  card.addEventListener('keydown', e => { if (e.key==='Enter'||e.key===' ') loadScheduleView(); });
+  grid.appendChild(card);
+
+  // 달력 바로가기 버튼
+  const goCard = document.createElement('div');
+  goCard.className = 'dashboard-card add-card sched-go-card';
+  goCard.setAttribute('role', 'button');
+  goCard.setAttribute('tabindex', '0');
+  goCard.innerHTML = `<div class="add-card-icon">📅</div><div class="add-card-label">일정 보기</div>`;
+  goCard.addEventListener('click', () => { closeSidebar(); loadScheduleView(); });
+  grid.appendChild(goCard);
+
+  // 토글
+  const toggleBtn = sec.querySelector('.dash-section-toggle');
+  toggleBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    const nowC = !sec.classList.contains('collapsed');
+    sec.classList.toggle('collapsed', nowC);
+    setSectionCollapsed('schedule', nowC);
+    toggleBtn.querySelector('.toggle-icon').textContent = nowC ? '＋' : '−';
+    toggleBtn.title = nowC ? '펼치기' : '접기';
+    toggleBtn.setAttribute('aria-expanded', String(!nowC));
+  });
+
+  return sec;
 }
 
 // 게시글 목록만 새로 페치하되, 진행 중인 모든 input 값을 보존
@@ -697,6 +764,28 @@ function makeDashCard(m) {
       </div>
       ${m.milestone_delayed ? `<div class="dc-delayed">⚠ 지연 ${m.milestone_delayed}건</div>` : ''}
     `;
+  } else if (m.category === 'schedule' || m.name === '주요 일정 점검') {
+    // 주요 일정 점검: 일정 수만 표시
+    const msPct = m.milestone_total ? Math.round(m.milestone_done / m.milestone_total * 100) : 0;
+    card.innerHTML = `
+      <div class="dc-header">
+        <div class="dc-dot" style="background:${m.color}"></div>
+        <div class="dc-name">${m.name}</div>
+      </div>
+      <div class="dc-stats">
+        <div class="dc-stat">
+          <div class="dc-stat-val">${m.milestone_done}<span class="dc-stat-denom">/${m.milestone_total}</span></div>
+          <div class="dc-stat-label">일정</div>
+        </div>
+      </div>
+      <div class="dc-prog-wrap">
+        <div class="dc-prog-label">진행률 ${msPct}%</div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width:${msPct}%;background:${m.color}"></div>
+        </div>
+      </div>
+      ${m.milestone_delayed ? `<div class="dc-delayed">⚠ 지연 ${m.milestone_delayed}건</div>` : ''}
+    `;
   } else {
     // 모델: 일정 + 체크리스트 + 클레임 (3열)
     const clPct = m.checklist_total ? Math.round(m.checklist_done / m.checklist_total * 100) : 0;
@@ -931,6 +1020,7 @@ function enableDashCardDrag(section) {
 async function selectModel(id) {
   const m = state.models.find(x => x.id === id);
   if (!m) return;
+
   state.activeModel = m;
   state.activeTab   = 'milestone';
   renderSidebar();
@@ -942,12 +1032,22 @@ async function selectModel(id) {
   document.getElementById('hdr-title').textContent    = m.name;
   document.getElementById('mobile-badge').style.background = m.color;
 
-  // 카테고리별 탭 표시 제어 (모니터링은 체크시트/Claim 숨김)
-  const hideForMon = (m.category === 'monitoring') ? 'none' : '';
+  // 탭 표시 제어
+  // - 모니터링: 체크시트·Claim 숨김
+  // - 주요 일정 점검: "일정표"(캘린더) + "일정 현황"(목록) 만 표시
+  const isSchedMdl = m.category === 'schedule' || (m.name && m.name.replace(/\s/g,'').includes('일정점검'));
+
+  const msStatusTab  = document.querySelector('.tab[data-tab="ms-status"]');
   const checklistTab = document.querySelector('.tab[data-tab="checklist"]');
-  if (checklistTab) checklistTab.style.display = hideForMon;
-  const claimTab = document.querySelector('.tab[data-tab="claim"]');
-  if (claimTab) claimTab.style.display = hideForMon;
+  const claimTab     = document.querySelector('.tab[data-tab="claim"]');
+  const memoTab      = document.querySelector('.tab[data-tab="memo"]');
+  const settingsTab  = document.querySelector('.tab[data-tab="settings"]');
+
+  if (msStatusTab)  msStatusTab.style.display  = isSchedMdl ? '' : 'none';
+  if (checklistTab) checklistTab.style.display = (m.category === 'monitoring' || isSchedMdl) ? 'none' : '';
+  if (claimTab)     claimTab.style.display     = (m.category === 'monitoring' || isSchedMdl) ? 'none' : '';
+  if (memoTab)      memoTab.style.display      = isSchedMdl ? 'none' : '';
+  if (settingsTab)  settingsTab.style.display  = isSchedMdl ? 'none' : '';
 
   // 탭 초기화
   document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === 'milestone'));
@@ -956,8 +1056,14 @@ async function selectModel(id) {
 
 // ── Tab Switching ────────────────────────────────────────────
 async function loadTab(tab) {
-  // 모니터링 카테고리는 체크시트/claim 비활성화 → 일정표로 리다이렉트
-  if ((tab === 'checklist' || tab === 'claim') && state.activeModel?.category === 'monitoring') {
+  // 숨겨진 탭 접근 시 일정표로 리다이렉트
+  const _am = state.activeModel;
+  const _isSchedMdl = _am && (_am.category === 'schedule' || (_am.name && _am.name.replace(/\s/g,'').includes('일정점검')));
+  if (_am?.category === 'monitoring' && (tab === 'checklist' || tab === 'claim')) {
+    tab = 'milestone';
+    document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === 'milestone'));
+  }
+  if (_isSchedMdl && (tab === 'checklist' || tab === 'claim' || tab === 'memo')) {
     tab = 'milestone';
     document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === 'milestone'));
   }
@@ -972,11 +1078,195 @@ async function loadTab(tab) {
     if (filterbar) filterbar.innerHTML = '';
   }
 
-  if (tab === 'milestone') await renderMilestone(body);
+  // 주요 일정 점검: 일정표 = 캘린더, 일정 현황 = 목록
+  const _am2 = state.activeModel;
+  const _isSchedMdl2 = _am2 && (_am2.category === 'schedule' || (_am2.name && _am2.name.replace(/\s/g,'').includes('일정점검')));
+
+  if (tab === 'milestone') {
+    if (_isSchedMdl2) await renderMilestoneCalendar(body);
+    else              await renderMilestone(body);
+  }
+  if (tab === 'ms-status') await renderMilestone(body);
   if (tab === 'checklist') await renderChecklist(body);
   if (tab === 'claim')     await renderClaim(body);
   if (tab === 'memo')      await renderMemo(body);
   if (tab === 'settings')  await renderSettings(body);
+}
+
+// ── ① 일정표 캘린더 (주요 일정 점검 전용) ──────────────────────
+const MS_STATUS_COLOR = {
+  pending:     '#94a3b8',
+  in_progress: '#3b82f6',
+  completed:   '#10b981',
+  delayed:     '#ef4444',
+};
+const MS_STATUS_LABEL = { pending:'대기', in_progress:'진행중', completed:'완료', delayed:'지연' };
+
+async function renderMilestoneCalendar(body) {
+  const mid   = state.activeModel.id;
+  const items = await GET(`/api/models/${mid}/milestones`);
+
+  const total   = items.length;
+  const done    = items.filter(x => x.status === 'completed').length;
+  const inProg  = items.filter(x => x.status === 'in_progress').length;
+  const delayed = items.filter(x => x.status === 'delayed').length;
+
+  // ── filterbar: 월 네비 + 상태 필터 + 추가 버튼 ──
+  const filterbar = document.getElementById('tab-filterbar');
+  filterbar.innerHTML = `
+    <div class="milestone-toolbar ms-cal-toolbar">
+      <div class="ms-cal-nav">
+        <button class="sched-nav-btn" id="ms-cal-prev">‹</button>
+        <span class="sched-period ms-cal-period" id="ms-cal-period">${msCalBase.getFullYear()}년 ${msCalBase.getMonth()+1}월</span>
+        <button class="sched-nav-btn" id="ms-cal-next">›</button>
+        <button class="sched-nav-btn sched-today" id="ms-cal-today">오늘</button>
+      </div>
+      <div class="ms-cal-filters">
+        <button class="ms-pill ms-pill-all active" data-sf="all">전체 ${total}</button>
+        <button class="ms-pill ms-pill-done" data-sf="completed">✓ 완료 ${done}</button>
+        <button class="ms-pill ms-pill-prog" data-sf="in_progress">◎ 진행중 ${inProg}</button>
+        <button class="ms-pill ms-pill-delay" data-sf="delayed">⚠ 지연 ${delayed}</button>
+      </div>
+      <button class="btn-primary" id="btn-add-ms">＋ 일정 추가</button>
+    </div>
+  `;
+
+  let activeSf = 'all';
+
+  const redraw = () => {
+    const filtered = activeSf === 'all' ? items : items.filter(x => x.status === activeSf);
+    drawMsCalendar(body, filtered, items);
+    filterbar.getElementById && filterbar.querySelector('#ms-cal-period') &&
+      (filterbar.querySelector('#ms-cal-period').textContent = `${msCalBase.getFullYear()}년 ${msCalBase.getMonth()+1}월`);
+  };
+
+  // 네비 이벤트
+  filterbar.querySelector('#ms-cal-prev').addEventListener('click', () => {
+    msCalBase = new Date(msCalBase.getFullYear(), msCalBase.getMonth() - 1, 1);
+    filterbar.querySelector('#ms-cal-period').textContent = `${msCalBase.getFullYear()}년 ${msCalBase.getMonth()+1}월`;
+    redraw();
+  });
+  filterbar.querySelector('#ms-cal-next').addEventListener('click', () => {
+    msCalBase = new Date(msCalBase.getFullYear(), msCalBase.getMonth() + 1, 1);
+    filterbar.querySelector('#ms-cal-period').textContent = `${msCalBase.getFullYear()}년 ${msCalBase.getMonth()+1}월`;
+    redraw();
+  });
+  filterbar.querySelector('#ms-cal-today').addEventListener('click', () => {
+    msCalBase = new Date();
+    filterbar.querySelector('#ms-cal-period').textContent = `${msCalBase.getFullYear()}년 ${msCalBase.getMonth()+1}월`;
+    redraw();
+  });
+
+  // 상태 필터 이벤트
+  filterbar.querySelectorAll('.ms-pill[data-sf]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterbar.querySelectorAll('.ms-pill[data-sf]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeSf = btn.dataset.sf;
+      redraw();
+    });
+  });
+
+  // 일정 추가
+  filterbar.querySelector('#btn-add-ms').addEventListener('click', () => openMsModal(null, []));
+
+  // 초기 렌더
+  drawMsCalendar(body, items, items);
+}
+
+function drawMsCalendar(container, filtered, allItems) {
+  const d = msCalBase;
+  const year = d.getFullYear(), month = d.getMonth();
+  const firstDay  = new Date(year, month, 1);
+  const lastDay   = new Date(year, month + 1, 0);
+  const startDow  = firstDay.getDay();
+  const totalDays = lastDay.getDate();
+  const todayStr  = new Date().toISOString().slice(0, 10);
+  const pad = n => String(n).padStart(2, '0');
+
+  // 날짜 → 이벤트 맵 생성 (시작일~종료일 범위 모두 포함)
+  const dateMap = {};
+  filtered.forEach(it => {
+    if (!it.due_date) return;
+    const start = it.due_date;
+    const end   = it.due_date_end || it.due_date;
+    const cur = new Date(start + 'T00:00');
+    const endD = new Date(end + 'T00:00');
+    while (cur <= endD) {
+      if (cur.getFullYear() === year && cur.getMonth() === month) {
+        const key = `${cur.getFullYear()}-${pad(cur.getMonth()+1)}-${pad(cur.getDate())}`;
+        if (!dateMap[key]) dateMap[key] = [];
+        if (!dateMap[key].find(x => x.id === it.id)) dateMap[key].push(it);
+      }
+      cur.setDate(cur.getDate() + 1);
+    }
+  });
+  Object.values(dateMap).forEach(arr => arr.sort((a,b)=>(a.due_date||'').localeCompare(b.due_date||'')));
+
+  // 셀 배열 (앞 빈칸 + 날짜 + 뒷 빈칸으로 6주)
+  const cells = [];
+  for (let i = 0; i < startDow; i++) cells.push(null);
+  for (let i = 1; i <= totalDays; i++) cells.push(i);
+  while (cells.length % 7 !== 0) cells.push(null);
+
+  const MAX_VIS = 4;
+
+  let html = `<div class="sched-monthly ms-monthly">
+    <div class="sched-cal-header">
+      ${['일','월','화','수','목','금','토'].map((lbl,i) =>
+        `<div class="sched-cal-dow${i===0?' sun':i===6?' sat':''}">${lbl}</div>`
+      ).join('')}
+    </div>
+    <div class="sched-cal-grid">`;
+
+  cells.forEach((day, idx) => {
+    const col = idx % 7;
+    const isSun = col === 0, isSat = col === 6;
+
+    if (day === null) {
+      html += `<div class="sched-cal-cell sched-cal-cell--other"></div>`;
+      return;
+    }
+
+    const dateStr = `${year}-${pad(month+1)}-${pad(day)}`;
+    const isToday = dateStr === todayStr;
+    const dayEvts = dateMap[dateStr] || [];
+    const overflow = dayEvts.length > MAX_VIS ? dayEvts.length - MAX_VIS : 0;
+    const visible  = dayEvts.slice(0, MAX_VIS);
+
+    html += `<div class="sched-cal-cell${isToday?' is-today':''}${isSun?' is-sun':isSat?' is-sat':''}" data-date="${dateStr}">
+      <div class="sched-cal-daynum${isToday?' today':''}${isSun?' sun':isSat?' sat':''}">${day}</div>
+      <div class="sched-cal-events">
+        ${visible.map(it => {
+          const bg  = MS_STATUS_COLOR[it.status] || '#3b82f6';
+          const isStart = it.due_date === dateStr;
+          const isEnd   = (it.due_date_end || it.due_date) === dateStr;
+          const isMulti = it.due_date_end && it.due_date !== it.due_date_end;
+          const period  = isMulti ? `${it.due_date} ~ ${it.due_date_end}` : it.due_date;
+          return `<div class="sched-cal-bar ms-cal-bar${isMulti?' ms-bar-multi':''}"
+                       style="background:${bg};opacity:${it.status==='completed'?'0.65':'1'}"
+                       data-id="${it.id}"
+                       title="${escHtml(it.title)}\n${period}\n상태: ${MS_STATUS_LABEL[it.status]||''}">
+            ${isStart ? `<span class="ms-bar-label">${escHtml(it.title)}</span>` : `<span class="ms-bar-label ms-bar-cont">↳ ${escHtml(it.title)}</span>`}
+            ${isMulti && isStart ? `<span class="ms-bar-period">${period}</span>` : ''}
+          </div>`;
+        }).join('')}
+        ${overflow ? `<div class="sched-cal-more">+${overflow}개 더</div>` : ''}
+      </div>
+    </div>`;
+  });
+
+  html += `</div></div>`;
+  container.innerHTML = html;
+
+  // 이벤트 바 클릭 → 수정 모달
+  container.querySelectorAll('.ms-cal-bar').forEach(el => {
+    el.addEventListener('click', e => {
+      e.stopPropagation();
+      const it = allItems.find(x => x.id === Number(el.dataset.id));
+      if (it) openMsModal(it, []);
+    });
+  });
 }
 
 // ── ① 일정표 (Milestone) ─────────────────────────────────────
@@ -1157,14 +1447,6 @@ function openMsModal(item, subs) {
       </div>
     </div>
     <div class="form-group">
-      <label class="form-label">상태</label>
-      <select class="form-select" id="ms-status">
-        ${Object.entries(STATUS_LABELS).map(([k,v]) =>
-          `<option value="${k}" ${item?.status === k ? 'selected':''}>${v}</option>`
-        ).join('')}
-      </select>
-    </div>
-    <div class="form-group">
       <label class="form-label">비고 (메모)</label>
       <textarea class="form-textarea" id="ms-note" placeholder="추가 메모, 참고사항 등">${item?.note || ''}</textarea>
     </div>
@@ -1217,7 +1499,7 @@ function openMsModal(item, subs) {
       note:        document.getElementById('ms-note').value.trim(),
       due_date,
       due_date_end,
-      status:      document.getElementById('ms-status').value,
+      status:      item?.status || 'pending',
     };
     if (item) {
       await PUT(`/api/milestones/${item.id}`, payload);
@@ -2445,6 +2727,7 @@ async function init() {
 
   // 이벤트
   document.getElementById('btn-dashboard').addEventListener('click', loadDashboard);
+  document.getElementById('btn-schedule').addEventListener('click', () => { closeSidebar(); loadScheduleView(); });
   document.getElementById('btn-goto-dashboard').addEventListener('click', loadDashboard);
   document.getElementById('btn-add-model').addEventListener('click', () => {
     closeSidebar();
@@ -2522,6 +2805,463 @@ function attachThemeToggle() {
     apply(next);
     localStorage.setItem('eye-care', next ? '1' : '0');
     toast(next ? '🌙 눈 보호 모드 활성' : '☀ 밝은 모드', 'success');
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+//  주요 일정 점검 (Schedule View)
+// ════════════════════════════════════════════════════════════
+
+// 현재 보기 모드: 'monthly' | 'list'
+let schedViewMode  = 'monthly';
+// 기준 날짜 (월/주/일 탐색용)
+let schedBaseDate  = new Date();
+// 모델 일정표 캘린더용 기준 날짜
+let msCalBase      = new Date();
+
+// 헬퍼: Date → 'YYYY-MM-DDThh:mm' (local)
+function toLocalDatetime(d) {
+  const pad = n => String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+// 헬퍼: 'YYYY-MM-DDThh:mm' → Date
+function parseDT(s) { return s ? new Date(s) : null; }
+
+// 헬퍼: 날짜 표시
+function fmtDT(s) {
+  const d = parseDT(s);
+  if (!d) return '-';
+  const pad = n => String(n).padStart(2,'0');
+  return `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+function fmtDate(s) {
+  const d = parseDT(s);
+  if (!d) return '-';
+  const pad = n => String(n).padStart(2,'0');
+  return `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())}`;
+}
+function fmtTime(s) {
+  const d = parseDT(s);
+  if (!d) return '';
+  const pad = n => String(n).padStart(2,'0');
+  return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+// hex → rgba
+function hexToRgba(hex, a) {
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+
+// 현재 표시 기간 제목 문자열
+function schedPeriodLabel() {
+  const d = schedBaseDate;
+  if (schedViewMode === 'monthly') {
+    return `${d.getFullYear()}년 ${d.getMonth()+1}월`;
+  }
+  return '전체 목록';
+}
+
+// 주요 일정 뷰 진입
+async function loadScheduleView() {
+  state.activeModel = null;
+  renderSidebar();
+  showView('schedule');
+  await renderScheduleMain();
+}
+
+async function renderScheduleMain() {
+  const toolbar = document.getElementById('sched-toolbar');
+  const body    = document.getElementById('sched-body');
+  if (!toolbar || !body) return;
+
+  // 데이터 로드
+  let items = [];
+  try { items = await GET('/api/schedules'); } catch(e) { items = []; }
+
+  const isMonthly = schedViewMode === 'monthly';
+
+  // 툴바 렌더
+  toolbar.innerHTML = `
+    ${isMonthly ? `
+    <div class="sched-nav">
+      <button class="sched-nav-btn" id="sched-prev">‹</button>
+      <span class="sched-period" id="sched-period">${schedPeriodLabel()}</span>
+      <button class="sched-nav-btn" id="sched-next">›</button>
+      <button class="sched-nav-btn sched-today" id="sched-today">오늘</button>
+    </div>` : `<div class="sched-nav"><span class="sched-period">전체 일정목록</span></div>`}
+    <div class="sched-mode-btns">
+      <button class="sched-mode-btn${schedViewMode==='monthly'?' active':''}" data-mode="monthly">📅 달력</button>
+      <button class="sched-mode-btn${schedViewMode==='list'?' active':''}" data-mode="list">📋 일정목록</button>
+    </div>
+    <button class="btn-primary sched-add-btn" id="sched-add-btn">＋ 일정 추가</button>
+  `;
+
+  // 본문 렌더
+  renderSchedBody(items, body);
+
+  // 이벤트 (달력 모드에서만 월 이동)
+  if (isMonthly) {
+    document.getElementById('sched-prev').addEventListener('click', () => {
+      moveSchedBase(-1); renderScheduleMain();
+    });
+    document.getElementById('sched-next').addEventListener('click', () => {
+      moveSchedBase(+1); renderScheduleMain();
+    });
+    document.getElementById('sched-today').addEventListener('click', () => {
+      schedBaseDate = new Date(); renderScheduleMain();
+    });
+  }
+  toolbar.querySelectorAll('.sched-mode-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      schedViewMode = btn.dataset.mode;
+      renderScheduleMain();
+    });
+  });
+  document.getElementById('sched-add-btn').addEventListener('click', () => {
+    openScheduleModal(null, items);
+  });
+}
+
+function moveSchedBase(dir) {
+  const d = schedBaseDate;
+  if (schedViewMode === 'monthly') {
+    schedBaseDate = new Date(d.getFullYear(), d.getMonth() + dir, 1);
+  }
+  // 'list' 모드는 전체 표시 — 이동 없음
+}
+
+function renderSchedBody(items, container) {
+  if (schedViewMode === 'monthly') renderSchedMonthly(items, container);
+  else renderSchedList(items, container);
+}
+
+// ── 월별 캘린더 ──────────────────────────────────────────────
+function renderSchedMonthly(items, container) {
+  const d = schedBaseDate;
+  const year = d.getFullYear(), month = d.getMonth();
+  const firstDay  = new Date(year, month, 1);
+  const lastDay   = new Date(year, month + 1, 0);
+  const startDow  = firstDay.getDay(); // 0=일
+  const totalDays = lastDay.getDate();
+  const today = new Date().toISOString().slice(0,10);
+  const pad = n => String(n).padStart(2,'0');
+
+  // 셀 배열 생성 (앞 빈 칸 + 날짜 + 뒷 빈 칸으로 6주 채우기)
+  const cells = [];
+  for (let i = 0; i < startDow; i++) cells.push(null);
+  for (let i = 1; i <= totalDays; i++) cells.push(i);
+  while (cells.length % 7 !== 0) cells.push(null);
+
+  // 날짜 → 이벤트 목록 매핑 (시작 시간 순 정렬)
+  const dateItems = {};
+  items.forEach(it => {
+    const s = parseDT(it.startAt), e = parseDT(it.endAt);
+    if (!s || !e) return;
+    const cur = new Date(s.getFullYear(), s.getMonth(), s.getDate());
+    const end = new Date(e.getFullYear(), e.getMonth(), e.getDate());
+    while (cur <= end) {
+      if (cur.getFullYear() === year && cur.getMonth() === month) {
+        const key = `${cur.getFullYear()}-${pad(cur.getMonth()+1)}-${pad(cur.getDate())}`;
+        if (!dateItems[key]) dateItems[key] = [];
+        if (!dateItems[key].find(x => x.id === it.id)) dateItems[key].push(it);
+      }
+      cur.setDate(cur.getDate() + 1);
+    }
+  });
+  // 각 날짜 목록을 시작시간 오름차순 정렬
+  Object.values(dateItems).forEach(arr => arr.sort((a,b) => (a.startAt||'').localeCompare(b.startAt||'')));
+
+  const MAX_VISIBLE = 4; // 셀당 최대 표시 개수
+
+  let html = `<div class="sched-monthly">
+    <div class="sched-cal-header">
+      ${['일','월','화','수','목','금','토'].map((lbl,i) =>
+        `<div class="sched-cal-dow${i===0?' sun':i===6?' sat':''}">${lbl}</div>`
+      ).join('')}
+    </div>
+    <div class="sched-cal-grid">`;
+
+  cells.forEach((day, idx) => {
+    const col = idx % 7;
+    const isSun = col === 0, isSat = col === 6;
+
+    if (day === null) {
+      // 이전/다음 달 날짜 (회색으로 날짜만 표시)
+      html += `<div class="sched-cal-cell sched-cal-cell--other"></div>`;
+      return;
+    }
+
+    const dateStr  = `${year}-${pad(month+1)}-${pad(day)}`;
+    const isToday  = dateStr === today;
+    const dayEvts  = dateItems[dateStr] || [];
+    const overflow = dayEvts.length > MAX_VISIBLE ? dayEvts.length - MAX_VISIBLE : 0;
+    const visible  = dayEvts.slice(0, MAX_VISIBLE);
+
+    html += `<div class="sched-cal-cell${isToday?' is-today':''}${isSun?' is-sun':isSat?' is-sat':''}" data-date="${dateStr}">
+      <div class="sched-cal-daynum${isToday?' today':''}${isSun?' sun':isSat?' sat':''}">${day}</div>
+      <div class="sched-cal-events">
+        ${visible.map(it => {
+          const bg   = it.color || '#3B82F6';
+          const time = fmtTime(it.startAt);
+          return `<div class="sched-cal-bar" style="background:${bg}" data-id="${it.id}" title="${escHtml(it.title)} (${fmtDT(it.startAt)} ~ ${fmtDT(it.endAt)})">
+            <span class="sched-cal-bar-time">${time}</span>
+            <span class="sched-cal-bar-title">${escHtml(it.title)}</span>
+          </div>`;
+        }).join('')}
+        ${overflow ? `<div class="sched-cal-more">+${overflow}개 더</div>` : ''}
+      </div>
+    </div>`;
+  });
+
+  html += `</div></div>`;
+  container.innerHTML = html;
+
+  // 이벤트 바 클릭 → 수정 모달
+  container.querySelectorAll('.sched-cal-bar').forEach(el => {
+    el.addEventListener('click', e => {
+      e.stopPropagation();
+      const it = items.find(x => x.id === Number(el.dataset.id));
+      if (it) openScheduleModal(it, items);
+    });
+  });
+
+  // 날짜 숫자 클릭 → 일정목록 전환
+  container.querySelectorAll('.sched-cal-cell[data-date] .sched-cal-daynum').forEach(el => {
+    el.addEventListener('click', e => {
+      e.stopPropagation();
+      schedViewMode = 'list';
+      renderScheduleMain();
+    });
+  });
+
+  // "+N개 더" 클릭 → 일정목록으로 이동
+  container.querySelectorAll('.sched-cal-more').forEach(el => {
+    el.addEventListener('click', e => {
+      e.stopPropagation();
+      schedViewMode = 'list';
+      renderScheduleMain();
+    });
+  });
+}
+
+// ── 일정목록 뷰 ─────────────────────────────────────────────
+function renderSchedList(items, container) {
+  const today = new Date().toISOString().slice(0,10);
+  const sorted = [...items].sort((a,b) => (a.startAt||'').localeCompare(b.startAt||''));
+
+  if (!sorted.length) {
+    container.innerHTML = `<div class="sched-empty">등록된 일정이 없습니다<br><small>＋ 일정 추가 버튼으로 새 일정을 만드세요</small></div>`;
+    return;
+  }
+
+  // 날짜별 그룹핑
+  const groups = {};
+  const pad = n => String(n).padStart(2,'0');
+  sorted.forEach(it => {
+    const s = parseDT(it.startAt);
+    if (!s) return;
+    const key = `${s.getFullYear()}-${pad(s.getMonth()+1)}-${pad(s.getDate())}`;
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(it);
+  });
+
+  let html = `<div class="sched-list">`;
+  Object.entries(groups).sort((a,b) => a[0].localeCompare(b[0])).forEach(([date, its]) => {
+    const dObj = parseDT(date + 'T00:00');
+    const dow = dObj ? ['일','월','화','수','목','금','토'][dObj.getDay()] : '';
+    const isToday = date === today;
+    html += `<div class="sched-list-dategroup">
+      <div class="sched-list-dateheader${isToday?' today':''}">${date.replace(/-/g,'.')} (${dow})${isToday?' 📌':''}</div>
+      ${its.map(it => {
+        const nowStr = new Date().toISOString().slice(0,16).replace('T',' ').replace(' ','T');
+        const isPast = it.endAt < nowStr;
+        return `<div class="sched-list-row${isPast?' past':''}" data-id="${it.id}">
+          <div class="sched-list-color" style="background:${it.color||'#3B82F6'}"></div>
+          <div class="sched-list-info">
+            <div class="sched-list-title">${escHtml(it.title)}</div>
+            <div class="sched-list-time">${fmtDT(it.startAt)} ~ ${fmtDT(it.endAt)}</div>
+            ${it.description ? `<div class="sched-list-desc">${escHtml(it.description)}</div>` : ''}
+            ${it.author ? `<div class="sched-list-author">👤 ${escHtml(it.author)}</div>` : ''}
+          </div>
+          <div class="sched-list-actions">
+            <button class="btn-icon-sm sched-edit-btn" data-id="${it.id}">✎</button>
+            <button class="btn-icon-sm danger sched-del-btn" data-id="${it.id}">🗑</button>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  });
+  html += `</div>`;
+  container.innerHTML = html;
+
+  container.querySelectorAll('.sched-list-row').forEach(el => {
+    el.addEventListener('click', e => {
+      if (e.target.closest('button')) return;
+      const it = items.find(x => x.id === Number(el.dataset.id));
+      if (it) openScheduleModal(it, items);
+    });
+  });
+  container.querySelectorAll('.sched-edit-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const it = items.find(x => x.id === Number(btn.dataset.id));
+      if (it) openScheduleModal(it, items);
+    });
+  });
+  container.querySelectorAll('.sched-del-btn').forEach(btn => {
+    btn.addEventListener('click', async e => {
+      e.stopPropagation();
+      const it = items.find(x => x.id === Number(btn.dataset.id));
+      if (!it) return;
+      if (!confirm(`"${it.title}" 일정을 삭제하시겠습니까?`)) return;
+      await DEL(`/api/schedules/${it.id}`);
+      toast('일정 삭제됨', 'success');
+      renderScheduleMain();
+    });
+  });
+}
+
+// ── 충돌 검사 ─────────────────────────────────────────────────
+function findConflicts(items, startAt, endAt, excludeId) {
+  return items.filter(it => {
+    if (it.id === excludeId) return false;
+    // 두 구간 겹침: s1 < e2 && s2 < e1
+    return it.startAt < endAt && it.endAt > startAt;
+  });
+}
+
+// ── 일정 추가/수정 모달 ──────────────────────────────────────
+function openScheduleModal(item, allItems) {
+  const isEdit = !!item;
+  const myName = getCommenterName();
+
+  // 기본 시작/종료 (현재 시각 기준 1시간)
+  const defStart = new Date(); defStart.setSeconds(0,0);
+  const defEnd   = new Date(defStart); defEnd.setHours(defEnd.getHours()+1);
+
+  const colorOpts = ['#3B82F6','#8B5CF6','#10B981','#F59E0B','#EF4444','#14B8A6','#F97316','#EC4899'];
+
+  const body = `
+    <div class="form-group">
+      <label class="form-label">작성자</label>
+      <input class="form-input" id="sc-author" value="${escHtml(item?.author||myName)}" placeholder="이름 입력" maxlength="40">
+    </div>
+    <div class="form-group">
+      <label class="form-label">일정 제목 *</label>
+      <input class="form-input" id="sc-title" value="${escHtml(item?.title||'')}" placeholder="일정 제목을 입력하세요" maxlength="100">
+    </div>
+    <div class="form-group">
+      <label class="form-label">내용 / 메모</label>
+      <textarea class="form-textarea" id="sc-desc" rows="3" placeholder="상세 내용을 입력하세요">${escHtml(item?.description||'')}</textarea>
+    </div>
+    <div class="form-row">
+      <div class="form-group" style="flex:1">
+        <label class="form-label">시작 일시 *</label>
+        <input class="form-input" id="sc-start" type="datetime-local"
+          value="${item?.startAt ? item.startAt.slice(0,16) : toLocalDatetime(defStart)}">
+      </div>
+      <div class="form-group" style="flex:1">
+        <label class="form-label">종료 일시 *</label>
+        <input class="form-input" id="sc-end" type="datetime-local"
+          value="${item?.endAt ? item.endAt.slice(0,16) : toLocalDatetime(defEnd)}">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">색상</label>
+      <div class="sched-color-row">
+        ${colorOpts.map(c => `<button type="button" class="sched-color-btn${(item?.color||'#3B82F6')===c?' selected':''}" data-color="${c}" style="background:${c}"></button>`).join('')}
+      </div>
+    </div>
+    <div id="sc-conflict-warn" class="sched-conflict-warn hidden"></div>
+  `;
+
+  const footer = `
+    <button class="btn-secondary" id="sc-cancel">취소</button>
+    ${isEdit ? `<button class="btn-danger" id="sc-delete">삭제</button>` : ''}
+    <button class="btn-primary" id="sc-confirm">${isEdit ? '수정' : '추가'}</button>
+  `;
+
+  openModal(isEdit ? '일정 수정' : '일정 추가', body, footer);
+
+  // 색상 선택
+  let selectedColor = item?.color || '#3B82F6';
+  document.querySelectorAll('.sched-color-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.sched-color-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      selectedColor = btn.dataset.color;
+    });
+  });
+
+  // 실시간 충돌 체크
+  const checkConflict = () => {
+    const s = document.getElementById('sc-start').value;
+    const e = document.getElementById('sc-end').value;
+    const warn = document.getElementById('sc-conflict-warn');
+    if (!s || !e || e <= s) { warn.classList.add('hidden'); return; }
+    const conflicts = findConflicts(allItems, s, e, item?.id);
+    if (conflicts.length) {
+      warn.classList.remove('hidden');
+      warn.innerHTML = `⚠ <strong>시간 충돌 ${conflicts.length}건</strong>: ${conflicts.map(c=>`"${escHtml(c.title)}" (${fmtTime(c.startAt)}~${fmtTime(c.endAt)})`).join(', ')}`;
+    } else {
+      warn.classList.add('hidden');
+    }
+  };
+  document.getElementById('sc-start').addEventListener('change', checkConflict);
+  document.getElementById('sc-end').addEventListener('change', checkConflict);
+  checkConflict();
+
+  // 취소
+  document.getElementById('sc-cancel').addEventListener('click', closeModal);
+
+  // 삭제
+  if (isEdit) {
+    document.getElementById('sc-delete').addEventListener('click', async () => {
+      if (!confirm(`"${item.title}" 일정을 삭제하시겠습니까?`)) return;
+      await DEL(`/api/schedules/${item.id}`);
+      closeModal();
+      toast('일정 삭제됨', 'success');
+      renderScheduleMain();
+    });
+  }
+
+  // 확인
+  document.getElementById('sc-confirm').addEventListener('click', async () => {
+    const author = document.getElementById('sc-author').value.trim();
+    const title  = document.getElementById('sc-title').value.trim();
+    const desc   = document.getElementById('sc-desc').value.trim();
+    const startAt = document.getElementById('sc-start').value;
+    const endAt   = document.getElementById('sc-end').value;
+
+    if (!title)   { toast('일정 제목을 입력하세요', 'error'); return; }
+    if (!startAt) { toast('시작 일시를 입력하세요', 'error'); return; }
+    if (!endAt)   { toast('종료 일시를 입력하세요', 'error'); return; }
+    if (endAt <= startAt) { toast('종료 일시는 시작 일시 이후여야 합니다', 'error'); return; }
+
+    if (author) setCommenterName(author);
+
+    const payload = { title, description: desc, startAt, endAt, color: selectedColor, author };
+
+    try {
+      let result;
+      if (isEdit) {
+        result = await PUT(`/api/schedules/${item.id}`, payload);
+      } else {
+        result = await POST('/api/schedules', payload);
+      }
+      closeModal();
+      if (result.conflicts && result.conflicts.length) {
+        toast(`일정 저장됨 (충돌 ${result.conflicts.length}건 있음)`, 'success');
+      } else {
+        toast(isEdit ? '일정 수정됨' : '일정 추가됨', 'success');
+      }
+      renderScheduleMain();
+    } catch(e) {
+      toast(e.message || '저장 실패', 'error');
+    }
   });
 }
 

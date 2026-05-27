@@ -95,6 +95,7 @@ const defaultDB = () => ({
   checklists: {1:[],2:[],3:[],4:[],5:[],6:[]},
   claims:     {1:[],2:[],3:[],4:[],5:[],6:[]},
   memos: {1:'',2:'',3:'',4:'',5:'',6:''},
+  schedules: [],
   nextId: 10000,
 });
 
@@ -277,6 +278,18 @@ function migrate() {
     changed = true;
   });
 
+  // 3) schedules 배열 초기화
+  if (!Array.isArray(DB.schedules)) { DB.schedules = []; changed = true; }
+
+  // 4) '일정 점검' 이름을 포함한 모델 → category를 'schedule'로 강제 변환
+  (DB.models || []).forEach(m => {
+    if (m.category !== 'schedule' && m.name && m.name.replace(/\s/g,'').includes('일정점검')) {
+      m.category = 'schedule';
+      changed = true;
+      console.log(`[migrate] ${m.name} → category: schedule`);
+    }
+  });
+
   if (changed) save();
 }
 migrate();
@@ -403,7 +416,7 @@ app.use((req, res, next) => {
   res.setHeader('Expires', '0');
   next();
 });
-app.use(express.static(path.join(__dirname, 'public'), { etag: false, lastModified: false }));
+app.use(express.static(path.join(__dirname, 'public'), { etag: false, lastModified: false, maxAge: 0 }));
 
 // 쿠키 파서 (의존성 없는 경량 구현)
 function parseCookies(req) {
@@ -1011,6 +1024,16 @@ app.get('/api/dashboard', (_, res) => {
     return !!(it.occurredDate && it.occurredDate < today);
   };
 
+  // 이달 일정 수 계산
+  const nowY = new Date().getFullYear();
+  const nowM = new Date().getMonth(); // 0-based
+  const schedThisMonth = (DB.schedules || []).filter(s => {
+    if (!s.startAt) return false;
+    const d = new Date(s.startAt);
+    return d.getFullYear() === nowY && d.getMonth() === nowM;
+  }).length;
+  const schedTotal = (DB.schedules || []).length;
+
   const summary = [...(DB.models||[])].sort((a,b)=>a.order-b.order).map(m => {
     const ms = DB.milestones[m.id]||[];
     const cl = DB.checklists[m.id]||[];
@@ -1030,7 +1053,83 @@ app.get('/api/dashboard', (_, res) => {
       claim_open:         cm.filter(x => x.status !== 'completed').length,
     };
   });
-  res.json(summary);
+  res.json({ models: summary, schedThisMonth, schedTotal });
+});
+
+// ── 주요 일정 점검 (Schedules) ───────────────────────────────
+app.get('/api/schedules', (_, res) => {
+  const list = (DB.schedules || []).slice().sort((a, b) => (a.startAt || '').localeCompare(b.startAt || ''));
+  res.json(list);
+});
+
+app.post('/api/schedules', (req, res) => {
+  if (!Array.isArray(DB.schedules)) DB.schedules = [];
+  const { title, description, startAt, endAt, color, author } = req.body;
+  if (!title)   return res.status(400).json({ error: '일정 제목이 필요합니다' });
+  if (!startAt) return res.status(400).json({ error: '시작 일시가 필요합니다' });
+  if (!endAt)   return res.status(400).json({ error: '종료 일시가 필요합니다' });
+  if (endAt <= startAt) return res.status(400).json({ error: '종료 일시는 시작 일시 이후여야 합니다' });
+
+  // 중복 검사 (신규 아이템과 겹치는 일정)
+  const conflicts = (DB.schedules || []).filter(s => {
+    if (s.startAt >= endAt || s.endAt <= startAt) return false; // no overlap
+    return true;
+  });
+
+  const item = {
+    id:          nextId(),
+    title:       title.trim(),
+    description: (description || '').trim(),
+    startAt,
+    endAt,
+    color:       color || '#3B82F6',
+    author:      (author || '').trim() || null,
+    created_at:  nowISO(),
+  };
+  DB.schedules.push(item);
+  save();
+  res.json({ item, conflicts });
+});
+
+app.put('/api/schedules/:id', (req, res) => {
+  const id = Number(req.params.id);
+  if (!Array.isArray(DB.schedules)) return res.status(404).json({ error: 'not found' });
+  const idx = DB.schedules.findIndex(s => s.id === id);
+  if (idx < 0) return res.status(404).json({ error: 'not found' });
+
+  const { title, description, startAt, endAt, color, author } = req.body;
+  if (endAt && startAt && endAt <= startAt)
+    return res.status(400).json({ error: '종료 일시는 시작 일시 이후여야 합니다' });
+
+  const cur = DB.schedules[idx];
+  const updated = {
+    ...cur,
+    title:       (title       ?? cur.title).trim(),
+    description: (description ?? cur.description ?? '').trim(),
+    startAt:     startAt  ?? cur.startAt,
+    endAt:       endAt    ?? cur.endAt,
+    color:       color    ?? cur.color,
+    author:      author   !== undefined ? ((author||'').trim()||null) : cur.author,
+    updated_at:  nowISO(),
+  };
+
+  // 중복 검사 (자기 자신 제외)
+  const conflicts = DB.schedules.filter(s => {
+    if (s.id === id) return false;
+    if (s.startAt >= updated.endAt || s.endAt <= updated.startAt) return false;
+    return true;
+  });
+
+  DB.schedules[idx] = updated;
+  save();
+  res.json({ item: updated, conflicts });
+});
+
+app.delete('/api/schedules/:id', (req, res) => {
+  const id = Number(req.params.id);
+  DB.schedules = (DB.schedules || []).filter(s => s.id !== id);
+  save();
+  res.json({ ok: true });
 });
 
 // ── Export / Import ─────────────────────────────────────────

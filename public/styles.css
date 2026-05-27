@@ -2532,6 +2532,447 @@ body.eye-care .memo-post {
   border-color: #4a3d20;
   border-left-color: #d97706;
 }
+
+/* ══════════════════════════════════════════════════════════
+   주요 일정 점검 (Schedule View)
+   ══════════════════════════════════════════════════════════ */
+
+/* 페이지 헤더 */
+.sched-page-header {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-bottom: 0;
+}
+.sched-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 10px 0 12px;
+}
+.sched-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.sched-nav-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 5px 12px;
+  font-size: 15px;
+  cursor: pointer;
+  color: var(--text);
+  transition: background var(--transition);
+}
+.sched-nav-btn:hover { background: var(--hover); }
+.sched-nav-btn.sched-today { font-size: 12px; padding: 5px 10px; }
+.sched-period {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  min-width: 160px;
+  text-align: center;
+}
+.sched-mode-btns {
+  display: flex;
+  gap: 4px;
+}
+.sched-mode-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 5px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  color: var(--text2);
+  transition: background var(--transition), color var(--transition);
+}
+.sched-mode-btn:hover { background: var(--hover); color: var(--text); }
+.sched-mode-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.sched-add-btn { margin-left: auto; white-space: nowrap; }
+
+/* 본문 스크롤 영역 */
+.sched-body {
+  flex: 1;
+  overflow: auto;
+  padding: 0 24px 24px;
+}
+
+/* ── 월별 캘린더 ── */
+.sched-monthly {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* 요일 헤더 행 */
+.sched-cal-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  background: var(--hover);
+  border-bottom: 1px solid var(--border);
+}
+.sched-cal-dow {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text2);
+  padding: 8px 4px;
+  letter-spacing: .5px;
+}
+.sched-cal-dow.sun { color: #ef4444; }
+.sched-cal-dow.sat { color: #3b82f6; }
+
+/* 날짜 그리드 */
+.sched-cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+/* 날짜 셀 */
+.sched-cal-cell {
+  min-height: 110px;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 4px 3px 4px 4px;
+  background: var(--surface);
+  vertical-align: top;
+  overflow: hidden;
+  position: relative;
+  transition: background var(--transition);
+}
+.sched-cal-cell:nth-child(7n) { border-right: none; }
+.sched-cal-cell:hover { background: var(--hover); }
+.sched-cal-cell--other {
+  background: color-mix(in srgb, var(--border) 30%, var(--surface));
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  min-height: 110px;
+}
+.sched-cal-cell--other:nth-child(7n) { border-right: none; }
+
+/* 오늘 강조 */
+.sched-cal-cell.is-today {
+  background: color-mix(in srgb, var(--accent) 5%, var(--surface));
+  outline: 2px solid var(--accent);
+  outline-offset: -1px;
+  z-index: 1;
+}
+
+/* 날짜 번호 */
+.sched-cal-daynum {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text2);
+  margin-bottom: 3px;
+  display: inline-block;
+  cursor: pointer;
+  padding: 1px 3px;
+  border-radius: 4px;
+  line-height: 1;
+  transition: background .1s, color .1s;
+}
+.sched-cal-daynum:hover { background: var(--accent); color: #fff; }
+.sched-cal-daynum.today {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 24px; height: 24px;
+  background: var(--accent); color: #fff;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 0;
+}
+.sched-cal-daynum.sun { color: #ef4444; }
+.sched-cal-daynum.sat { color: #3b82f6; }
+.sched-cal-daynum.today { color: #fff !important; }
+
+/* 이벤트 영역 */
+.sched-cal-events {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 2px;
+}
+
+/* 이벤트 바 (스크린샷의 가로 막대) */
+.sched-cal-bar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 3px;
+  padding: 2px 5px;
+  font-size: 11px;
+  color: #fff;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  line-height: 1.4;
+  box-shadow: 0 1px 2px rgba(0,0,0,.12);
+  transition: filter .1s;
+}
+.sched-cal-bar:hover { filter: brightness(1.12); }
+.sched-cal-bar-time {
+  font-size: 10px;
+  font-weight: 700;
+  opacity: .92;
+  flex-shrink: 0;
+}
+.sched-cal-bar-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
+}
+
+/* +N개 더 */
+.sched-cal-more {
+  font-size: 10px;
+  color: var(--text3);
+  padding: 1px 5px;
+  cursor: pointer;
+  font-weight: 600;
+  border-radius: 3px;
+  transition: color .1s;
+}
+.sched-cal-more:hover { color: var(--accent); text-decoration: underline; }
+
+/* ══ 모델 일정표 캘린더 (주요 일정 점검 전용) ══════════════════ */
+.ms-monthly { margin-top: 0; }
+
+/* 캘린더 바 — 상태 색상 기반 */
+.ms-cal-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  border-radius: 4px;
+  padding: 2px 6px;
+  margin: 1px 2px;
+  cursor: pointer;
+  transition: filter .12s, transform .08s;
+  min-height: 20px;
+  gap: 1px;
+}
+.ms-cal-bar:hover { filter: brightness(1.15); transform: translateY(-1px); }
+
+.ms-bar-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  display: block;
+}
+.ms-bar-cont { opacity: .75; }
+.ms-bar-period {
+  font-size: 10px;
+  color: rgba(255,255,255,.85);
+  white-space: nowrap;
+}
+.ms-bar-multi {
+  border-left: 3px solid rgba(255,255,255,.5);
+}
+
+/* filterbar — 캘린더 네비 + 상태 필터 */
+.ms-cal-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.ms-cal-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.ms-cal-period {
+  font-size: 14px;
+  font-weight: 700;
+  min-width: 100px;
+  text-align: center;
+}
+.ms-cal-filters {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+/* 상태 필터 pill */
+.ms-pill {
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  color: var(--text2);
+  transition: background .15s, color .15s, border-color .15s;
+}
+.ms-pill.active,
+.ms-pill:hover          { background: var(--accent); color: #fff; border-color: var(--accent); }
+.ms-pill-done.active    { background: #10b981; border-color: #10b981; }
+.ms-pill-prog.active    { background: #3b82f6; border-color: #3b82f6; }
+.ms-pill-delay.active   { background: #ef4444; border-color: #ef4444; }
+
+
+/* ── 목록 뷰 ── */
+.sched-list { display: flex; flex-direction: column; gap: 16px; }
+.sched-list-dategroup {}
+.sched-list-dateheader {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text2);
+  padding: 4px 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 6px;
+}
+.sched-list-dateheader.today { color: var(--accent); }
+.sched-list-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: background var(--transition);
+  margin-bottom: 6px;
+}
+.sched-list-row:hover { background: var(--hover); }
+.sched-list-row.past { opacity: 0.55; }
+.sched-list-color {
+  width: 4px;
+  min-height: 40px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  align-self: stretch;
+}
+.sched-list-info { flex: 1; min-width: 0; }
+.sched-list-title { font-size: 14px; font-weight: 600; color: var(--text); }
+.sched-list-time  { font-size: 12px; color: var(--text2); margin-top: 2px; }
+.sched-list-desc  { font-size: 12px; color: var(--text3); margin-top: 4px; white-space: pre-wrap; }
+.sched-list-author { font-size: 11px; color: var(--text3); margin-top: 4px; }
+.sched-list-actions { display: flex; gap: 4px; align-items: center; flex-shrink: 0; }
+
+/* 충돌 경고 */
+.sched-conflict-warn {
+  background: #fef2f2;
+  border: 1px solid #fca5a5;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: #b91c1c;
+  margin-top: 8px;
+}
+body.eye-care .sched-conflict-warn {
+  background: #3a1a1a;
+  border-color: #7f1d1d;
+  color: #fca5a5;
+}
+
+/* 색상 선택 */
+.sched-color-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+.sched-color-btn {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  cursor: pointer;
+  transition: border-color .15s, transform .1s;
+}
+.sched-color-btn:hover { transform: scale(1.15); }
+.sched-color-btn.selected { border-color: var(--text); }
+
+/* 빈 상태 */
+.sched-empty {
+  text-align: center;
+  color: var(--text3);
+  font-size: 14px;
+  padding: 60px 20px;
+  line-height: 1.8;
+}
+
+/* 사이드바 두 번째 대시보드 버튼 */
+#btn-schedule {
+  margin-top: 4px;
+}
+
+/* ── 주요 일정 점검 대시보드 섹션 카드 ── */
+.sched-dash-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 4px 0;
+}
+.sched-dash-card {
+  min-width: 160px;
+  max-width: 220px;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  cursor: pointer;
+}
+.sched-dash-count-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 8px 0;
+}
+.sched-dash-count {
+  font-size: 40px;
+  font-weight: 800;
+  color: #3B82F6;
+  line-height: 1;
+}
+.sched-dash-count-label {
+  font-size: 12px;
+  color: var(--text2);
+  margin-top: 4px;
+  font-weight: 600;
+}
+.sched-dash-total {
+  font-size: 11px;
+  color: var(--text3);
+  text-align: right;
+  padding-top: 4px;
+  border-top: 1px solid var(--border);
+}
+.sched-go-card {
+  min-width: 80px;
+  max-width: 100px;
+  flex: 0 0 auto;
+  align-self: stretch;
+}
+
+/* 모바일 */
+@media (max-width: 900px) {
+  .sched-body { padding: 0 12px 80px; }
+  .sched-toolbar {
+    padding: 8px 0 10px;
+    gap: 6px;
+  }
+  .sched-add-btn { width: 100%; margin-left: 0; margin-top: 4px; }
+  .sched-cal-cell { min-height: 72px; }
+  .sched-cal-cell--other { min-height: 72px; }
+  .sched-monthly { overflow-x: auto; min-width: 340px; }
+  .sched-cal-bar { font-size: 10px; padding: 1px 4px; }
+  .sched-cal-bar-time { display: none; } /* 모바일에선 시간 생략, 제목만 */
+  .sched-cal-daynum { font-size: 11px; }
+}
 body.eye-care .memo-post-body, body.eye-care .memo-cmt-body { color: var(--text); }
 body.eye-care .memo-cmt { background: #2c2418; border-color: #4a3d20; }
 body.eye-care .memo-cmt-reply { background: #232730; border-left-color: #d97706; }
