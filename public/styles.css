@@ -1179,6 +1179,9 @@ body {
 .dashboard-card:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
 /* 카드 내부 요소가 클릭/드래그를 가로채지 않도록 */
 .dashboard-card > * { pointer-events: none; }
+/* 상태 필 — pointer-events 복원 */
+.dc-status-pills { pointer-events: auto !important; }
+.dc-status-pill  { pointer-events: auto; }
 /* 드래그: 2초 홀드 후 JS에서 처리하므로 기본은 스크롤 허용, 드래그 활성화 시 none으로 전환 */
 .dashboard-card { touch-action: pan-y; }  /* 세로 스크롤은 항상 허용 */
 .dashboard-card.drag-pending,
@@ -1348,6 +1351,43 @@ body {
   display: inline-flex; align-items: center; gap: 2px;
   margin-top: 4px; font-size: 9px; color: var(--red); font-weight: 700;
 }
+
+/* ── 대시보드 상태 선택 필 (상시 모니터링) ─────────────────── */
+.dc-status-pills {
+  display: flex;
+  gap: 4px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+.dc-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 20px;
+  border: 1.5px solid currentColor;
+  background: transparent;
+  cursor: pointer;
+  transition: background .12s, opacity .12s;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+.dc-status-pill:hover { opacity: .85; }
+.dc-pill-prog  { color: #3b82f6; }
+.dc-pill-prog:hover  { background: rgba(59,130,246,.12); }
+.dc-pill-delay { color: #94a3b8; }           /* 지연 없으면 회색 */
+.dc-pill-delay.has-delay { color: #ef4444; } /* 지연 있으면 빨강 */
+.dc-pill-delay:hover { background: rgba(239,68,68,.10); }
+.dc-pill-done  { color: #10b981; }
+.dc-pill-done:hover  { background: rgba(16,185,129,.12); }
+
+/* eye-care 모드 */
+body.eye-care .dc-pill-prog  { color: #93c5fd; }
+body.eye-care .dc-pill-delay { color: #94a3b8; }
+body.eye-care .dc-pill-delay.has-delay { color: #fca5a5; }
+body.eye-care .dc-pill-done  { color: #6ee7b7; }
 
 /* ── Section Blocks ─────────────────────────────────────────── */
 .section-card {

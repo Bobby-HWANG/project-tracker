@@ -757,9 +757,10 @@ function makeDashCard(m) {
   card.style.borderTopColor = m.color;
 
   if (m.category === 'monitoring') {
-    // 모니터링: 일정 진행률 중심
+    // 모니터링: 일정 진행률 + 상태 선택 버튼
     const msPct = m.milestone_total ? Math.round(m.milestone_done / m.milestone_total * 100) : 0;
-    const inProgress = m.milestone_total - m.milestone_done - m.milestone_delayed;
+    const inProgress = Math.max(0, m.milestone_total - m.milestone_done - (m.milestone_delayed||0));
+    const delayed    = m.milestone_delayed || 0;
     card.innerHTML = `
       <div class="dc-header">
         <div class="dc-dot" style="background:${m.color}"></div>
@@ -775,12 +776,26 @@ function makeDashCard(m) {
           <div class="dc-stat-label">완료</div>
         </div>
       </div>
-      <div class="dc-prog-label">진행률 ${msPct}%</div>
-      <div class="progress-bar">
-        <div class="progress-fill" style="width:${msPct}%;background:${m.color}"></div>
+      <div class="dc-prog-wrap">
+        <div class="dc-prog-label">진행률 ${msPct}%</div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width:${msPct}%;background:${m.color}"></div>
+        </div>
       </div>
-      ${m.milestone_delayed ? `<div class="dc-delayed">⚠ 지연 ${m.milestone_delayed}건</div>` : ''}
+      <div class="dc-status-pills">
+        <button class="dc-status-pill dc-pill-prog" data-filter="in_progress">◎ 진행중 ${inProgress}</button>
+        <button class="dc-status-pill dc-pill-delay${delayed ? ' has-delay' : ''}" data-filter="delayed">⚠ 지연 ${delayed}</button>
+        <button class="dc-status-pill dc-pill-done" data-filter="completed">✓ 완료 ${m.milestone_done}</button>
+      </div>
     `;
+    // 상태 필 클릭 → 해당 필터로 모델 진입
+    card.querySelectorAll('.dc-status-pill').forEach(pill => {
+      pill.addEventListener('click', e => {
+        e.stopPropagation();
+        window._pendingMsFilter = pill.dataset.filter;
+        selectModel(m.id);
+      });
+    });
   } else if (m.category === 'schedule' || m.name === '주요 일정 점검') {
     // 주요 일정 점검: 일정 수만 표시
     const msPct = m.milestone_total ? Math.round(m.milestone_done / m.milestone_total * 100) : 0;
@@ -1378,6 +1393,17 @@ async function renderMilestone(body) {
   });
 
   filterbar.querySelector('#btn-add-ms').addEventListener('click', () => openMsModal(null, []));
+
+  // 대시보드 상태 필 클릭 후 진입 시 자동 필터 적용
+  if (window._pendingMsFilter) {
+    const pending = window._pendingMsFilter;
+    window._pendingMsFilter = null;
+    filterbar.querySelectorAll('.ms-pill[data-filter]').forEach(b => b.classList.remove('active'));
+    const targetPill = filterbar.querySelector(`.ms-pill[data-filter="${pending}"]`);
+    if (targetPill) targetPill.classList.add('active');
+    applyMsFilter(msList, pending, total);
+  }
+
   refreshCommentCounts();
   attachInlineCommentsHandler(document.getElementById('tab-body'));
 }
