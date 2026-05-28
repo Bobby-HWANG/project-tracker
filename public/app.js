@@ -2856,8 +2856,17 @@ async function init() {
   document.getElementById('close-sidebar').addEventListener('click', closeSidebar);
   document.getElementById('overlay').addEventListener('click', closeSidebar);
   document.getElementById('modal-close').addEventListener('click', closeModal);
-  document.getElementById('modal-backdrop').addEventListener('click', e => {
-    if (e.target === document.getElementById('modal-backdrop')) closeModal();
+
+  // 모달 바깥(backdrop) 클릭 시 닫힘 — 단, 모달 내부에서 드래그해서 나온 경우는 닫히지 않음
+  // mousedown 시작 위치가 backdrop 자체일 때만 닫기
+  let _backdropMouseDownOnBg = false;
+  const _backdrop = document.getElementById('modal-backdrop');
+  _backdrop.addEventListener('mousedown', e => {
+    _backdropMouseDownOnBg = (e.target === _backdrop);
+  });
+  _backdrop.addEventListener('click', e => {
+    if (_backdropMouseDownOnBg && e.target === _backdrop) closeModal();
+    _backdropMouseDownOnBg = false;
   });
 
   document.getElementById('tabs').addEventListener('click', e => {
