@@ -2844,6 +2844,33 @@ body.eye-care .memo-post {
   opacity: .7;
   white-space: nowrap;
 }
+.ms-cal-dbl-hint {
+  font-size: 10px;
+  color: var(--text3);
+  opacity: .65;
+  white-space: nowrap;
+  margin-right: 4px;
+}
+
+/* 날짜 셀 더블클릭 힌트 — 호버 시 + 아이콘 표시 */
+.sched-cal-cell[data-date] {
+  cursor: default;
+}
+.sched-cal-cell[data-date]:hover::after {
+  content: '＋';
+  position: absolute;
+  bottom: 3px;
+  right: 4px;
+  font-size: 11px;
+  color: var(--accent);
+  opacity: 0;
+  transition: opacity .15s;
+  pointer-events: none;
+  font-weight: 700;
+}
+.sched-cal-cell[data-date]:hover::after {
+  opacity: .35;
+}
 
 /* ══ 모델 일정표 캘린더 (주요 일정 점검 전용) ══════════════════ */
 .ms-monthly { margin-top: 0; }

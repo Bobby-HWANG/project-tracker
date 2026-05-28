@@ -1164,6 +1164,7 @@ async function renderMilestoneCalendar(body) {
         <span class="ms-cal-zoom-badge" id="ms-cal-zoom-badge">${Math.round(msCalZoom*100)}%</span>
         <button class="ms-cal-zoom-reset" id="ms-cal-zoom-reset" title="줌 초기화">↺</button>
       </div>
+      <span class="ms-cal-dbl-hint">📅 날짜 더블클릭으로 일정 추가</span>
       <button class="btn-primary" id="btn-add-ms">＋ 일정 추가</button>
     </div>
   `;
@@ -1327,6 +1328,14 @@ function drawMsCalendar(container, filtered, allItems) {
       e.stopPropagation();
       const it = allItems.find(x => x.id === Number(el.dataset.id));
       if (it) openMsModal(it, []);
+    });
+  });
+
+  // 날짜 셀 더블클릭 → 해당 날짜로 일정 추가 모달 열기
+  container.querySelectorAll('.sched-cal-cell[data-date]').forEach(cell => {
+    cell.addEventListener('dblclick', e => {
+      if (e.target.closest('.ms-cal-bar')) return; // 이벤트 바 더블클릭은 무시
+      openMsModal({ due_date: cell.dataset.date }, []);
     });
   });
 }
@@ -1536,9 +1545,9 @@ function openMsModal(item, subs) {
 
   const footer = `
     <button class="btn-secondary" id="modal-cancel">취소</button>
-    <button class="btn-primary" id="modal-confirm">${item ? '수정' : '추가'}</button>
+    <button class="btn-primary" id="modal-confirm">${item?.id ? '수정' : '추가'}</button>
   `;
-  openModal(item ? '일정 수정' : '일정 추가', body, footer);
+  openModal(item?.id ? '일정 수정' : '일정 추가', body, footer);
 
   // 단일/기간 토글
   let dateMode = item?.due_date_end ? 'range' : 'single';
@@ -1583,7 +1592,7 @@ function openMsModal(item, subs) {
       due_date_end,
       status:      item?.status || 'pending',
     };
-    if (item) {
+    if (item?.id) {
       await PUT(`/api/milestones/${item.id}`, payload);
       toast('수정되었습니다', 'success');
     } else {
