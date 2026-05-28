@@ -1227,7 +1227,7 @@ async function renderMilestoneCalendar(body) {
         <button class="ms-pill ms-pill-delay" data-sf="delayed">⚠ 지연 ${delayed}</button>
       </div>
       <div style="display:flex;align-items:center;gap:5px;margin-left:auto">
-        <span class="ms-cal-zoom-hint">🖱 스크롤 줌</span>
+        <span class="ms-cal-zoom-hint">Ctrl+스크롤 줌</span>
         <span class="ms-cal-zoom-badge" id="ms-cal-zoom-badge">${Math.round(msCalZoom*100)}%</span>
         <button class="ms-cal-zoom-reset" id="ms-cal-zoom-reset" title="줌 초기화">↺</button>
       </div>
@@ -1283,19 +1283,42 @@ async function renderMilestoneCalendar(body) {
     filterbar.querySelector('#ms-cal-zoom-badge').textContent = '100%';
   });
 
-  // 스크롤 줌 (이전 리스너 제거 후 재등록)
+  // 휠: Ctrl+스크롤 → 줌 / 일반 스크롤 → 월 이동
   if (body._msCalWheelHandler) {
     body.removeEventListener('wheel', body._msCalWheelHandler);
   }
+  // 연속 스크롤 스로틀 (300ms 쿨다운)
+  let _wheelCooldown = false;
   body._msCalWheelHandler = (e) => {
-    if (e.ctrlKey || e.metaKey) return; // 브라우저 기본 줌은 유지
+    if (!e.target.closest('.sched-cal-grid, .sched-cal-header, #ms-cal-zoom-wrap')) return;
+
+    if (e.ctrlKey || e.metaKey) {
+      // Ctrl+스크롤 → 줌
+      e.preventDefault();
+      const delta = e.deltaY > 0 ? -0.05 : 0.05;
+      msCalZoom = Math.min(2.5, Math.max(0.4, msCalZoom + delta));
+      const wrap = body.querySelector('#ms-cal-zoom-wrap');
+      if (wrap) wrap.style.zoom = msCalZoom;
+      const badge = filterbar.querySelector('#ms-cal-zoom-badge');
+      if (badge) badge.textContent = Math.round(msCalZoom * 100) + '%';
+      return;
+    }
+
+    // 일반 스크롤 → 월 이동 (연속 스크롤 방지)
+    if (_wheelCooldown) return;
     e.preventDefault();
-    const delta = e.deltaY > 0 ? -0.05 : 0.05;
-    msCalZoom = Math.min(2.5, Math.max(0.4, msCalZoom + delta));
-    const wrap = body.querySelector('#ms-cal-zoom-wrap');
-    if (wrap) wrap.style.zoom = msCalZoom;
-    const badge = filterbar.querySelector('#ms-cal-zoom-badge');
-    if (badge) badge.textContent = Math.round(msCalZoom * 100) + '%';
+    _wheelCooldown = true;
+    setTimeout(() => { _wheelCooldown = false; }, 300);
+
+    if (e.deltaY < 0) {
+      // 스크롤 업 → 이전 달
+      msCalBase = new Date(msCalBase.getFullYear(), msCalBase.getMonth() - 1, 1);
+    } else {
+      // 스크롤 다운 → 다음 달
+      msCalBase = new Date(msCalBase.getFullYear(), msCalBase.getMonth() + 1, 1);
+    }
+    filterbar.querySelector('#ms-cal-period').textContent = `${msCalBase.getFullYear()}년 ${msCalBase.getMonth()+1}월`;
+    redraw();
   };
   body.addEventListener('wheel', body._msCalWheelHandler, { passive: false });
 
@@ -3115,6 +3138,24 @@ async function renderScheduleMain() {
       () => { moveSchedBase(-1); renderScheduleMain(); },
       () => { moveSchedBase(+1); renderScheduleMain(); }
     );
+
+    // 스크롤로 월 이동 (이전 핸들러 정리 후 재등록)
+    if (body._schedWheelHandler) {
+      body.removeEventListener('wheel', body._schedWheelHandler);
+    }
+    let _schedWheelCD = false;
+    body._schedWheelHandler = (e) => {
+      if (!e.target.closest('.sched-cal-grid, .sched-cal-header')) return;
+      if (e.ctrlKey || e.metaKey) return; // 브라우저 줌 허용
+      if (_schedWheelCD) return;
+      e.preventDefault();
+      _schedWheelCD = true;
+      setTimeout(() => { _schedWheelCD = false; }, 300);
+      if (e.deltaY < 0) { moveSchedBase(-1); }
+      else              { moveSchedBase(+1); }
+      renderScheduleMain();
+    };
+    body.addEventListener('wheel', body._schedWheelHandler, { passive: false });
   }
   toolbar.querySelectorAll('.sched-mode-btn').forEach(btn => {
     btn.addEventListener('click', () => {
