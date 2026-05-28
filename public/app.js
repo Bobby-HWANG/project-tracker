@@ -1231,7 +1231,7 @@ async function renderMilestoneCalendar(body) {
         <span class="ms-cal-zoom-badge" id="ms-cal-zoom-badge">${Math.round(msCalZoom*100)}%</span>
         <button class="ms-cal-zoom-reset" id="ms-cal-zoom-reset" title="줌 초기화">↺</button>
       </div>
-      <span class="ms-cal-dbl-hint">📅 날짜 더블클릭으로 일정 추가</span>
+      <span class="ms-cal-dbl-hint">📅 더블클릭: 일정 추가 &nbsp;|&nbsp; ← 드래그: 월 이동 →</span>
       <button class="btn-primary" id="btn-add-ms">＋ 일정 추가</button>
     </div>
   `;
@@ -1301,6 +1301,20 @@ async function renderMilestoneCalendar(body) {
 
   // 초기 렌더
   drawMsCalendar(body, items, items);
+
+  // 드래그로 월 변경 (좌드래그→다음달, 우드래그→이전달)
+  attachCalDrag(body,
+    () => {  // 이전 달
+      msCalBase = new Date(msCalBase.getFullYear(), msCalBase.getMonth() - 1, 1);
+      filterbar.querySelector('#ms-cal-period').textContent = `${msCalBase.getFullYear()}년 ${msCalBase.getMonth()+1}월`;
+      redraw();
+    },
+    () => {  // 다음 달
+      msCalBase = new Date(msCalBase.getFullYear(), msCalBase.getMonth() + 1, 1);
+      filterbar.querySelector('#ms-cal-period').textContent = `${msCalBase.getFullYear()}년 ${msCalBase.getMonth()+1}월`;
+      redraw();
+    }
+  );
 }
 
 function drawMsCalendar(container, filtered, allItems) {
@@ -3096,6 +3110,11 @@ async function renderScheduleMain() {
     document.getElementById('sched-today').addEventListener('click', () => {
       schedBaseDate = new Date(); renderScheduleMain();
     });
+    // 드래그로 월 변경
+    attachCalDrag(body,
+      () => { moveSchedBase(-1); renderScheduleMain(); },
+      () => { moveSchedBase(+1); renderScheduleMain(); }
+    );
   }
   toolbar.querySelectorAll('.sched-mode-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -3580,6 +3599,75 @@ function openScheduleModal(item, allItems) {
       toast(e.message || '저장 실패', 'error');
     }
   });
+}
+
+/* ── 캘린더 드래그 → 월 이동 유틸 ──────────────────────────────
+   container : 이벤트를 걸 부모 요소 (body 탭 or sched-body)
+   onPrev    : 이전 달로 이동 콜백 (오른쪽 드래그)
+   onNext    : 다음 달로 이동 콜백 (왼쪽 드래그)
+   ─────────────────────────────────────────────────────────── */
+function attachCalDrag(container, onPrev, onNext) {
+  // 기존 핸들러 정리 (중복 방지)
+  if (container._calDragHandler) {
+    container.removeEventListener('pointerdown', container._calDragHandler);
+    delete container._calDragHandler;
+  }
+
+  const THRESHOLD = 55; // 월 이동 최소 드래그 거리 (px)
+
+  container._calDragHandler = (e) => {
+    // 달력 셀/헤더 영역에서만 활성화
+    if (!e.target.closest('.sched-cal-grid, .sched-cal-header')) return;
+    // 이벤트바·+버튼·날짜숫자 클릭은 드래그 무시
+    if (e.target.closest('.ms-cal-bar, .sched-cal-bar, .cal-add-btn, .sched-cal-daynum')) return;
+
+    const startX = e.clientX;
+    const startY = e.clientY;
+    let hasDragged = false;
+
+    // 이동 중 시각 피드백 — .sched-monthly 요소를 살짝 따라 이동
+    const monthly = container.querySelector('.sched-monthly');
+    if (monthly) monthly.style.transition = 'none'; // 드래그 중 즉각 반응
+
+    const onMove = (mv) => {
+      const dx = mv.clientX - startX;
+      const dy = mv.clientY - startY;
+      // 수평 이동이 수직보다 커야 월 이동 드래그로 인식
+      if (Math.abs(dx) > Math.abs(dy) * 1.2 && Math.abs(dx) > 10) {
+        hasDragged = true;
+      }
+      if (hasDragged && monthly) {
+        // 화면이 손가락/마우스를 따라가되 최대 ±45px 제한
+        const visual = Math.sign(dx) * Math.min(Math.abs(dx) * 0.38, 45);
+        monthly.style.transform = `translateX(${visual}px)`;
+        monthly.style.opacity   = String(Math.max(0.6, 1 - Math.abs(dx) / 380));
+      }
+    };
+
+    const onUp = (up) => {
+      container.removeEventListener('pointermove', onMove);
+      container.removeEventListener('pointerup',   onUp);
+      container.removeEventListener('pointercancel', onUp);
+
+      // 스냅백 애니메이션
+      if (monthly) {
+        monthly.style.transition = 'transform 0.2s ease, opacity 0.2s';
+        monthly.style.transform  = '';
+        monthly.style.opacity    = '';
+      }
+
+      if (!hasDragged) return;
+      const dx = up.clientX - startX;
+      if      (dx >  THRESHOLD) onPrev(); // 오른쪽 드래그 → 이전 달
+      else if (dx < -THRESHOLD) onNext(); // 왼쪽 드래그  → 다음 달
+    };
+
+    container.addEventListener('pointermove',   onMove);
+    container.addEventListener('pointerup',     onUp);
+    container.addEventListener('pointercancel', onUp);
+  };
+
+  container.addEventListener('pointerdown', container._calDragHandler);
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
