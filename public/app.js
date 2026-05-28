@@ -1462,6 +1462,7 @@ function drawMsCalendar(container, filtered, allItems) {
 async function renderMilestone(body) {
   const mid    = state.activeModel.id;
   const items  = await GET(`/api/models/${mid}/milestones`);
+  window._milestoneItems = items;   // 상태 직접 변경 시 사용
   const subs   = []; // 더 이상 그룹 분류 안함
 
   // 상태 정렬: 진행중 → 지연 → 대기 → 완료
@@ -1562,7 +1563,9 @@ function makeMsItem(it, today) {
       ${it.description ? `<div class="ms-desc">${escHtml(it.description)}</div>` : ''}
       <div class="ms-meta">
         ${dateStr ? `<div class="ms-date ${overdue ? 'overdue':''}">${dateStr}${overdue ? ' 지연':''}</div>` : ''}
-        <span class="status-badge status-${it.status}">${STATUS_LABELS[it.status]}</span>
+        <button class="status-badge status-${it.status} ms-status-btn"
+                data-action="status-ms" data-id="${it.id}"
+                title="클릭하여 상태 변경">${STATUS_LABELS[it.status]} ▾</button>
       </div>
       ${it.note ? `<div class="ms-note">📝 ${escHtml(it.note)}</div>` : ''}
       ${buildInlineCommentsHTML('milestone', it.id, cmts)}
@@ -1588,6 +1591,10 @@ document.getElementById('tab-body').addEventListener('click', async e => {
   if (action === 'cmt-check') return openCommentsModal('checklist', id, actBtn.dataset.title);
   if (action === 'cmt-clm')   return openCommentsModal('claim',     id, actBtn.dataset.title);
 
+  if (action === 'status-ms') {
+    showMsStatusPicker(actBtn, id);
+    return;
+  }
   if (action === 'edit-ms') {
     const items = await GET(`/api/models/${mid}/milestones`);
     openMsModal(items.find(x => x.id === id), []);
@@ -3640,6 +3647,93 @@ function openScheduleModal(item, allItems) {
       toast(e.message || '저장 실패', 'error');
     }
   });
+}
+
+/* ── 일정 상태 직접 선택 피커 ────────────────────────────────── */
+function showMsStatusPicker(anchor, msId) {
+  // 기존 피커 닫기
+  document.querySelectorAll('.ms-status-picker').forEach(el => el.remove());
+
+  const OPTIONS = [
+    { key: 'in_progress', label: '◎ 진행중', cls: 'sp-prog' },
+    { key: 'delayed',     label: '⚠ 지연',   cls: 'sp-delay' },
+    { key: 'completed',   label: '✓ 완료',   cls: 'sp-done' },
+    { key: 'pending',     label: '○ 대기중', cls: 'sp-pend' },
+  ];
+
+  const picker = document.createElement('div');
+  picker.className = 'ms-status-picker';
+  picker.innerHTML = OPTIONS.map(o =>
+    `<button class="ms-sp-btn ${o.cls}" data-status="${o.key}">${o.label}</button>`
+  ).join('');
+
+  // 현재 상태에 active 표시
+  const currentStatus = anchor.dataset?.currentStatus ||
+    [...anchor.classList].find(c => c.startsWith('status-'))?.replace('status-', '');
+  picker.querySelectorAll('.ms-sp-btn').forEach(b => {
+    if (b.dataset.status === currentStatus) b.classList.add('active');
+  });
+
+  // 위치: 앵커 아래 or 화면 상단 넘치면 위
+  const rect = anchor.getBoundingClientRect();
+  picker.style.cssText = `position:fixed;left:${rect.left}px;top:${rect.bottom+4}px;z-index:9999;`;
+  document.body.appendChild(picker);
+
+  // 화면 아래 넘침 보정
+  requestAnimationFrame(() => {
+    const pr = picker.getBoundingClientRect();
+    if (pr.bottom > window.innerHeight - 8) {
+      picker.style.top = `${rect.top - pr.height - 4}px`;
+    }
+  });
+
+  // 옵션 클릭 → 즉시 UI 반영 + 서버 저장
+  picker.addEventListener('click', async e => {
+    const btn = e.target.closest('.ms-sp-btn');
+    if (!btn) return;
+    const newStatus = btn.dataset.status;
+    picker.remove();
+
+    // 버튼 즉시 업데이트
+    anchor.className = `status-badge status-${newStatus} ms-status-btn`;
+    anchor.textContent = STATUS_LABELS[newStatus] + ' ▾';
+
+    // 상위 milestone-item 상태 dot + data-status 갱신
+    const itemEl = anchor.closest('.milestone-item');
+    if (itemEl) {
+      itemEl.dataset.status = newStatus;
+      const dot = itemEl.querySelector('.ms-status-dot');
+      if (dot) dot.style.background = STATUS_DOT[newStatus];
+    }
+
+    // 서버 저장
+    const cached = (window._milestoneItems || []).find(x => x.id === msId);
+    if (!cached) { toast('항목 오류', 'error'); return; }
+    try {
+      await PUT(`/api/milestones/${msId}`, { ...cached, status: newStatus });
+      cached.status = newStatus;           // 캐시도 갱신
+      toast('상태가 변경되었습니다', 'success');
+      notifyDataChanged();
+    } catch(err) {
+      // 실패 시 원래 상태로 복원
+      anchor.className = `status-badge status-${cached.status} ms-status-btn`;
+      anchor.textContent = STATUS_LABELS[cached.status] + ' ▾';
+      if (itemEl) {
+        itemEl.dataset.status = cached.status;
+        const dot = itemEl.querySelector('.ms-status-dot');
+        if (dot) dot.style.background = STATUS_DOT[cached.status];
+      }
+    }
+  });
+
+  // 외부 클릭 시 닫기
+  const closeHandler = (ev) => {
+    if (!picker.contains(ev.target) && ev.target !== anchor) {
+      picker.remove();
+      document.removeEventListener('pointerdown', closeHandler);
+    }
+  };
+  setTimeout(() => document.addEventListener('pointerdown', closeHandler), 30);
 }
 
 /* ── 캘린더 드래그 → 월 이동 유틸 ──────────────────────────────
