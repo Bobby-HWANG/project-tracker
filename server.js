@@ -9,6 +9,19 @@ const path = require('path');
 const os = require('os');
 const crypto = require('crypto');
 
+// ════════════════════════════════════════════════════════════
+//  전역 에러 핸들러 — 어떤 오류도 프로세스를 죽이지 않음
+// ════════════════════════════════════════════════════════════
+process.on('uncaughtException', (err, origin) => {
+  console.error(`[CRITICAL] uncaughtException (${origin}):`, err.message);
+  console.error(err.stack);
+  // 프로세스를 종료하지 않고 계속 실행 → 강제 꺼짐 방지
+});
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('[CRITICAL] unhandledRejection:', reason);
+  // 프로세스를 종료하지 않고 계속 실행 → 강제 꺼짐 방지
+});
+
 const app = express();
 
 // ════════════════════════════════════════════════════════════
@@ -410,6 +423,15 @@ bootstrapAdmin();
 
 // ── Middleware (인증/API 라우트 정의 전에 반드시 등록) ──────
 app.use(express.json({ limit: '5mb' }));
+
+// JSON 파싱 오류 처리 (malformed body → 400, 프로세스 종료 없음)
+app.use((err, req, res, next) => {
+  if (err.type === 'entity.parse.failed') {
+    return res.status(400).json({ error: '잘못된 요청 형식입니다' });
+  }
+  next(err);
+});
+
 app.use((req, res, next) => {
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
   res.setHeader('Pragma', 'no-cache');
@@ -417,6 +439,20 @@ app.use((req, res, next) => {
   next();
 });
 app.use(express.static(path.join(__dirname, 'public'), { etag: false, lastModified: false, maxAge: 0 }));
+
+// ── 안전한 라우트 래퍼: 어떤 에러도 next(err)로 전달 ──────────
+function sr(fn) {
+  return (req, res, next) => {
+    try {
+      const result = fn(req, res, next);
+      if (result && typeof result.catch === 'function') {
+        result.catch(next);
+      }
+    } catch (err) {
+      next(err);
+    }
+  };
+}
 
 // 쿠키 파서 (의존성 없는 경량 구현)
 function parseCookies(req) {
@@ -473,7 +509,7 @@ app.get('/api/models', (_, res) => {
 app.post('/api/models', (req, res) => {
   const { name, color = '#3B82F6', category = 'model' } = req.body;
   if (!DB.models) DB.models = [];
-  const maxO = Math.max(-1, ...DB.models.filter(x=>x.category===category).map(x=>x.order));
+  const maxO = DB.models.filter(x=>x.category===category).reduce((m,x)=>Math.max(m,x.order??0),-1);
   const id = nextId();
   DB.models.push({ id, name, color, order: maxO+1, category, ...stampCreate(req) });
   DB.subItems[id] = [
@@ -541,7 +577,7 @@ app.get('/api/models/:id/sub-items', (req, res) => {
 app.post('/api/models/:id/sub-items', (req, res) => {
   const id = Number(req.params.id);
   if (!DB.subItems[id]) DB.subItems[id] = [];
-  const maxO = Math.max(-1, ...DB.subItems[id].map(x=>x.order));
+  const maxO = (DB.subItems[id]||[]).reduce((m,x)=>Math.max(m,x.order??0),-1);
   const sub = { id:nextId(), modelId:id, name:req.body.name, order:maxO+1 };
   DB.subItems[id].push(sub);
   save();
@@ -682,7 +718,7 @@ app.get('/api/models/:id/checklist', (req, res) => {
 app.post('/api/models/:id/checklist', (req, res) => {
   const id = Number(req.params.id);
   if (!DB.checklists[id]) DB.checklists[id] = [];
-  const maxO = Math.max(-1, ...DB.checklists[id].map(x=>x.order ?? 0));
+  const maxO = (DB.checklists[id]||[]).reduce((m,x)=>Math.max(m,x.order??0),-1);
   const item = {
     id: nextId(),
     author:     req.body.author       || null,
@@ -768,7 +804,7 @@ app.get('/api/models/:id/claims', (req, res) => {
 app.post('/api/models/:id/claims', (req, res) => {
   const id = Number(req.params.id);
   if (!DB.claims[id]) DB.claims[id] = [];
-  const maxO = Math.max(-1, ...DB.claims[id].map(x=>x.order ?? 0));
+  const maxO = (DB.claims[id]||[]).reduce((m,x)=>Math.max(m,x.order??0),-1);
   const item = {
     id: nextId(),
     author:           req.body.author             || null,
@@ -1200,6 +1236,15 @@ async function gracefulShutdown(sig) {
 }
 process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 process.on('SIGINT',  () => gracefulShutdown('SIGINT'));
+
+// ── Express 전역 에러 미들웨어 (반드시 모든 라우트 뒤에 위치) ──
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, next) => {
+  console.error('[API Error]', req.method, req.path, err.message || err);
+  if (!res.headersSent) {
+    res.status(500).json({ error: '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.' });
+  }
+});
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log('\n┌──────────────────────────────────────────────┐');

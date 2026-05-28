@@ -37,8 +37,24 @@ async function api(method, path, body) {
     headers: { 'Content-Type': 'application/json' },
   };
   if (body !== undefined) opts.body = JSON.stringify(body);
-  const r = await fetch(path, opts);
-  if (!r.ok) throw new Error(await r.text());
+  let r;
+  try {
+    r = await fetch(path, opts);
+  } catch (netErr) {
+    // 네트워크 오류 (서버 다운, 연결 끊김 등)
+    toast('서버에 연결할 수 없습니다. 네트워크를 확인하세요.', 'error');
+    throw netErr;
+  }
+  if (!r.ok) {
+    let msg = `오류 ${r.status}`;
+    try {
+      const txt = await r.text();
+      const parsed = JSON.parse(txt);
+      msg = parsed.error || parsed.message || msg;
+    } catch (_) {}
+    toast(msg, 'error');
+    throw new Error(msg);
+  }
   return r.json();
 }
 const GET  = path       => api('GET',    path);
