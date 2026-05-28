@@ -1274,9 +1274,9 @@ body {
   font-weight: 700;
   letter-spacing: 0.5px;
 }
-/* ── 모델 카드: 정사각형 (데스크톱) ─────────────────────── */
+/* ── 모델 카드: 높이 컨텐츠 기반 (백색 공란 제거) ─────── */
 .dash-section.model .dashboard-card:not(.add-card) {
-  aspect-ratio: 1 / 1;           /* 데스크톱: aspect-ratio로 정사각형 */
+  aspect-ratio: auto;             /* 정사각형 해제 → 컨텐츠 높이만 차지 */
   overflow: hidden;
   padding: 10px 10px;
   justify-content: space-between;
@@ -2855,20 +2855,39 @@ body.eye-care .memo-post {
 .sched-cal-cell[data-date] {
   cursor: default;
 }
-.sched-cal-cell[data-date]:hover::after {
-  content: '＋';
+
+/* ── 캘린더 날짜 "+" 추가 버튼 (클릭 가능한 진짜 버튼) ── */
+.cal-add-btn {
   position: absolute;
-  bottom: 3px;
+  bottom: 4px;
   right: 4px;
-  font-size: 11px;
-  color: var(--accent);
+  width: 22px;
+  height: 22px;
+  font-size: 16px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
   opacity: 0;
-  transition: opacity .15s;
-  pointer-events: none;
-  font-weight: 700;
+  transition: opacity .15s, transform .1s;
+  z-index: 3;
+  padding: 0;
+  font-weight: 800;
+  box-shadow: 0 1px 4px rgba(0,0,0,.18);
+  flex-shrink: 0;
 }
-.sched-cal-cell[data-date]:hover::after {
-  opacity: .35;
+.sched-cal-cell:hover .cal-add-btn {
+  opacity: .75;
+}
+.cal-add-btn:hover {
+  opacity: 1 !important;
+  transform: scale(1.15);
+  background: var(--blue);
 }
 
 /* ══ 모델 일정표 캘린더 (주요 일정 점검 전용) ══════════════════ */
@@ -3520,11 +3539,14 @@ body.eye-care .welcome p { color: var(--text3); }
 .dc-prog-label { font-size: 11px !important; }
 .dc-delayed { font-size: 11px !important; }
 
-/* 모델 섹션도 동일 */
-.dash-section.model .dashboard-card { padding: 16px 14px !important; min-height: 140px !important; }
+/* 모델 카드 — 백색 공란 제거 (세로 컨텐츠 기반) */
+.dash-section.model .dashboard-card { padding: 10px 12px 8px !important; min-height: 0 !important; }
 .dash-section.model .dc-name { font-size: 14.5px !important; }
 .dash-section.model .dc-stat-val { font-size: 19px !important; }
 .dash-section.model .dc-stats-3 .dc-stat-val { font-size: 17px !important; }
+.dash-section.model .dc-stats   { gap: 4px !important; margin-bottom: 4px !important; }
+.dash-section.model .dc-stat    { padding: 4px 2px !important; }
+.dash-section.model .dc-prog-wrap { margin-top: 4px !important; }
 
 /* 페이지 헤더 우측 여백 추가 축소 (헤더는 폭 좁아도 OK) */
 #view-dashboard .page-header { padding: 14px 130px 12px 16px !important; }
@@ -3538,10 +3560,15 @@ body.eye-care .welcome p { color: var(--text3); }
   min-height: 165px !important;
   padding-bottom: 12px !important;
 }
-.dash-section.model .dashboard-card,
+/* 모니터링 카드는 pills 공간 필요 — min-height 유지 */
 .dash-section.monitoring .dashboard-card {
-  min-height: 165px !important;
+  min-height: 140px !important;
   padding-bottom: 12px !important;
+}
+/* 모델 카드는 컨텐츠 기반 (aspect-ratio 해제로 공란 제거) */
+.dash-section.model .dashboard-card {
+  min-height: 0 !important;
+  padding-bottom: 8px !important;
 }
 
 /* 지연 메시지 한 줄 (좌·우 균형 배치) */

@@ -291,9 +291,9 @@ function makeSchedDashSection(thisMonth, total) {
 
   const grid = sec.querySelector('.sched-dash-grid');
 
-  // 그리드 컬럼: 데이터 카드 1개 + 바로가기 카드 (모니터링과 동일 방식)
+  // 그리드 컬럼: 모니터링 3카드와 동일 너비 (1fr) + 빈 2fr + 바로가기 카드
   if (window.innerWidth > 900) {
-    grid.style.gridTemplateColumns = `minmax(0, 1fr) var(--add-w)`;
+    grid.style.gridTemplateColumns = `minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) var(--add-w)`;
   }
 
   // 카드 한 장: 이달 일정 수 — 모니터링 카드와 동일 dc-stats 구조
@@ -335,6 +335,7 @@ function makeSchedDashSection(thisMonth, total) {
   goCard.setAttribute('tabindex', '0');
   goCard.innerHTML = `<div class="add-card-icon">📋</div><div class="add-card-label">세부 일정 목록</div>`;
   goCard.addEventListener('click', () => { closeSidebar(); loadScheduleView(); });
+  if (window.innerWidth > 900) goCard.style.gridColumn = '4'; // 우측 고정
   grid.appendChild(goCard);
 
   // 토글
@@ -1387,6 +1388,7 @@ function drawMsCalendar(container, filtered, allItems) {
         }).join('')}
         ${overflow ? `<div class="sched-cal-more">+${overflow}개 더</div>` : ''}
       </div>
+      <button class="cal-add-btn" data-date="${dateStr}" title="${dateStr} 일정 추가">＋</button>
     </div>`;
   });
 
@@ -1405,8 +1407,16 @@ function drawMsCalendar(container, filtered, allItems) {
   // 날짜 셀 더블클릭 → 해당 날짜로 일정 추가 모달 열기
   container.querySelectorAll('.sched-cal-cell[data-date]').forEach(cell => {
     cell.addEventListener('dblclick', e => {
-      if (e.target.closest('.ms-cal-bar')) return; // 이벤트 바 더블클릭은 무시
+      if (e.target.closest('.ms-cal-bar') || e.target.closest('.cal-add-btn')) return;
       openMsModal({ due_date: cell.dataset.date }, []);
+    });
+  });
+
+  // "+" 버튼 클릭 → 해당 날짜로 일정 추가 모달 (단일 클릭)
+  container.querySelectorAll('.cal-add-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      openMsModal({ due_date: btn.dataset.date }, []);
     });
   });
 }
@@ -3190,6 +3200,7 @@ function renderSchedMonthly(items, container) {
         }).join('')}
         ${overflow ? `<div class="sched-cal-more">+${overflow}개 더</div>` : ''}
       </div>
+      <button class="cal-add-btn" data-date="${dateStr}" title="${dateStr} 일정 추가">＋</button>
     </div>`;
   });
 
@@ -3202,6 +3213,15 @@ function renderSchedMonthly(items, container) {
       e.stopPropagation();
       const it = items.find(x => x.id === Number(el.dataset.id));
       if (it) openScheduleModal(it, items);
+    });
+  });
+
+  // "+" 버튼 클릭 → 해당 날짜 일정 추가 모달 (날짜 자동 입력)
+  container.querySelectorAll('.cal-add-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const d = btn.dataset.date;
+      openScheduleModal({ startAt: `${d}T09:00`, endAt: `${d}T10:00` }, items);
     });
   });
 
@@ -3312,7 +3332,7 @@ function findConflicts(items, startAt, endAt, excludeId) {
 
 // ── 일정 추가/수정 모달 (커스텀 24H / 30분 단위 피커) ─────────
 function openScheduleModal(item, allItems) {
-  const isEdit = !!item;
+  const isEdit = !!(item?.id);  // id 없으면 날짜만 pre-fill된 신규 추가
   const myName = getCommenterName();
 
   // 현재 시각을 30분 단위로 반올림
