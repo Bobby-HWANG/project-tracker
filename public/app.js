@@ -1322,6 +1322,15 @@ async function renderMilestone(body) {
   const items  = await GET(`/api/models/${mid}/milestones`);
   const subs   = []; // 더 이상 그룹 분류 안함
 
+  // 상태 정렬: 진행중 → 지연 → 대기 → 완료
+  const STATUS_ORDER = { in_progress: 0, delayed: 1, pending: 2, completed: 3 };
+  items.sort((a, b) => {
+    const sa = STATUS_ORDER[a.status] ?? 2;
+    const sb = STATUS_ORDER[b.status] ?? 2;
+    if (sa !== sb) return sa - sb;
+    return (a.due_date || '').localeCompare(b.due_date || ''); // 같은 상태면 날짜 오름차순
+  });
+
   // 댓글 일괄 페치
   await batchFetchComments(items.map(it => ({ type: 'milestone', id: it.id })));
 
