@@ -502,6 +502,9 @@ body {
 .sidebar-dashboard-btn.active { background: var(--sb-active); color: var(--sb-text-h); }
 .si-icon { font-size: 16px; }
 
+/* 대시보드 ↔ 주요 일정 점검 사이 2줄 간격 */
+#btn-schedule { margin-top: 22px; }
+
 .sidebar-label {
   padding: 14px 16px 6px;
   font-size: 10px;
@@ -529,7 +532,7 @@ body {
   border-radius: var(--radius-sm);
   cursor: pointer;
   color: var(--sb-text);
-  font-size: 14px;
+  font-size: 12px;           /* ↓ 14px → 12px (세부항목 축소) */
   font-weight: 500;
   transition: background var(--transition), color var(--transition);
   position: relative;
@@ -1109,7 +1112,7 @@ body {
   align-items: center;
   gap: 4px;
   width: 100%;
-  font-size: 12px;
+  font-size: 14px;           /* ↑ 12px → 14px (대제목 강조) */
   font-weight: 700;
   letter-spacing: -0.2px;
   padding: 14px 14px 6px;
@@ -1132,12 +1135,13 @@ body {
 .sb-group-label.model      { color: #A78BFA; }
 .sb-group-label.memo       { color: #34D399; }
 .sb-group-label.memo.active { color: #10b981; background: rgba(52,211,153,.08); border-radius: 6px; }
-.sb-group-label:first-child { padding-top: 6px; }
+/* 첫 번째 대분류: 위에 사이드바 섹션과 2줄 간격 */
+.sb-group-label:first-child { padding-top: 22px; }
 
-/* 그룹 간 구분선 */
+/* 그룹 간 구분선 + 2줄 간격 */
 .sb-group-label.model,
 .sb-group-label.memo {
-  margin-top: 8px;
+  margin-top: 20px;          /* 8px → 20px (약 2줄 높이) */
   padding-top: 14px;
   border-top: 1px solid rgba(255,255,255,0.06);
 }
