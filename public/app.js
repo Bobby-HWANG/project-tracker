@@ -293,12 +293,12 @@ function makeSchedDashSection(thisMonth, total) {
     </div>
     <div class="dc-stats">
       <div class="dc-stat">
-        <div class="sched-dash-count">${thisMonth}</div>
-        <div class="sched-dash-count-label">${now.getMonth()+1}월 일정</div>
+        <div class="dc-stat-val" style="color:#3B82F6">${thisMonth}</div>
+        <div class="dc-stat-label">${now.getMonth()+1}월 일정</div>
       </div>
       <div class="dc-stat">
-        <div class="sched-dash-count" style="color:var(--text)">${total}</div>
-        <div class="sched-dash-count-label">전체</div>
+        <div class="dc-stat-val">${total}</div>
+        <div class="dc-stat-label">전체</div>
       </div>
     </div>
     <div class="dc-prog-wrap">

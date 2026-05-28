@@ -761,8 +761,7 @@ body {
 .dash-section.schedule {
   background: linear-gradient(180deg, #E0F2FE 0%, #F0F9FF 100%);
   border-color: #7DD3FC;
-  flex: 0 0 auto !important;
-  min-height: 0 !important;
+  /* flex/min-height 제거 → .dash-section 기본값(flex:1) 사용 — 모니터링과 동일 */
 }
 .dash-section.memo {
   background: linear-gradient(180deg, #FEF9C3 0%, #FEFCE8 100%);
@@ -3391,13 +3390,16 @@ body.eye-care .welcome p { color: var(--text3); }
   font-size: 16px !important;
 }
 
-/* 모니터링 카드 — 동일하게 넉넉하게 */
-.dash-section.monitoring .dashboard-card {
+/* 모니터링 / 주요일정 카드 — 동일 규격 */
+.dash-section.monitoring .dashboard-card,
+.dash-section.schedule .dashboard-card {
   padding: 14px 14px !important;
   min-height: 130px;
 }
-.dash-section.monitoring .dc-name { font-size: 13.5px !important; }
-.dash-section.monitoring .dc-stat-val { font-size: 18px !important; }
+.dash-section.monitoring .dc-name,
+.dash-section.schedule   .dc-name { font-size: 13.5px !important; }
+.dash-section.monitoring .dc-stat-val,
+.dash-section.schedule   .dc-stat-val { font-size: 18px !important; }
 
 /* 모델 섹션의 추가 셀 — 세로로 길게, 우측 칼럼 */
 .dash-section.model .add-card {
