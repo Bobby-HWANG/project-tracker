@@ -1127,6 +1127,11 @@ async function renderMilestoneCalendar(body) {
         <button class="ms-pill ms-pill-prog" data-sf="in_progress">◎ 진행중 ${inProg}</button>
         <button class="ms-pill ms-pill-delay" data-sf="delayed">⚠ 지연 ${delayed}</button>
       </div>
+      <div style="display:flex;align-items:center;gap:5px;margin-left:auto">
+        <span class="ms-cal-zoom-hint">🖱 스크롤 줌</span>
+        <span class="ms-cal-zoom-badge" id="ms-cal-zoom-badge">${Math.round(msCalZoom*100)}%</span>
+        <button class="ms-cal-zoom-reset" id="ms-cal-zoom-reset" title="줌 초기화">↺</button>
+      </div>
       <button class="btn-primary" id="btn-add-ms">＋ 일정 추가</button>
     </div>
   `;
@@ -1170,6 +1175,30 @@ async function renderMilestoneCalendar(body) {
   // 일정 추가
   filterbar.querySelector('#btn-add-ms').addEventListener('click', () => openMsModal(null, []));
 
+  // 줌 초기화 버튼
+  filterbar.querySelector('#ms-cal-zoom-reset').addEventListener('click', () => {
+    msCalZoom = 1.0;
+    const wrap = body.querySelector('#ms-cal-zoom-wrap');
+    if (wrap) wrap.style.zoom = '1';
+    filterbar.querySelector('#ms-cal-zoom-badge').textContent = '100%';
+  });
+
+  // 스크롤 줌 (이전 리스너 제거 후 재등록)
+  if (body._msCalWheelHandler) {
+    body.removeEventListener('wheel', body._msCalWheelHandler);
+  }
+  body._msCalWheelHandler = (e) => {
+    if (e.ctrlKey || e.metaKey) return; // 브라우저 기본 줌은 유지
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -0.05 : 0.05;
+    msCalZoom = Math.min(2.5, Math.max(0.4, msCalZoom + delta));
+    const wrap = body.querySelector('#ms-cal-zoom-wrap');
+    if (wrap) wrap.style.zoom = msCalZoom;
+    const badge = filterbar.querySelector('#ms-cal-zoom-badge');
+    if (badge) badge.textContent = Math.round(msCalZoom * 100) + '%';
+  };
+  body.addEventListener('wheel', body._msCalWheelHandler, { passive: false });
+
   // 초기 렌더
   drawMsCalendar(body, items, items);
 }
@@ -1211,7 +1240,8 @@ function drawMsCalendar(container, filtered, allItems) {
 
   const MAX_VIS = 4;
 
-  let html = `<div class="sched-monthly ms-monthly">
+  let html = `<div id="ms-cal-zoom-wrap" style="zoom:${msCalZoom}">
+  <div class="sched-monthly ms-monthly">
     <div class="sched-cal-header">
       ${['일','월','화','수','목','금','토'].map((lbl,i) =>
         `<div class="sched-cal-dow${i===0?' sun':i===6?' sat':''}">${lbl}</div>`
@@ -1256,7 +1286,7 @@ function drawMsCalendar(container, filtered, allItems) {
     </div>`;
   });
 
-  html += `</div></div>`;
+  html += `</div></div></div>`;  /* grid / ms-monthly / zoom-wrap */
   container.innerHTML = html;
 
   // 이벤트 바 클릭 → 수정 모달
@@ -2818,6 +2848,8 @@ let schedViewMode  = 'monthly';
 let schedBaseDate  = new Date();
 // 모델 일정표 캘린더용 기준 날짜
 let msCalBase      = new Date();
+// 캘린더 스크롤 줌 배율 (1.0 = 기본 9/10 CSS 크기)
+let msCalZoom      = 1.0;
 
 // 헬퍼: Date → 'YYYY-MM-DDThh:mm' (local)
 function toLocalDatetime(d) {
