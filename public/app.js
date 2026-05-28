@@ -275,27 +275,44 @@ function makeSchedDashSection(thisMonth, total) {
 
   const grid = sec.querySelector('.sched-dash-grid');
 
-  // 카드 한 장: 이달 일정 수
+  // 그리드 컬럼: 데이터 카드 1개 + 바로가기 카드 (모니터링과 동일 방식)
+  if (window.innerWidth > 900) {
+    grid.style.gridTemplateColumns = `minmax(0, 1fr) var(--add-w)`;
+  }
+
+  // 카드 한 장: 이달 일정 수 — 모니터링 카드와 동일 dc-stats 구조
+  const pct = total > 0 ? Math.round(thisMonth / total * 100) : 0;
   const card = document.createElement('div');
   card.className = 'dashboard-card sched-dash-card';
   card.setAttribute('role', 'button');
   card.setAttribute('tabindex', '0');
   card.innerHTML = `
-    <div class="dc-header" style="gap:3px">
-      <div class="dc-dot" style="background:#3B82F6;width:6px;height:6px;flex-shrink:0"></div>
-      <div class="dc-name" style="font-size:9px">${now.getMonth()+1}월 일정</div>
+    <div class="dc-header">
+      <div class="dc-dot" style="background:#3B82F6"></div>
+      <div class="dc-name">주요 일정 점검</div>
     </div>
-    <div class="sched-dash-count-wrap">
-      <div class="sched-dash-count">${thisMonth}</div>
-      <div class="sched-dash-count-label">건</div>
+    <div class="dc-stats">
+      <div class="dc-stat">
+        <div class="sched-dash-count">${thisMonth}</div>
+        <div class="sched-dash-count-label">${now.getMonth()+1}월 일정</div>
+      </div>
+      <div class="dc-stat">
+        <div class="sched-dash-count" style="color:var(--text)">${total}</div>
+        <div class="sched-dash-count-label">전체</div>
+      </div>
     </div>
-    <div class="sched-dash-total">전체 ${total}건</div>
+    <div class="dc-prog-wrap">
+      <div class="dc-prog-label">이달 비율 ${pct}%</div>
+      <div class="progress-bar">
+        <div class="progress-fill" style="width:${pct}%;background:#3B82F6"></div>
+      </div>
+    </div>
   `;
   card.addEventListener('click', () => { closeSidebar(); loadScheduleView(); });
   card.addEventListener('keydown', e => { if (e.key==='Enter'||e.key===' ') loadScheduleView(); });
   grid.appendChild(card);
 
-  // 달력 바로가기 버튼
+  // 달력 바로가기 버튼 (add-card 기본 스타일 그대로)
   const goCard = document.createElement('div');
   goCard.className = 'dashboard-card add-card sched-go-card';
   goCard.setAttribute('role', 'button');
