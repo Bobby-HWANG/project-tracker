@@ -725,29 +725,27 @@ body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 20px;                /* 섹션 간 여백 */
-  padding: 16px 16px 24px;  /* 좌우 패딩 최소화 → 카드가 최대한 넓게 */
+  gap: 24px;                /* 섹션 간 여백 (겹침 방지용 여유 확보) */
+  padding: 20px 16px 32px;  /* 상하 패딩도 충분히 */
   min-height: 0;
   overflow-y: auto;
-  overflow-x: hidden;       /* 가로 스크롤 차단 */
-  /* 접힘/펼침 무관하게 항상 가로 전폭 사용 */
+  overflow-x: hidden;
   width: 100%;
   box-sizing: border-box;
-  /* 스크롤바가 나타나도 레이아웃 폭 유지 (Chrome/Firefox 최신) */
   scrollbar-gutter: stable;
+  align-items: stretch;     /* 자식 섹션이 가로 전폭을 채움 */
 }
 
 .dash-section {
-  flex: 1;
+  /* 컨텐츠 크기만큼만 차지 — flex:1 금지 (겹침 원인) */
+  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
   border-radius: 14px;
-  padding: 16px 18px 18px;     /* 섹션 좌우 패딩 축소 */
+  padding: 16px 18px 18px;
   border: 1px solid;
   min-height: 0;
-  /* 접힘/펼침 무관하게 항상 가로 폭 유지 */
   width: 100%;
-  align-self: stretch;
   box-sizing: border-box;
 }
 .dash-section.monitoring {
@@ -761,20 +759,10 @@ body {
 .dash-section.schedule {
   background: linear-gradient(180deg, #E0F2FE 0%, #F0F9FF 100%);
   border-color: #7DD3FC;
-  /* flex/min-height 제거 → .dash-section 기본값(flex:1) 사용 — 모니터링과 동일 */
 }
 .dash-section.memo {
   background: linear-gradient(180deg, #FEF9C3 0%, #FEFCE8 100%);
   border-color: #FDE68A;
-  flex: 0 0 auto !important;       /* 컨텐츠 크기 고정 — 다른 섹션 접기에 영향 안 받음 */
-  min-height: 0 !important;
-}
-/* 모든 섹션 — 컨텐츠 크기 고정
-   → 다른 섹션 접으면 위로 밀착, 나머지는 늘어나지 않음 */
-.dash-section.monitoring,
-.dash-section.model {
-  flex: 0 0 auto !important;
-  min-height: 0 !important;
 }
 .dash-section.memo .dash-memo-body {
   max-height: 320px;
@@ -1067,11 +1055,7 @@ body {
 .dash-section.model      .dash-section-toggle:hover .toggle-icon { color: #6b21a8; }
 
 /* 접힘 상태: 그리드(카드) 숨김, 헤더만 노출, 섹션 자체도 컨텐츠 높이만큼 축소 */
-.dash-section.collapsed,
-.dash-section.monitoring.collapsed,
-.dash-section.model.collapsed,
-.dash-section.memo.collapsed {
-  flex: 0 0 auto !important;       /* 비율(2/4/1) 무시 — 헤더 높이만 차지 */
+.dash-section.collapsed {
   min-height: 0 !important;
   max-height: none !important;
   padding-bottom: 12px !important;
