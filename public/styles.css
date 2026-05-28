@@ -2753,6 +2753,20 @@ body.eye-care .memo-post {
 .sched-cal-daynum.sat { color: #3b82f6; }
 .sched-cal-daynum.today { color: #fff !important; }
 
+/* 공휴일 (네이버 달력 기준) */
+.sched-cal-cell.is-holiday { background: color-mix(in srgb, #fef2f2 85%, var(--surface)); }
+.sched-cal-cell.is-holiday.is-today { background: color-mix(in srgb, var(--accent) 5%, var(--surface)); }
+.sched-cal-holiday-name {
+  font-size: 8.5px;
+  font-weight: 600;
+  color: #ef4444;
+  line-height: 1.1;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* 이벤트 영역 */
 .sched-cal-events {
   display: flex;
@@ -3036,6 +3050,12 @@ body.eye-care .sched-conflict-warn {
   font-weight: 700;
   color: var(--text2);
   flex-shrink: 0;
+}
+/* 특정일 모드 시작~종료 구분선 */
+.dt-range-sep {
+  font-size: 14px;
+  color: var(--text3);
+  padding: 0 2px;
 }
 .dt-auto-hint {
   font-size: 10px;

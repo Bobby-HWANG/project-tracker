@@ -1150,6 +1150,56 @@ const MS_STATUS_COLOR = {
 };
 const MS_STATUS_LABEL = { pending:'대기', in_progress:'진행중', completed:'완료', delayed:'지연' };
 
+/* ── 대한민국 공휴일 (네이버 달력 기준, 2024–2027) ───────────────── */
+const KR_HOLIDAYS = {
+  /* 2024 */
+  '2024-01-01':'신정',
+  '2024-02-09':'설날 연휴', '2024-02-10':'설날', '2024-02-11':'설날 연휴', '2024-02-12':'대체공휴일',
+  '2024-03-01':'삼일절',
+  '2024-05-05':'어린이날', '2024-05-06':'대체공휴일', '2024-05-15':'부처님오신날',
+  '2024-06-06':'현충일',
+  '2024-08-15':'광복절',
+  '2024-09-16':'추석 연휴', '2024-09-17':'추석', '2024-09-18':'추석 연휴',
+  '2024-10-03':'개천절', '2024-10-09':'한글날',
+  '2024-12-25':'성탄절',
+  /* 2025 */
+  '2025-01-01':'신정',
+  '2025-01-28':'설날 연휴', '2025-01-29':'설날', '2025-01-30':'설날 연휴',
+  '2025-03-01':'삼일절', '2025-03-03':'대체공휴일',
+  '2025-05-05':'어린이날', '2025-05-06':'대체공휴일',
+  '2025-06-06':'현충일',
+  '2025-08-15':'광복절',
+  '2025-10-03':'개천절',
+  '2025-10-05':'추석 연휴', '2025-10-06':'추석', '2025-10-07':'추석 연휴', '2025-10-08':'대체공휴일',
+  '2025-10-09':'한글날',
+  '2025-12-25':'성탄절',
+  /* 2026 */
+  '2026-01-01':'신정',
+  '2026-02-17':'설날 연휴', '2026-02-18':'설날', '2026-02-19':'설날 연휴',
+  '2026-03-01':'삼일절', '2026-03-02':'대체공휴일',
+  '2026-05-05':'어린이날',
+  '2026-05-24':'부처님오신날',
+  '2026-06-06':'현충일',
+  '2026-08-15':'광복절',
+  '2026-09-24':'추석 연휴', '2026-09-25':'추석', '2026-09-26':'추석 연휴', '2026-09-28':'대체공휴일',
+  '2026-10-03':'개천절', '2026-10-05':'대체공휴일',
+  '2026-10-09':'한글날',
+  '2026-12-25':'성탄절',
+  /* 2027 */
+  '2027-01-01':'신정',
+  '2027-02-06':'설날 연휴', '2027-02-07':'설날', '2027-02-08':'설날 연휴',
+  '2027-03-01':'삼일절',
+  '2027-05-05':'어린이날',
+  '2027-05-13':'부처님오신날',
+  '2027-06-06':'현충일',
+  '2027-08-15':'광복절',
+  '2027-09-14':'추석 연휴', '2027-09-15':'추석', '2027-09-16':'추석 연휴',
+  '2027-10-03':'개천절',
+  '2027-10-04':'대체공휴일',
+  '2027-10-09':'한글날',
+  '2027-12-25':'성탄절',
+};
+
 async function renderMilestoneCalendar(body) {
   const mid   = state.activeModel.id;
   const items = await GET(`/api/models/${mid}/milestones`);
@@ -1307,14 +1357,19 @@ function drawMsCalendar(container, filtered, allItems) {
       return;
     }
 
-    const dateStr = `${year}-${pad(month+1)}-${pad(day)}`;
-    const isToday = dateStr === todayStr;
-    const dayEvts = dateMap[dateStr] || [];
+    const dateStr  = `${year}-${pad(month+1)}-${pad(day)}`;
+    const isToday  = dateStr === todayStr;
+    const holiday  = KR_HOLIDAYS[dateStr] || '';
+    const isHoliday = !!holiday;
+    const dayEvts  = dateMap[dateStr] || [];
     const overflow = dayEvts.length > MAX_VIS ? dayEvts.length - MAX_VIS : 0;
     const visible  = dayEvts.slice(0, MAX_VIS);
+    // 공휴일은 일요일처럼 빨간색
+    const isRed    = isSun || isHoliday;
 
-    html += `<div class="sched-cal-cell${isToday?' is-today':''}${isSun?' is-sun':isSat?' is-sat':''}" data-date="${dateStr}">
-      <div class="sched-cal-daynum${isToday?' today':''}${isSun?' sun':isSat?' sat':''}">${day}</div>
+    html += `<div class="sched-cal-cell${isToday?' is-today':''}${isSun?' is-sun':isSat?' is-sat':''}${isHoliday?' is-holiday':''}" data-date="${dateStr}">
+      <div class="sched-cal-daynum${isToday?' today':''}${isRed?' sun':isSat?' sat':''}">${day}</div>
+      ${holiday ? `<div class="sched-cal-holiday-name">${holiday}</div>` : ''}
       <div class="sched-cal-events">
         ${visible.map(it => {
           const bg  = MS_STATUS_COLOR[it.status] || '#3b82f6';
@@ -3112,14 +3167,18 @@ function renderSchedMonthly(items, container) {
       return;
     }
 
-    const dateStr  = `${year}-${pad(month+1)}-${pad(day)}`;
-    const isToday  = dateStr === today;
-    const dayEvts  = dateItems[dateStr] || [];
-    const overflow = dayEvts.length > MAX_VISIBLE ? dayEvts.length - MAX_VISIBLE : 0;
-    const visible  = dayEvts.slice(0, MAX_VISIBLE);
+    const dateStr   = `${year}-${pad(month+1)}-${pad(day)}`;
+    const isToday   = dateStr === today;
+    const holiday   = KR_HOLIDAYS[dateStr] || '';
+    const isHoliday = !!holiday;
+    const dayEvts   = dateItems[dateStr] || [];
+    const overflow  = dayEvts.length > MAX_VISIBLE ? dayEvts.length - MAX_VISIBLE : 0;
+    const visible   = dayEvts.slice(0, MAX_VISIBLE);
+    const isRed     = isSun || isHoliday;
 
-    html += `<div class="sched-cal-cell${isToday?' is-today':''}${isSun?' is-sun':isSat?' is-sat':''}" data-date="${dateStr}">
-      <div class="sched-cal-daynum${isToday?' today':''}${isSun?' sun':isSat?' sat':''}">${day}</div>
+    html += `<div class="sched-cal-cell${isToday?' is-today':''}${isSun?' is-sun':isSat?' is-sat':''}${isHoliday?' is-holiday':''}" data-date="${dateStr}">
+      <div class="sched-cal-daynum${isToday?' today':''}${isRed?' sun':isSat?' sat':''}">${day}</div>
+      ${holiday ? `<div class="sched-cal-holiday-name">${holiday}</div>` : ''}
       <div class="sched-cal-events">
         ${visible.map(it => {
           const bg   = it.color || '#3B82F6';
@@ -3304,6 +3363,9 @@ function openScheduleModal(item, allItems) {
 
   const colorOpts = ['#3B82F6','#8B5CF6','#10B981','#F59E0B','#EF4444','#14B8A6','#F97316','#EC4899'];
 
+  // 수정 시 기간 여부 판단 (시작일 ≠ 종료일 이면 기간 모드)
+  const initMode = (item?.startAt && item?.endAt && item.startAt.slice(0,10) !== item.endAt.slice(0,10)) ? 'range' : 'single';
+
   const body = `
     <div class="form-group">
       <label class="form-label">작성자</label>
@@ -3318,36 +3380,59 @@ function openScheduleModal(item, allItems) {
       <textarea class="form-textarea" id="sc-desc" rows="2" placeholder="상세 내용을 입력하세요">${escHtml(item?.description||'')}</textarea>
     </div>
 
-    <!-- ▼ 시작 일시 (날짜 + 시 + 분) -->
+    <!-- ▼ 날짜 모드 선택 -->
     <div class="form-group">
-      <label class="form-label">시작 일시 *</label>
-      <div class="dt-pick-row">
-        <input class="form-input dt-date" type="date" id="sc-sd" value="${sp.date}">
-        <select class="form-input dt-hour" id="sc-sh">${hourOpts(sp.h)}</select>
-        <span class="dt-sep">:</span>
-        <select class="form-input dt-min" id="sc-sm">${minOpts(sp.m)}</select>
+      <label class="form-label">일정 유형</label>
+      <div class="date-mode-toggle" id="sc-date-mode">
+        <button type="button" class="dm-btn ${initMode==='single'?'active':''}" data-mode="single">📅 특정일</button>
+        <button type="button" class="dm-btn ${initMode==='range'?'active':''}" data-mode="range">📆 기간</button>
       </div>
     </div>
 
-    <!-- ▼ 종료 일시 (자동 +30분) -->
-    <div class="form-group">
-      <label class="form-label">종료 일시 * <span class="dt-auto-hint">시작 변경 시 자동 +30분</span></label>
-      <div class="dt-pick-row">
-        <input class="form-input dt-date" type="date" id="sc-ed" value="${ep.date}">
-        <select class="form-input dt-hour" id="sc-eh">${hourOpts(ep.h)}</select>
-        <span class="dt-sep">:</span>
-        <select class="form-input dt-min" id="sc-em">${minOpts(ep.m)}</select>
+    <!-- ▼ 특정일 모드: 날짜 1개 + 시간 범위 -->
+    <div id="sc-single-wrap" style="${initMode==='range'?'display:none':''}">
+      <div class="form-group">
+        <label class="form-label">날짜 *</label>
+        <input class="form-input" type="date" id="sc-single-date" value="${sp.date}">
+      </div>
+      <div class="form-group">
+        <label class="form-label">시간 <span class="dt-auto-hint">시작 변경 시 종료 자동 +30분</span></label>
+        <div class="dt-pick-row">
+          <select class="form-input dt-hour" id="sc-sh1">${hourOpts(sp.h)}</select>
+          <span class="dt-sep">:</span>
+          <select class="form-input dt-min" id="sc-sm1">${minOpts(sp.m)}</select>
+          <span class="dt-sep dt-range-sep">~</span>
+          <select class="form-input dt-hour" id="sc-eh1">${hourOpts(ep.h)}</select>
+          <span class="dt-sep">:</span>
+          <select class="form-input dt-min" id="sc-em1">${minOpts(ep.m)}</select>
+        </div>
       </div>
     </div>
 
-    <!-- ▼ 시간 확인 버튼 -->
-    <div class="dt-confirm-zone" id="dt-confirm-zone">
-      <button type="button" class="dt-confirm-btn" id="dt-confirm-btn">✓ 시간 확인</button>
-      <div class="dt-confirm-result hidden" id="dt-confirm-result"></div>
+    <!-- ▼ 기간 모드: 시작/종료 일시 각각 -->
+    <div id="sc-range-wrap" style="${initMode==='single'?'display:none':''}">
+      <div class="form-group">
+        <label class="form-label">시작 일시 *</label>
+        <div class="dt-pick-row">
+          <input class="form-input dt-date" type="date" id="sc-sd" value="${sp.date}">
+          <select class="form-input dt-hour" id="sc-sh">${hourOpts(sp.h)}</select>
+          <span class="dt-sep">:</span>
+          <select class="form-input dt-min" id="sc-sm">${minOpts(sp.m)}</select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">종료 일시 * <span class="dt-auto-hint">시작 변경 시 자동 +30분</span></label>
+        <div class="dt-pick-row">
+          <input class="form-input dt-date" type="date" id="sc-ed" value="${ep.date}">
+          <select class="form-input dt-hour" id="sc-eh">${hourOpts(ep.h)}</select>
+          <span class="dt-sep">:</span>
+          <select class="form-input dt-min" id="sc-em">${minOpts(ep.m)}</select>
+        </div>
+      </div>
     </div>
 
     <!-- ▼ 색상 -->
-    <div class="form-group" style="margin-top:4px">
+    <div class="form-group">
       <label class="form-label">색상</label>
       <div class="sched-color-row">
         ${colorOpts.map(c => `<button type="button" class="sched-color-btn${(item?.color||'#3B82F6')===c?' selected':''}" data-color="${c}" style="background:${c}"></button>`).join('')}
@@ -3365,9 +3450,35 @@ function openScheduleModal(item, allItems) {
 
   // ── 헬퍼: 현재 선택값 읽기 ──
   const getVal = (id) => document.getElementById(id)?.value ?? '';
-  const fmtPicked = (d, h, m) => `${d} ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
 
-  // ── 시작 변경 → 종료 자동 +30분 ──
+  // ── 날짜 모드 전환 ──
+  let scDateMode = initMode;
+  document.getElementById('sc-date-mode').addEventListener('click', e => {
+    const btn = e.target.closest('.dm-btn');
+    if (!btn) return;
+    scDateMode = btn.dataset.mode;
+    document.querySelectorAll('#sc-date-mode .dm-btn').forEach(b =>
+      b.classList.toggle('active', b.dataset.mode === scDateMode));
+    document.getElementById('sc-single-wrap').style.display = scDateMode === 'single' ? '' : 'none';
+    document.getElementById('sc-range-wrap').style.display  = scDateMode === 'range'  ? '' : 'none';
+  });
+
+  // ── 특정일 모드: 시작 시간 변경 → 종료 자동 +30분 (같은 날) ──
+  const autoFillSingle = () => {
+    const sh = parseInt(getVal('sc-sh1'));
+    const sm = parseInt(getVal('sc-sm1'));
+    let eh = sh, em = sm + 30;
+    if (em >= 60) { em = 0; eh++; }
+    if (eh >= 24) { eh = 23; em = 30; }
+    document.getElementById('sc-eh1').value = String(eh);
+    document.getElementById('sc-em1').value = String(em);
+  };
+  ['sc-sh1','sc-sm1'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('change', autoFillSingle);
+  });
+
+  // ── 기간 모드: 시작 변경 → 종료 자동 +30분 ──
   const autoFillEnd = () => {
     const sd = getVal('sc-sd');
     const sh = parseInt(getVal('sc-sh'));
@@ -3380,23 +3491,9 @@ function openScheduleModal(item, allItems) {
     document.getElementById('sc-eh').value = String(eh);
     document.getElementById('sc-em').value = String(em);
   };
-  ['sc-sd','sc-sh','sc-sm'].forEach(id =>
-    document.getElementById(id).addEventListener('change', autoFillEnd)
-  );
-
-  // ── 시간 확인 버튼 ──
-  document.getElementById('dt-confirm-btn').addEventListener('click', () => {
-    const sd = getVal('sc-sd'), sh = parseInt(getVal('sc-sh')), sm = parseInt(getVal('sc-sm'));
-    const ed = getVal('sc-ed'), eh = parseInt(getVal('sc-eh')), em = parseInt(getVal('sc-em'));
-    if (!sd || !ed) { toast('날짜를 먼저 선택하세요', 'error'); return; }
-    const startStr = fmtPicked(sd, sh, sm);
-    const endStr   = fmtPicked(ed, eh, em);
-    const result = document.getElementById('dt-confirm-result');
-    result.innerHTML = `<span class="dt-ok-icon">✅</span> <strong>${startStr}</strong> → <strong>${endStr}</strong>`;
-    result.classList.remove('hidden');
-    const btn = document.getElementById('dt-confirm-btn');
-    btn.textContent = '✓ 확인됨';
-    btn.classList.add('confirmed');
+  ['sc-sd','sc-sh','sc-sm'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('change', autoFillEnd);
   });
 
   // ── 색상 선택 ──
@@ -3425,20 +3522,31 @@ function openScheduleModal(item, allItems) {
 
   // ── 저장 ──
   document.getElementById('sc-confirm').addEventListener('click', async () => {
-    const author  = getVal('sc-author').trim();
-    const title   = getVal('sc-title').trim();
-    const desc    = getVal('sc-desc').trim();
-    const sd = getVal('sc-sd'), sh = getVal('sc-sh'), sm = getVal('sc-sm');
-    const ed = getVal('sc-ed'), eh = getVal('sc-eh'), em = getVal('sc-em');
+    const author = getVal('sc-author').trim();
+    const title  = getVal('sc-title').trim();
+    const desc   = getVal('sc-desc').trim();
 
     if (!title) { toast('일정 제목을 입력하세요', 'error'); return; }
-    if (!sd)    { toast('시작 날짜를 선택하세요', 'error'); return; }
-    if (!ed)    { toast('종료 날짜를 선택하세요', 'error'); return; }
 
-    const startAt = `${sd}T${String(sh).padStart(2,'0')}:${String(sm).padStart(2,'0')}`;
-    const endAt   = `${ed}T${String(eh).padStart(2,'0')}:${String(em).padStart(2,'0')}`;
+    let startAt, endAt;
+    if (scDateMode === 'single') {
+      const sd = getVal('sc-single-date');
+      if (!sd) { toast('날짜를 선택하세요', 'error'); return; }
+      const sh = getVal('sc-sh1'), sm = getVal('sc-sm1');
+      const eh = getVal('sc-eh1'), em = getVal('sc-em1');
+      startAt = `${sd}T${String(sh).padStart(2,'0')}:${String(sm).padStart(2,'0')}`;
+      endAt   = `${sd}T${String(eh).padStart(2,'0')}:${String(em).padStart(2,'0')}`;
+      if (endAt <= startAt) endAt = `${sd}T${String(sh).padStart(2,'0')}:${String(sm).padStart(2,'0')}`.replace(/T.*/, 'T23:59');
+    } else {
+      const sd = getVal('sc-sd'), sh = getVal('sc-sh'), sm = getVal('sc-sm');
+      const ed = getVal('sc-ed'), eh = getVal('sc-eh'), em = getVal('sc-em');
+      if (!sd) { toast('시작 날짜를 선택하세요', 'error'); return; }
+      if (!ed) { toast('종료 날짜를 선택하세요', 'error'); return; }
+      startAt = `${sd}T${String(sh).padStart(2,'0')}:${String(sm).padStart(2,'0')}`;
+      endAt   = `${ed}T${String(eh).padStart(2,'0')}:${String(em).padStart(2,'0')}`;
+      if (endAt <= startAt) { toast('종료 일시는 시작 일시 이후여야 합니다', 'error'); return; }
+    }
 
-    if (endAt <= startAt) { toast('종료 일시는 시작 일시 이후여야 합니다', 'error'); return; }
     if (author) setCommenterName(author);
 
     const payload = { title, description: desc, startAt, endAt, color: selectedColor, author };
