@@ -281,9 +281,9 @@ function makeSchedDashSection(thisMonth, total) {
   card.setAttribute('role', 'button');
   card.setAttribute('tabindex', '0');
   card.innerHTML = `
-    <div class="dc-header" style="gap:5px">
-      <div class="dc-dot" style="background:#3B82F6;width:8px;height:8px;flex-shrink:0"></div>
-      <div class="dc-name" style="font-size:11px">${now.getMonth()+1}월 일정</div>
+    <div class="dc-header" style="gap:3px">
+      <div class="dc-dot" style="background:#3B82F6;width:6px;height:6px;flex-shrink:0"></div>
+      <div class="dc-name" style="font-size:9px">${now.getMonth()+1}월 일정</div>
     </div>
     <div class="sched-dash-count-wrap">
       <div class="sched-dash-count">${thisMonth}</div>
