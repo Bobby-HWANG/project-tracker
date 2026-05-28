@@ -1281,11 +1281,11 @@ function drawMsCalendar(container, filtered, allItems) {
   });
   Object.values(dateMap).forEach(arr => arr.sort((a,b)=>(a.due_date||'').localeCompare(b.due_date||'')));
 
-  // 셀 배열 (앞 빈칸 + 날짜 + 뒷 빈칸으로 6주)
+  // 셀 배열 (앞 빈칸 + 날짜 + 뒷 빈칸 → 항상 42셀=6행 고정, 2026년 5월 기준)
   const cells = [];
   for (let i = 0; i < startDow; i++) cells.push(null);
   for (let i = 1; i <= totalDays; i++) cells.push(i);
-  while (cells.length % 7 !== 0) cells.push(null);
+  while (cells.length < 42) cells.push(null);
 
   const MAX_VIS = 4;
 
@@ -3067,11 +3067,11 @@ function renderSchedMonthly(items, container) {
   const today = new Date().toISOString().slice(0,10);
   const pad = n => String(n).padStart(2,'0');
 
-  // 셀 배열 생성 (앞 빈 칸 + 날짜 + 뒷 빈 칸으로 6주 채우기)
+  // 셀 배열 생성 (앞 빈 칸 + 날짜 + 뒷 빈 칸 → 항상 42셀=6행 고정, 2026년 5월 기준)
   const cells = [];
   for (let i = 0; i < startDow; i++) cells.push(null);
   for (let i = 1; i <= totalDays; i++) cells.push(i);
-  while (cells.length % 7 !== 0) cells.push(null);
+  while (cells.length < 42) cells.push(null);
 
   // 날짜 → 이벤트 목록 매핑 (시작 시간 순 정렬)
   const dateItems = {};

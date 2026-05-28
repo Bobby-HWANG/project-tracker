@@ -2689,10 +2689,11 @@ body.eye-care .memo-post {
 .sched-cal-dow.sun { color: #ef4444; }
 .sched-cal-dow.sat { color: #3b82f6; }
 
-/* 날짜 그리드 */
+/* 날짜 그리드 — 항상 6행 고정 (2026년 5월 기준) */
 .sched-cal-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(6, 1fr);
 }
 
 /* 날짜 셀 */
