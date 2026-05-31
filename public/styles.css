@@ -502,8 +502,8 @@ body {
 .sidebar-dashboard-btn.active { background: var(--sb-active); color: var(--sb-text-h); }
 .si-icon { font-size: 16px; }
 
-/* 대시보드 ↔ 주요 일정 점검 사이 2줄 간격 */
-#btn-schedule { margin-top: 22px; }
+/* 대시보드 ↔ 주요 일정 점검 사이 간격 (1/2) */
+#btn-schedule { margin-top: 11px; }
 
 .sidebar-label {
   padding: 14px 16px 6px;
@@ -528,7 +528,7 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 9px 12px;
+  padding: 4px 12px;
   border-radius: var(--radius-sm);
   cursor: pointer;
   color: var(--sb-text);
@@ -1126,10 +1126,10 @@ body {
   align-items: center;
   gap: 4px;
   width: 100%;
-  font-size: 14px;           /* ↑ 12px → 14px (대제목 강조) */
+  font-size: 14px;
   font-weight: 700;
   letter-spacing: -0.2px;
-  padding: 14px 14px 6px;
+  padding: 7px 14px 3px;    /* 14px→7px, 6px→3px (1/2) */
   background: none;
   border: none;
   cursor: pointer;
@@ -1151,16 +1151,16 @@ body {
 .sb-group-label.sec_exterior  { color: #FBBF24; }
 .sb-group-label.memo          { color: #34D399; }
 .sb-group-label.memo.active { color: #10b981; background: rgba(52,211,153,.08); border-radius: 6px; }
-/* 첫 번째 대분류: 위에 사이드바 섹션과 2줄 간격 */
-.sb-group-label:first-child { padding-top: 22px; }
+/* 첫 번째 대분류: 위 간격 (1/2) */
+.sb-group-label:first-child { padding-top: 11px; }
 
-/* 그룹 간 구분선 + 2줄 간격 */
+/* 그룹 간 구분선 + 간격 (1/2) */
 .sb-group-label.model,
 .sb-group-label.audit,
 .sb-group-label.sec_exterior,
 .sb-group-label.memo {
-  margin-top: 20px;
-  padding-top: 14px;
+  margin-top: 10px;
+  padding-top: 7px;
   border-top: 1px solid rgba(255,255,255,0.06);
 }
 .dashboard-card {
