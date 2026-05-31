@@ -754,7 +754,7 @@ function makeDashSection(category, title, list) {
   } else {
     // 모델 — 데스크톱: 4열 + 추가 셀 컬럼 / 모바일: CSS가 2열로 대체
     if (!isMobile) {
-      grid.style.gridTemplateColumns = `repeat(4, minmax(0, 1fr)) var(--add-w)`;
+      grid.style.gridTemplateColumns = `repeat(5, minmax(0, 1fr)) var(--add-w)`;
       grid.style.gridAutoRows = 'minmax(0, 1fr)';
     }
   }
@@ -764,8 +764,8 @@ function makeDashSection(category, title, list) {
   const addCard = makeAddCard(category);
   if (category === 'model' && !isMobile) {
     // 데스크톱: 추가 카드를 우측에 세로로 길게 배치 (모든 행 커버)
-    const rows = Math.max(1, Math.ceil(n / 4));
-    addCard.style.gridColumn = '5';
+    const rows = Math.max(1, Math.ceil(n / 5));
+    addCard.style.gridColumn = '6';
     addCard.style.gridRow = `1 / span ${rows}`;
   }
   grid.appendChild(addCard);
