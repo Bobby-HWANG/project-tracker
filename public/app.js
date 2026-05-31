@@ -1595,6 +1595,16 @@ function makeMsItem(it, today) {
   }
 
   const cmts = _commentsCache[`milestone_${it.id}`] || [];
+  const isSecExt = state.activeModel?.category === 'sec_exterior';
+  // SEC 외관 한도 컨펌 현황: 의뢰건수/OK/NG 배지
+  const countBadge = (isSecExt && (it.request_count != null || it.ok_count != null || it.ng_count != null))
+    ? `<div class="ms-count-badges">
+        <span class="ms-cnt-badge total">의뢰 ${it.request_count ?? '-'}</span>
+        <span class="ms-cnt-badge ok">OK ${it.ok_count ?? '-'}</span>
+        <span class="ms-cnt-badge ng">NG ${it.ng_count ?? '-'}</span>
+       </div>`
+    : '';
+
   div.innerHTML = `
     <div class="ms-status-dot" style="background:${STATUS_DOT[it.status]}"></div>
     <div class="ms-body">
@@ -1603,6 +1613,7 @@ function makeMsItem(it, today) {
         ${it.author ? `<span class="ms-author">👤 ${escHtml(it.author)}</span>` : ''}
       </div>
       ${it.description ? `<div class="ms-desc">${escHtml(it.description)}</div>` : ''}
+      ${countBadge}
       <div class="ms-meta">
         ${dateStr ? `<div class="ms-date ${overdue ? 'overdue':''}">${dateStr}${overdue ? ' 지연':''}</div>` : ''}
         <button class="status-badge status-${it.status} ms-status-btn"
@@ -1674,6 +1685,32 @@ document.getElementById('tab-body').addEventListener('click', async e => {
 
 function openMsModal(item, subs) {
   const myName = getCommenterName();
+  const isSecExt = state.activeModel?.category === 'sec_exterior';
+
+  // SEC 외관 한도 컨펌 현황 전용 — 의뢰건수/OK/NG 입력 필드
+  const secExtFields = isSecExt ? `
+    <div class="form-group">
+      <label class="form-label">컨펌 현황</label>
+      <div class="ms-count-row">
+        <div class="ms-count-item">
+          <label class="ms-count-label">의뢰건수</label>
+          <input class="form-input ms-count-input" type="number" id="ms-req-count"
+                 min="0" value="${item?.request_count ?? ''}" placeholder="0">
+        </div>
+        <div class="ms-count-item ok">
+          <label class="ms-count-label">OK</label>
+          <input class="form-input ms-count-input" type="number" id="ms-ok-count"
+                 min="0" value="${item?.ok_count ?? ''}" placeholder="0">
+        </div>
+        <div class="ms-count-item ng">
+          <label class="ms-count-label">NG</label>
+          <input class="form-input ms-count-input" type="number" id="ms-ng-count"
+                 min="0" value="${item?.ng_count ?? ''}" placeholder="0">
+        </div>
+      </div>
+    </div>
+  ` : '';
+
   const body = `
     <div class="form-group">
       <label class="form-label">작성자 <span style="color:#ef4444">*</span></label>
@@ -1689,6 +1726,7 @@ function openMsModal(item, subs) {
       <label class="form-label">설명</label>
       <textarea class="form-textarea" id="ms-desc" placeholder="상세 내용">${escHtml(item?.description || '')}</textarea>
     </div>
+    ${secExtFields}
     <div class="form-group">
       <label class="form-label">목표일</label>
       <div class="date-mode-toggle" id="ms-date-mode">
@@ -1750,14 +1788,21 @@ function openMsModal(item, subs) {
       due_date_end = null;
     }
 
+    const getNum = (id) => {
+      const v = document.getElementById(id)?.value;
+      return (v !== '' && v != null) ? Number(v) : null;
+    };
     const payload = {
       author,
       title,
-      description: document.getElementById('ms-desc').value.trim(),
-      note:        document.getElementById('ms-note').value.trim(),
+      description:   document.getElementById('ms-desc').value.trim(),
+      note:          document.getElementById('ms-note').value.trim(),
       due_date,
       due_date_end,
-      status:      item?.status || 'pending',
+      status:        item?.status || 'pending',
+      request_count: isSecExt ? getNum('ms-req-count') : undefined,
+      ok_count:      isSecExt ? getNum('ms-ok-count')  : undefined,
+      ng_count:      isSecExt ? getNum('ms-ng-count')  : undefined,
     };
     if (item?.id) {
       await PUT(`/api/milestones/${item.id}`, payload);

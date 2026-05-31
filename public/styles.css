@@ -1665,6 +1665,52 @@ button.ms-pill.active { opacity: 1; box-shadow: 0 0 0 2px currentColor; }
   line-height: 1.5;
 }
 
+/* ── SEC 외관 한도 컨펌: 의뢰건수/OK/NG 모달 입력 행 ─────────── */
+.ms-count-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+.ms-count-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+.ms-count-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text2);
+}
+.ms-count-item.ok  .ms-count-label { color: #065f46; }
+.ms-count-item.ng  .ms-count-label { color: #991b1b; }
+.ms-count-input {
+  text-align: center;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  padding: 6px 8px !important;
+}
+
+/* ── SEC 외관 한도 컨펌: 목록 내 건수 배지 ─────────────────── */
+.ms-count-badges {
+  display: flex;
+  gap: 6px;
+  margin: 5px 0 2px;
+  flex-wrap: wrap;
+}
+.ms-cnt-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 9px;
+  border-radius: 20px;
+}
+.ms-cnt-badge.total { background: #e0f2fe; color: #0369a1; }
+.ms-cnt-badge.ok    { background: #d1fae5; color: #065f46; }
+.ms-cnt-badge.ng    { background: #fee2e2; color: #991b1b; }
+
 /* ── 체크시트 테이블형 ───────────────────────────────────── */
 .cl-table-wrap {
   background: var(--surface);

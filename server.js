@@ -636,6 +636,9 @@ app.get('/api/models/:id/milestones', (req, res) => {
     date_type: it.dueDateEnd ? 'range' : 'single',
     status: it.status,
     sub_item_name: subs.find(s=>s.id===Number(it.subItemId))?.name || null,
+    request_count: it.requestCount ?? null,
+    ok_count:      it.okCount      ?? null,
+    ng_count:      it.ngCount      ?? null,
   })).sort((a,b)=>{
     if(!a.due_date) return 1;
     if(!b.due_date) return -1;
@@ -657,6 +660,9 @@ app.post('/api/models/:id/milestones', (req, res) => {
     dueDate: req.body.due_date || null,
     dueDateEnd: req.body.due_date_end || null,
     status: req.body.status || 'pending',
+    requestCount: req.body.request_count != null ? Number(req.body.request_count) : null,
+    okCount:      req.body.ok_count      != null ? Number(req.body.ok_count)      : null,
+    ngCount:      req.body.ng_count      != null ? Number(req.body.ng_count)      : null,
   };
   DB.milestones[id].push(item);
   save();
@@ -679,6 +685,9 @@ app.put('/api/milestones/:id', (req, res) => {
         dueDate: req.body.due_date || null,
         dueDateEnd: req.body.due_date_end || null,
         status: req.body.status,
+        requestCount: req.body.request_count != null ? Number(req.body.request_count) : (cur.requestCount ?? null),
+        okCount:      req.body.ok_count      != null ? Number(req.body.ok_count)      : (cur.okCount      ?? null),
+        ngCount:      req.body.ng_count      != null ? Number(req.body.ng_count)      : (cur.ngCount      ?? null),
       };
       save();
       return res.json(DB.milestones[mid][idx]);
