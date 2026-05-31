@@ -147,23 +147,19 @@ function renderSidebar() {
     models.forEach(renderItem);
   }
 
-  // ── 3. 주요 인증심사 및 AUDIT 일정 ──
-  if (audit.length) {
-    makeHeader('audit', '🔍', '주요 인증심사 및 AUDIT 일정', () => {
-      state._sidebarMemo = false;
-      loadDashboard().then(() => scrollDashSection('audit'));
-    });
-    audit.forEach(renderItem);
-  }
+  // ── 3. 주요 인증심사 및 AUDIT 일정 (항목 없어도 헤더 표시) ──
+  makeHeader('audit', '🔍', '주요 인증심사 및 AUDIT 일정', () => {
+    state._sidebarMemo = false;
+    loadDashboard().then(() => scrollDashSection('audit'));
+  });
+  audit.forEach(renderItem);
 
-  // ── 4. SEC 외관 한도 컨펌 현황 ──
-  if (sec_exterior.length) {
-    makeHeader('sec_exterior', '🏷', 'SEC 외관 한도 컨펌 현황', () => {
-      state._sidebarMemo = false;
-      loadDashboard().then(() => scrollDashSection('sec_exterior'));
-    });
-    sec_exterior.forEach(renderItem);
-  }
+  // ── 4. SEC 외관 한도 컨펌 현황 (항목 없어도 헤더 표시) ──
+  makeHeader('sec_exterior', '🏷', 'SEC 외관 한도 컨펌 현황', () => {
+    state._sidebarMemo = false;
+    loadDashboard().then(() => scrollDashSection('sec_exterior'));
+  });
+  sec_exterior.forEach(renderItem);
 
   // ── 5. 메모장 (공용 게시판) ──
   const memoBtn = document.createElement('button');
@@ -282,32 +278,32 @@ function renderDashboardData(wrap, res) {
     empty.className = 'empty-state';
     empty.innerHTML = '<div class="empty-icon">📂</div>등록된 모델이 없습니다';
     insertBeforeMemo(empty);
-  } else {
-    const monitoring   = data.filter(m => m.category === 'monitoring').sort((a,b)=>a.order-b.order);
-    const models       = data.filter(m => !['monitoring','schedule','audit','sec_exterior'].includes(m.category)).sort((a,b)=>a.order-b.order);
-    const audit        = data.filter(m => m.category === 'audit').sort((a,b)=>a.order-b.order);
-    const sec_exterior = data.filter(m => m.category === 'sec_exterior').sort((a,b)=>a.order-b.order);
+  // 카테고리별 분류 (항목 0개라도 섹션은 항상 표시)
+  const monitoring   = data.filter(m => m.category === 'monitoring').sort((a,b)=>a.order-b.order);
+  const models       = data.filter(m => !['monitoring','schedule','audit','sec_exterior'].includes(m.category)).sort((a,b)=>a.order-b.order);
+  const audit        = data.filter(m => m.category === 'audit').sort((a,b)=>a.order-b.order);
+  const sec_exterior = data.filter(m => m.category === 'sec_exterior').sort((a,b)=>a.order-b.order);
 
-    if (monitoring.length) {
-      const sec = makeDashSection('monitoring', '📡 상시 모니터링', monitoring);
-      insertBeforeMemo(sec);
-      enableDashCardDrag(sec);
-    }
-    if (models.length) {
-      const sec = makeDashSection('model', '📦 주요 모델 이벤트 현황', models);
-      insertBeforeMemo(sec);
-      enableDashCardDrag(sec);
-    }
-    if (audit.length) {
-      const sec = makeDashSection('audit', '🔍 주요 인증심사 및 AUDIT 일정', audit);
-      insertBeforeMemo(sec);
-      enableDashCardDrag(sec);
-    }
-    if (sec_exterior.length) {
-      const sec = makeDashSection('sec_exterior', '🏷 SEC 외관 한도 컨펌 현황', sec_exterior);
-      insertBeforeMemo(sec);
-      enableDashCardDrag(sec);
-    }
+  if (monitoring.length) {
+    const sec = makeDashSection('monitoring', '📡 상시 모니터링', monitoring);
+    insertBeforeMemo(sec);
+    enableDashCardDrag(sec);
+  }
+  if (models.length) {
+    const sec = makeDashSection('model', '📦 주요 모델 이벤트 현황', models);
+    insertBeforeMemo(sec);
+    enableDashCardDrag(sec);
+  }
+  // 새 카테고리: 항목 없어도 항상 표시 (추가 버튼 노출)
+  {
+    const sec = makeDashSection('audit', '🔍 주요 인증심사 및 AUDIT 일정', audit);
+    insertBeforeMemo(sec);
+    if (audit.length) enableDashCardDrag(sec);
+  }
+  {
+    const sec = makeDashSection('sec_exterior', '🏷 SEC 외관 한도 컨펌 현황', sec_exterior);
+    insertBeforeMemo(sec);
+    if (sec_exterior.length) enableDashCardDrag(sec);
   }
 
   if (!memo) wrap.appendChild(makeDashMemoSection());
