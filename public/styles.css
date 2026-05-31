@@ -729,15 +729,10 @@ body {
   width: 100%;
   box-sizing: border-box;
 }
-/* 주요 일정 점검: 내용이 적어 좁게 고정 */
-.dash-top-row .dash-section.schedule {
-  flex: 0 0 320px;
+/* schedule/monitoring flex는 JS에서 카드수 기준으로 설정 (카드 폭 균일) */
+.dash-top-row .dash-section {
   min-width: 0;
-}
-/* 상시 모니터링: 남은 공간 모두 차지 */
-.dash-top-row .dash-section.monitoring {
-  flex: 1;
-  min-width: 0;
+  min-height: 0;
 }
 /* 모바일: 세로 전환 */
 @media (max-width: 900px) {

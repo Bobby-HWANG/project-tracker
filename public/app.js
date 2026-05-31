@@ -277,11 +277,16 @@ function renderDashboardData(wrap, res) {
   const sec_exterior = data.filter(m => m.category === 'sec_exterior').sort((a,b)=>a.order-b.order);
 
   // ── 주요 일정 점검 + 상시 모니터링 → 한 줄(flex row) ──
+  // 각 카드 폭이 동일하도록: schedule=flex:1, monitoring=flex:N(카드수)
   const topRow = document.createElement('div');
   topRow.className = 'dash-top-row';
-  topRow.appendChild(makeSchedDashSection(schedThisMonth, schedTotal));
+  const schedSec = makeSchedDashSection(schedThisMonth, schedTotal);
+  schedSec.style.flex = '1';
+  topRow.appendChild(schedSec);
   if (monitoring.length) {
     const monSec = makeDashSection('monitoring', '📡 상시 모니터링', monitoring);
+    // 모니터링 카드 수만큼 flex 비율 설정 → schedule 카드와 동일 폭
+    monSec.style.flex = String(monitoring.length);
     topRow.appendChild(monSec);
     enableDashCardDrag(monSec);
   }
@@ -333,9 +338,9 @@ function makeSchedDashSection(thisMonth, total) {
 
   const grid = sec.querySelector('.sched-dash-grid');
 
-  // 그리드 컬럼: 모니터링 3카드와 동일 너비 (1fr) + 빈 2fr + 바로가기 카드
+  // 그리드 컬럼: 데이터 카드 1개(전폭) + 바로가기 카드
   if (window.innerWidth > 900) {
-    grid.style.gridTemplateColumns = `minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) var(--add-w)`;
+    grid.style.gridTemplateColumns = `minmax(0, 1fr) var(--add-w)`;
   }
 
   // 카드 한 장: 이달 일정 수 — 모니터링 카드와 동일 dc-stats 구조
@@ -377,7 +382,7 @@ function makeSchedDashSection(thisMonth, total) {
   goCard.setAttribute('tabindex', '0');
   goCard.innerHTML = `<div class="add-card-icon">📋</div><div class="add-card-label">세부 일정 목록</div>`;
   goCard.addEventListener('click', () => { closeSidebar(); loadScheduleView(); });
-  if (window.innerWidth > 900) goCard.style.gridColumn = '4'; // 우측 고정
+  if (window.innerWidth > 900) goCard.style.gridColumn = '2'; // 우측 고정
   grid.appendChild(goCard);
 
   // 토글
