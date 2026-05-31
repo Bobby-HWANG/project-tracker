@@ -273,16 +273,18 @@ function renderDashboardData(wrap, res) {
   // ── 주요 일정 점검 섹션 (항상 최상단) ──
   insertBeforeMemo(makeSchedDashSection(schedThisMonth, schedTotal));
 
+  // 카테고리별 분류
+  const monitoring   = data.filter(m => m.category === 'monitoring').sort((a,b)=>a.order-b.order);
+  const models       = data.filter(m => !['monitoring','schedule','audit','sec_exterior'].includes(m.category)).sort((a,b)=>a.order-b.order);
+  const audit        = data.filter(m => m.category === 'audit').sort((a,b)=>a.order-b.order);
+  const sec_exterior = data.filter(m => m.category === 'sec_exterior').sort((a,b)=>a.order-b.order);
+
   if (!data.length) {
     const empty = document.createElement('div');
     empty.className = 'empty-state';
     empty.innerHTML = '<div class="empty-icon">📂</div>등록된 모델이 없습니다';
     insertBeforeMemo(empty);
-  // 카테고리별 분류 (항목 0개라도 섹션은 항상 표시)
-  const monitoring   = data.filter(m => m.category === 'monitoring').sort((a,b)=>a.order-b.order);
-  const models       = data.filter(m => !['monitoring','schedule','audit','sec_exterior'].includes(m.category)).sort((a,b)=>a.order-b.order);
-  const audit        = data.filter(m => m.category === 'audit').sort((a,b)=>a.order-b.order);
-  const sec_exterior = data.filter(m => m.category === 'sec_exterior').sort((a,b)=>a.order-b.order);
+  }
 
   if (monitoring.length) {
     const sec = makeDashSection('monitoring', '📡 상시 모니터링', monitoring);
