@@ -1402,6 +1402,22 @@ body {
 .dc-pill-done  { color: #10b981; }
 .dc-pill-done:hover  { background: rgba(16,185,129,.12); }
 
+/* 모니터링 카드 — 진행중/지연/완료 항상 한 줄 */
+.dash-section.monitoring .dc-status-pills {
+  flex-wrap: nowrap;       /* 줄바꿈 금지 */
+  gap: 3px;
+  margin-top: 6px;
+}
+.dash-section.monitoring .dc-status-pill {
+  flex: 1;                 /* 3개가 균등 분배 */
+  justify-content: center;
+  padding: 2px 3px;        /* 좌우 패딩 최소화 */
+  font-size: 9px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* eye-care 모드 */
 body.eye-care .dc-pill-prog  { color: #93c5fd; }
 body.eye-care .dc-pill-delay { color: #94a3b8; }
