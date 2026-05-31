@@ -760,6 +760,14 @@ body {
   background: linear-gradient(180deg, #E0F2FE 0%, #F0F9FF 100%);
   border-color: #7DD3FC;
 }
+.dash-section.audit {
+  background: linear-gradient(180deg, #CCFBF1 0%, #F0FDFA 100%);
+  border-color: #5EEAD4;
+}
+.dash-section.sec_exterior {
+  background: linear-gradient(180deg, #FEF3C7 0%, #FFFBEB 100%);
+  border-color: #FCD34D;
+}
 .dash-section.memo {
   background: linear-gradient(180deg, #FEF9C3 0%, #FEFCE8 100%);
   border-color: #FDE68A;
@@ -1018,9 +1026,11 @@ body {
   letter-spacing: -0.3px;
   color: #1e293b;
 }
-.dash-section.schedule   .dash-section-title { color: #0369a1; }
-.dash-section.monitoring .dash-section-title { color: #1e40af; }
-.dash-section.model      .dash-section-title { color: #6b21a8; }
+.dash-section.schedule      .dash-section-title { color: #0369a1; }
+.dash-section.monitoring    .dash-section-title { color: #1e40af; }
+.dash-section.model         .dash-section-title { color: #6b21a8; }
+.dash-section.audit         .dash-section-title { color: #0f766e; }
+.dash-section.sec_exterior  .dash-section-title { color: #92400e; }
 .dash-section-count {
   font-size: 12px;
   font-weight: 700;
@@ -1051,8 +1061,10 @@ body {
 }
 .dash-section-toggle:hover { background: #fff; transform: translateY(-1px); }
 .dash-section-toggle:active { transform: translateY(0); }
-.dash-section.monitoring .dash-section-toggle:hover .toggle-icon { color: #1e40af; }
-.dash-section.model      .dash-section-toggle:hover .toggle-icon { color: #6b21a8; }
+.dash-section.monitoring    .dash-section-toggle:hover .toggle-icon { color: #1e40af; }
+.dash-section.model         .dash-section-toggle:hover .toggle-icon { color: #6b21a8; }
+.dash-section.audit         .dash-section-toggle:hover .toggle-icon { color: #0f766e; }
+.dash-section.sec_exterior  .dash-section-toggle:hover .toggle-icon { color: #92400e; }
 
 /* 접힘 상태: 그리드(카드) 숨김, 헤더만 노출, 섹션 자체도 컨텐츠 높이만큼 축소 */
 .dash-section.collapsed {
@@ -1114,17 +1126,21 @@ body {
   transition: opacity .15s, transform .15s;
 }
 .sb-group-label:hover .sb-arrow { opacity: .9; transform: translateX(2px); }
-.sb-group-label.monitoring { color: #60A5FA; }
-.sb-group-label.model      { color: #A78BFA; }
-.sb-group-label.memo       { color: #34D399; }
+.sb-group-label.monitoring    { color: #60A5FA; }
+.sb-group-label.model         { color: #A78BFA; }
+.sb-group-label.audit         { color: #2DD4BF; }
+.sb-group-label.sec_exterior  { color: #FBBF24; }
+.sb-group-label.memo          { color: #34D399; }
 .sb-group-label.memo.active { color: #10b981; background: rgba(52,211,153,.08); border-radius: 6px; }
 /* 첫 번째 대분류: 위에 사이드바 섹션과 2줄 간격 */
 .sb-group-label:first-child { padding-top: 22px; }
 
 /* 그룹 간 구분선 + 2줄 간격 */
 .sb-group-label.model,
+.sb-group-label.audit,
+.sb-group-label.sec_exterior,
 .sb-group-label.memo {
-  margin-top: 20px;          /* 8px → 20px (약 2줄 높이) */
+  margin-top: 20px;
   padding-top: 14px;
   border-top: 1px solid rgba(255,255,255,0.06);
 }
@@ -2587,13 +2603,23 @@ body.eye-care .dash-section.model {
   background: linear-gradient(180deg, #2a1f3d 0%, #231a31 100%);
   border-color: #3e2a5c;
 }
+body.eye-care .dash-section.audit {
+  background: linear-gradient(180deg, #0e2a27 0%, #0a211f 100%);
+  border-color: #1a4a44;
+}
+body.eye-care .dash-section.sec_exterior {
+  background: linear-gradient(180deg, #2f2510 0%, #261d0c 100%);
+  border-color: #4a3a18;
+}
 body.eye-care .dash-section.memo {
   background: linear-gradient(180deg, #3d3320 0%, #2f2818 100%);
   border-color: #5c4a28;
 }
-body.eye-care .dash-section.monitoring .dash-section-title { color: #93c5fd; }
-body.eye-care .dash-section.model      .dash-section-title { color: #c4b5fd; }
-body.eye-care .dash-section.memo       .dash-section-title { color: #fcd34d; }
+body.eye-care .dash-section.monitoring   .dash-section-title { color: #93c5fd; }
+body.eye-care .dash-section.model        .dash-section-title { color: #c4b5fd; }
+body.eye-care .dash-section.audit        .dash-section-title { color: #6ee7df; }
+body.eye-care .dash-section.sec_exterior .dash-section-title { color: #fde68a; }
+body.eye-care .dash-section.memo         .dash-section-title { color: #fcd34d; }
 body.eye-care .dash-section-count {
   background: rgba(0,0,0,0.2);
   color: var(--text3);

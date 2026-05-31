@@ -85,13 +85,26 @@ function closeModal() {
   document.getElementById('modal-backdrop').classList.add('hidden');
 }
 
+// 모니터링과 동일한 탭 구성(일정표·메모장·설정만)을 공유하는 카테고리 목록
+const MONITORING_LIKE = ['monitoring', 'audit', 'sec_exterior'];
+
+// 카테고리별 표시 정보
+const CATEGORY_META = {
+  monitoring:   { icon: '📡', label: '상시 모니터링' },
+  model:        { icon: '📦', label: '주요 모델 이벤트 현황' },
+  audit:        { icon: '🔍', label: '주요 인증심사 및 AUDIT 일정' },
+  sec_exterior: { icon: '🏷', label: 'SEC 외관 한도 컨펌 현황' },
+};
+
 // ── Sidebar ──────────────────────────────────────────────────
 function renderSidebar() {
   const list = document.getElementById('model-list');
   list.innerHTML = '';
 
-  const monitoring = state.models.filter(m => m.category === 'monitoring').sort((a,b)=>a.order-b.order);
-  const models     = state.models.filter(m => m.category !== 'monitoring' && m.category !== 'schedule').sort((a,b)=>a.order-b.order);
+  const monitoring   = state.models.filter(m => m.category === 'monitoring').sort((a,b)=>a.order-b.order);
+  const audit        = state.models.filter(m => m.category === 'audit').sort((a,b)=>a.order-b.order);
+  const sec_exterior = state.models.filter(m => m.category === 'sec_exterior').sort((a,b)=>a.order-b.order);
+  const models       = state.models.filter(m => !['monitoring','schedule','audit','sec_exterior'].includes(m.category)).sort((a,b)=>a.order-b.order);
 
   const isMemo = state.view === 'dashboard' && state._sidebarMemo;
 
@@ -134,7 +147,25 @@ function renderSidebar() {
     models.forEach(renderItem);
   }
 
-  // ── 3. 메모장 (공용 게시판) ──
+  // ── 3. 주요 인증심사 및 AUDIT 일정 ──
+  if (audit.length) {
+    makeHeader('audit', '🔍', '주요 인증심사 및 AUDIT 일정', () => {
+      state._sidebarMemo = false;
+      loadDashboard().then(() => scrollDashSection('audit'));
+    });
+    audit.forEach(renderItem);
+  }
+
+  // ── 4. SEC 외관 한도 컨펌 현황 ──
+  if (sec_exterior.length) {
+    makeHeader('sec_exterior', '🏷', 'SEC 외관 한도 컨펌 현황', () => {
+      state._sidebarMemo = false;
+      loadDashboard().then(() => scrollDashSection('sec_exterior'));
+    });
+    sec_exterior.forEach(renderItem);
+  }
+
+  // ── 5. 메모장 (공용 게시판) ──
   const memoBtn = document.createElement('button');
   memoBtn.className = 'sb-group-label memo' + (isMemo ? ' active' : '');
   memoBtn.innerHTML = `📝 메모장 <span style="font-size:11px;opacity:.7">(공용 게시판)</span><span class="sb-arrow">›</span>`;
@@ -252,9 +283,10 @@ function renderDashboardData(wrap, res) {
     empty.innerHTML = '<div class="empty-icon">📂</div>등록된 모델이 없습니다';
     insertBeforeMemo(empty);
   } else {
-    // schedule 카테고리 모델은 전용 섹션에서 표시하므로 여기서 제외
-    const monitoring = data.filter(m => m.category === 'monitoring').sort((a,b)=>a.order-b.order);
-    const models     = data.filter(m => m.category !== 'monitoring' && m.category !== 'schedule').sort((a,b)=>a.order-b.order);
+    const monitoring   = data.filter(m => m.category === 'monitoring').sort((a,b)=>a.order-b.order);
+    const models       = data.filter(m => !['monitoring','schedule','audit','sec_exterior'].includes(m.category)).sort((a,b)=>a.order-b.order);
+    const audit        = data.filter(m => m.category === 'audit').sort((a,b)=>a.order-b.order);
+    const sec_exterior = data.filter(m => m.category === 'sec_exterior').sort((a,b)=>a.order-b.order);
 
     if (monitoring.length) {
       const sec = makeDashSection('monitoring', '📡 상시 모니터링', monitoring);
@@ -263,6 +295,16 @@ function renderDashboardData(wrap, res) {
     }
     if (models.length) {
       const sec = makeDashSection('model', '📦 주요 모델 이벤트 현황', models);
+      insertBeforeMemo(sec);
+      enableDashCardDrag(sec);
+    }
+    if (audit.length) {
+      const sec = makeDashSection('audit', '🔍 주요 인증심사 및 AUDIT 일정', audit);
+      insertBeforeMemo(sec);
+      enableDashCardDrag(sec);
+    }
+    if (sec_exterior.length) {
+      const sec = makeDashSection('sec_exterior', '🏷 SEC 외관 한도 컨펌 현황', sec_exterior);
       insertBeforeMemo(sec);
       enableDashCardDrag(sec);
     }
@@ -704,7 +746,8 @@ function makeDashSection(category, title, list) {
   const n = list.length;
   const isMobile = window.innerWidth <= 900;
 
-  if (category === 'monitoring') {
+  if (MONITORING_LIKE.includes(category)) {
+    // 상시 모니터링 / 인증심사 / SEC 외관: 항목 수만큼 가로 + 추가 셀 (1줄)
     if (!isMobile) {
       grid.style.gridTemplateColumns = n > 0
         ? `repeat(${n}, minmax(0, 1fr)) var(--add-w)`
@@ -773,8 +816,8 @@ function makeDashCard(m) {
   card.className = 'dashboard-card';
   card.style.borderTopColor = m.color;
 
-  if (m.category === 'monitoring') {
-    // 모니터링: 일정 진행률 + 상태 선택 버튼
+  if (MONITORING_LIKE.includes(m.category)) {
+    // 모니터링 계열(상시 모니터링·인증심사·SEC 외관): 일정 진행률 + 상태 선택 버튼
     const msPct = m.milestone_total ? Math.round(m.milestone_done / m.milestone_total * 100) : 0;
     const inProgress = Math.max(0, m.milestone_total - m.milestone_done - (m.milestone_delayed||0));
     const delayed    = m.milestone_delayed || 0;
@@ -901,7 +944,7 @@ function makeDashCard(m) {
 function enableDashCardDrag(section) {
   const grid = section.querySelector('.dash-section-grid');
   if (!grid) return;
-  const category = section.classList.contains('monitoring') ? 'monitoring' : 'model';
+  const category = MONITORING_LIKE.find(c => section.classList.contains(c)) || 'model';
 
   const LONG_PRESS_MS = 2000; // 2초 홀드 후 드래그 활성화
 
@@ -1084,7 +1127,8 @@ async function selectModel(id) {
   // 탭 표시 제어
   // - 모니터링: 체크시트·Claim 숨김
   // - 주요 일정 점검: "일정표"(캘린더) + "일정 현황"(목록) 만 표시
-  const isSchedMdl = m.category === 'schedule' || (m.name && m.name.replace(/\s/g,'').includes('일정점검'));
+  const isSchedMdl    = m.category === 'schedule' || (m.name && m.name.replace(/\s/g,'').includes('일정점검'));
+  const isMonLike     = MONITORING_LIKE.includes(m.category); // 일정표·메모장·설정만 표시
 
   const msStatusTab  = document.querySelector('.tab[data-tab="ms-status"]');
   const checklistTab = document.querySelector('.tab[data-tab="checklist"]');
@@ -1093,8 +1137,8 @@ async function selectModel(id) {
   const settingsTab  = document.querySelector('.tab[data-tab="settings"]');
 
   if (msStatusTab)  msStatusTab.style.display  = isSchedMdl ? '' : 'none';
-  if (checklistTab) checklistTab.style.display = (m.category === 'monitoring' || isSchedMdl) ? 'none' : '';
-  if (claimTab)     claimTab.style.display     = (m.category === 'monitoring' || isSchedMdl) ? 'none' : '';
+  if (checklistTab) checklistTab.style.display = (isMonLike || isSchedMdl) ? 'none' : '';
+  if (claimTab)     claimTab.style.display     = (isMonLike || isSchedMdl) ? 'none' : '';
   if (memoTab)      memoTab.style.display      = isSchedMdl ? 'none' : '';
   if (settingsTab)  settingsTab.style.display  = isSchedMdl ? 'none' : '';
 
@@ -1108,7 +1152,7 @@ async function loadTab(tab) {
   // 숨겨진 탭 접근 시 일정표로 리다이렉트
   const _am = state.activeModel;
   const _isSchedMdl = _am && (_am.category === 'schedule' || (_am.name && _am.name.replace(/\s/g,'').includes('일정점검')));
-  if (_am?.category === 'monitoring' && (tab === 'checklist' || tab === 'claim')) {
+  if (MONITORING_LIKE.includes(_am?.category) && (tab === 'checklist' || tab === 'claim')) {
     tab = 'milestone';
     document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === 'milestone'));
   }
@@ -2856,13 +2900,21 @@ function enableSubItemDragDrop(container, modelId) {
 
 // ── 모델 추가 Modal ──────────────────────────────────────────
 function openAddModelModal(defaultCategory = 'model') {
-  const title = defaultCategory === 'monitoring' ? '📡 상시 모니터링 항목 추가' : '📦 주요 모델 이벤트 추가';
+  const titleMap = {
+    monitoring:   '📡 상시 모니터링 항목 추가',
+    audit:        '🔍 인증심사/AUDIT 일정 추가',
+    sec_exterior: '🏷 SEC 외관 컨펌 현황 추가',
+  };
+  const title = titleMap[defaultCategory] || '📦 주요 모델 이벤트 추가';
+  const sel = (v) => defaultCategory === v ? 'selected' : '';
   const body = `
     <div class="form-group">
       <label class="form-label">분류</label>
       <select class="form-select" id="new-model-cat">
-        <option value="model"      ${defaultCategory==='model'      ? 'selected':''}>📦 주요 모델 이벤트 현황</option>
-        <option value="monitoring" ${defaultCategory==='monitoring' ? 'selected':''}>📡 상시 모니터링</option>
+        <option value="model"         ${sel('model')}>📦 주요 모델 이벤트 현황</option>
+        <option value="monitoring"    ${sel('monitoring')}>📡 상시 모니터링</option>
+        <option value="audit"         ${sel('audit')}>🔍 주요 인증심사 및 AUDIT 일정</option>
+        <option value="sec_exterior"  ${sel('sec_exterior')}>🏷 SEC 외관 한도 컨펌 현황</option>
       </select>
     </div>
     <div class="form-group">
