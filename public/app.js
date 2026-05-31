@@ -270,26 +270,28 @@ function renderDashboardData(wrap, res) {
     else wrap.appendChild(sec);
   };
 
-  // ── 주요 일정 점검 섹션 (항상 최상단) ──
-  insertBeforeMemo(makeSchedDashSection(schedThisMonth, schedTotal));
-
   // 카테고리별 분류
   const monitoring   = data.filter(m => m.category === 'monitoring').sort((a,b)=>a.order-b.order);
   const models       = data.filter(m => !['monitoring','schedule','audit','sec_exterior'].includes(m.category)).sort((a,b)=>a.order-b.order);
   const audit        = data.filter(m => m.category === 'audit').sort((a,b)=>a.order-b.order);
   const sec_exterior = data.filter(m => m.category === 'sec_exterior').sort((a,b)=>a.order-b.order);
 
+  // ── 주요 일정 점검 + 상시 모니터링 → 한 줄(flex row) ──
+  const topRow = document.createElement('div');
+  topRow.className = 'dash-top-row';
+  topRow.appendChild(makeSchedDashSection(schedThisMonth, schedTotal));
+  if (monitoring.length) {
+    const monSec = makeDashSection('monitoring', '📡 상시 모니터링', monitoring);
+    topRow.appendChild(monSec);
+    enableDashCardDrag(monSec);
+  }
+  insertBeforeMemo(topRow);
+
   if (!data.length) {
     const empty = document.createElement('div');
     empty.className = 'empty-state';
     empty.innerHTML = '<div class="empty-icon">📂</div>등록된 모델이 없습니다';
     insertBeforeMemo(empty);
-  }
-
-  if (monitoring.length) {
-    const sec = makeDashSection('monitoring', '📡 상시 모니터링', monitoring);
-    insertBeforeMemo(sec);
-    enableDashCardDrag(sec);
   }
   if (models.length) {
     const sec = makeDashSection('model', '📦 주요 모델 이벤트 현황', models);

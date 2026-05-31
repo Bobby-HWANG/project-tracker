@@ -721,6 +721,30 @@ body {
 #view-dashboard .page-header { padding: 16px 16px 12px; }
 #view-dashboard .page-title  { font-size: 22px; }
 
+/* 주요 일정 점검 + 상시 모니터링 한 줄 배치 */
+.dash-top-row {
+  display: flex;
+  gap: 16px;
+  align-items: stretch;
+  width: 100%;
+  box-sizing: border-box;
+}
+/* 주요 일정 점검: 내용이 적어 좁게 고정 */
+.dash-top-row .dash-section.schedule {
+  flex: 0 0 320px;
+  min-width: 0;
+}
+/* 상시 모니터링: 남은 공간 모두 차지 */
+.dash-top-row .dash-section.monitoring {
+  flex: 1;
+  min-width: 0;
+}
+/* 모바일: 세로 전환 */
+@media (max-width: 900px) {
+  .dash-top-row { flex-direction: column; }
+  .dash-top-row .dash-section.schedule { flex: none; }
+}
+
 .dashboard-grid {
   flex: 1;
   display: flex;
