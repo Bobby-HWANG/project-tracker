@@ -332,7 +332,64 @@ function migrate() {
     }
   });
 
-  if (changed) save();
+  // 6) 기존 저장 데이터의 <br> → \n 일괄 변환
+  const fixBr = (s) => (typeof s === 'string' ? s.replace(/<br\s*\/?>/gi, '\n') : s);
+
+  // 마일스톤 (description, note)
+  Object.values(DB.milestones || {}).forEach(list => {
+    (list || []).forEach(it => {
+      const d = fixBr(it.description), n = fixBr(it.note);
+      if (d !== it.description || n !== it.note) {
+        it.description = d; it.note = n; changed = true;
+      }
+    });
+  });
+
+  // 체크시트 (detail, note)
+  Object.values(DB.checklists || {}).forEach(list => {
+    (list || []).forEach(it => {
+      const d = fixBr(it.detail), n = fixBr(it.note);
+      if (d !== it.detail || n !== it.note) {
+        it.detail = d; it.note = n; changed = true;
+      }
+    });
+  });
+
+  // 클레임 (content, action, note)
+  Object.values(DB.claims || {}).forEach(list => {
+    (list || []).forEach(it => {
+      const c = fixBr(it.content), a = fixBr(it.action), n = fixBr(it.note);
+      if (c !== it.content || a !== it.action || n !== it.note) {
+        it.content = c; it.action = a; it.note = n; changed = true;
+      }
+    });
+  });
+
+  // 일정 (description)
+  (DB.schedules || []).forEach(it => {
+    const d = fixBr(it.description);
+    if (d !== it.description) { it.description = d; changed = true; }
+  });
+
+  // 메모장 게시글 (content) + 댓글 (content)
+  (DB.posts || []).forEach(p => {
+    const c = fixBr(p.content);
+    if (c !== p.content) { p.content = c; changed = true; }
+    (p.comments || []).forEach(cm => {
+      const cc = fixBr(cm.content);
+      if (cc !== cm.content) { cm.content = cc; changed = true; }
+    });
+  });
+
+  // 댓글 별도 컬렉션
+  Object.values(DB.comments || {}).forEach(list => {
+    (list || []).forEach(cm => {
+      const c = fixBr(cm.content);
+      if (c !== cm.content) { cm.content = c; changed = true; }
+    });
+  });
+
+  if (changed) { save(); console.log('[migrate] <br> → \\n 변환 완료'); }
 }
 migrate();
 
