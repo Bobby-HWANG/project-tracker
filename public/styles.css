@@ -783,6 +783,99 @@ body {
   background: linear-gradient(180deg, #CCFBF1 0%, #F0FDFA 100%);
   border-color: #5EEAD4;
 }
+/* SEC 외관 LIST 하위 섹션 */
+.dash-section.sec_list {
+  background: linear-gradient(180deg, #FFF7ED 0%, #FFFBF7 100%);
+  border-color: #FDBA74;
+}
+.dash-section.sec_list .dash-section-title { color: #c2410c; }
+.dash-sec-ext-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: linear-gradient(180deg, #FFFBEB 0%, #FEFCE8 100%);
+  border: 1.5px solid #FCD34D;
+  border-radius: 16px;
+  padding: 14px;
+}
+
+/* ── 파일 탭 UI ─────────────────────────────────────────────── */
+.files-tab-wrap { display: flex; flex-direction: column; gap: 16px; padding: 8px 0; }
+
+.files-upload-zone {
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  padding: 24px 20px;
+  text-align: center;
+  transition: border-color .15s, background .15s;
+  background: var(--bg);
+}
+.files-upload-zone.drag-over {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 6%, var(--bg));
+}
+.files-upload-inner { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.files-upload-icon { font-size: 32px; }
+.files-upload-btn {
+  display: inline-block;
+  padding: 8px 20px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity .12s;
+}
+.files-upload-btn:hover { opacity: .85; }
+.files-size-hint { font-size: 11px; color: var(--text3); }
+
+.files-prog-bar {
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+.files-prog-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 3px;
+  transition: width .2s;
+}
+.files-prog-label { font-size: 12px; color: var(--text3); }
+
+.files-list-header { margin-bottom: 8px; }
+.files-count { font-size: 12px; font-weight: 700; color: var(--text2); }
+
+.files-list { display: flex; flex-direction: column; gap: 6px; }
+
+.file-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  transition: background .12s;
+}
+.file-item:hover { background: var(--hover); }
+.file-icon-lg { font-size: 24px; flex-shrink: 0; }
+.file-info { flex: 1; min-width: 0; }
+.file-name {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.file-name:hover { text-decoration: underline; }
+.file-meta { font-size: 11px; color: var(--text3); display: block; margin-top: 2px; }
+
 /* 인증심사 하위 섹션 */
 .dash-section.audit_cert {
   background: linear-gradient(180deg, #E0F2FE 0%, #F0F9FF 100%);

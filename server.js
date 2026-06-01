@@ -294,7 +294,29 @@ function migrate() {
   // 3) schedules 배열 초기화
   if (!Array.isArray(DB.schedules)) { DB.schedules = []; changed = true; }
 
-  // 5) 인증심사 / AUDIT 하위 모델 자동 생성
+  // 5) files 컬렉션 초기화
+  if (!DB.files) { DB.files = {}; changed = true; }
+
+  // 6) 인증심사 / AUDIT 하위 모델 자동 생성
+  // 7) SEC 외관 한도 컨펌 현황 > LIST 하위 모델 자동 생성
+  const secListDefaults = [
+    { name: 'Q8 CAM DECO',   color: '#F59E0B', category: 'sec_list' },
+    { name: 'Q8 FRONT DECO', color: '#EF4444', category: 'sec_list' },
+  ];
+  secListDefaults.forEach((def, idx) => {
+    const exists = (DB.models||[]).some(m => m.name === def.name);
+    if (exists) return;
+    const id = nextId();
+    DB.models.push({ id, name: def.name, color: def.color, order: idx, category: def.category });
+    DB.subItems[id]   = [];
+    DB.milestones[id] = [];
+    DB.checklists[id] = [];
+    DB.claims[id]     = [];
+    DB.memos[id]      = '';
+    DB.files[id]      = [];
+    changed = true;
+  });
+
   const auditDefaults = [
     // audit_cert — 인증심사 일정
     {
@@ -1140,6 +1162,57 @@ app.get('/api/dashboard', (_, res) => {
   });
   res.json({ models: summary, schedThisMonth, schedTotal });
 });
+
+// ── 파일 업로드 (Files) ──────────────────────────────────────
+app.get('/api/models/:id/files', sr((req, res) => {
+  const id = Number(req.params.id);
+  if (!DB.files) DB.files = {};
+  const list = (DB.files[id] || []).map(f => ({
+    id: f.id, name: f.name, size: f.size, type: f.type, uploadedAt: f.uploadedAt,
+    // data는 목록에서 제외 (용량 절약)
+  }));
+  res.json(list);
+}));
+
+app.post('/api/models/:id/files', sr((req, res) => {
+  const id = Number(req.params.id);
+  if (!DB.files) DB.files = {};
+  if (!DB.files[id]) DB.files[id] = [];
+  const { name, size, type, data } = req.body;
+  if (!name || !data) return res.status(400).json({ error: 'name, data required' });
+  const item = { id: nextId(), name, size: Number(size)||0, type: type||'', data, uploadedAt: new Date().toISOString() };
+  DB.files[id].push(item);
+  save();
+  res.json({ id: item.id, name: item.name, size: item.size, type: item.type, uploadedAt: item.uploadedAt });
+}));
+
+app.get('/api/files/:id', sr((req, res) => {
+  const id = Number(req.params.id);
+  if (!DB.files) return res.status(404).json({ error: 'not found' });
+  for (const mid in DB.files) {
+    const f = (DB.files[mid] || []).find(x => x.id === id);
+    if (f) {
+      const buf = Buffer.from(f.data, 'base64');
+      const encodedName = encodeURIComponent(f.name).replace(/'/g, "%27");
+      res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodedName}`);
+      res.setHeader('Content-Type', f.type || 'application/octet-stream');
+      res.setHeader('Content-Length', buf.length);
+      return res.send(buf);
+    }
+  }
+  res.status(404).json({ error: 'not found' });
+}));
+
+app.delete('/api/files/:id', sr((req, res) => {
+  const id = Number(req.params.id);
+  if (!DB.files) return res.status(404).json({ error: 'not found' });
+  for (const mid in DB.files) {
+    const before = (DB.files[mid]||[]).length;
+    DB.files[mid] = (DB.files[mid]||[]).filter(x => x.id !== id);
+    if ((DB.files[mid]||[]).length < before) { save(); return res.json({ ok: true }); }
+  }
+  res.status(404).json({ error: 'not found' });
+}));
 
 // ── 주요 일정 점검 (Schedules) ───────────────────────────────
 app.get('/api/schedules', (_, res) => {
