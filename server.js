@@ -294,68 +294,6 @@ function migrate() {
   // 3) schedules 배열 초기화
   if (!Array.isArray(DB.schedules)) { DB.schedules = []; changed = true; }
 
-  // 5) files 컬렉션 초기화
-  if (!DB.files) { DB.files = {}; changed = true; }
-
-  // 6) 인증심사 / AUDIT 하위 모델 자동 생성
-  // 7) SEC 외관 한도 컨펌 현황 > LIST 하위 모델 자동 생성
-  const secListDefaults = [
-    { name: 'Q8 CAM DECO',   color: '#F59E0B', category: 'sec_list' },
-    { name: 'Q8 FRONT DECO', color: '#EF4444', category: 'sec_list' },
-  ];
-  secListDefaults.forEach((def, idx) => {
-    const exists = (DB.models||[]).some(m => m.name === def.name);
-    if (exists) return;
-    const id = nextId();
-    DB.models.push({ id, name: def.name, color: def.color, order: idx, category: def.category });
-    DB.subItems[id]   = [];
-    DB.milestones[id] = [];
-    DB.checklists[id] = [];
-    DB.claims[id]     = [];
-    DB.memos[id]      = '';
-    DB.files[id]      = [];
-    changed = true;
-  });
-
-  const auditDefaults = [
-    // audit_cert — 인증심사 일정
-    {
-      name: 'ISO13485 (INTOPS : 6/15~19)', color: '#14B8A6', category: 'audit_cert',
-      milestones: [{ title: 'ISO13485 인증심사', description: 'INTOPS', dueDate: '2026-06-15', dueDateEnd: '2026-06-19', status: 'pending' }],
-    },
-    {
-      name: 'ISO13485 (OBM : 7/24~7/27)', color: '#0EA5E9', category: 'audit_cert',
-      milestones: [{ title: 'ISO13485 인증심사', description: 'OBM', dueDate: '2026-07-24', dueDateEnd: '2026-07-27', status: 'pending' }],
-    },
-    // audit_process — AUDIT 일정
-    {
-      name: '용산 JG1 공정감사 (6/2)', color: '#F59E0B', category: 'audit_process',
-      milestones: [{ title: '용산 JG1 공정감사', dueDate: '2026-06-02', status: 'pending' }],
-    },
-  ];
-  auditDefaults.forEach((def, idx) => {
-    const exists = (DB.models||[]).some(m => m.name === def.name);
-    if (exists) return;
-    const id = nextId();
-    DB.models.push({ id, name: def.name, color: def.color, order: idx, category: def.category });
-    DB.subItems[id]   = [];
-    DB.milestones[id] = (def.milestones || []).map(ms => ({
-      id: nextId(),
-      author: null,
-      title: ms.title,
-      description: ms.description || '',
-      note: '',
-      subItemId: null,
-      dueDate: ms.dueDate || null,
-      dueDateEnd: ms.dueDateEnd || null,
-      status: ms.status || 'pending',
-    }));
-    DB.checklists[id] = [];
-    DB.claims[id]     = [];
-    DB.memos[id]      = '';
-    changed = true;
-  });
-
   // 4) '일정 점검' 이름을 포함한 모델 → category를 'schedule'로 강제 변환
   (DB.models || []).forEach(m => {
     if (m.category !== 'schedule' && m.name && m.name.replace(/\s/g,'').includes('일정점검')) {
@@ -1162,57 +1100,6 @@ app.get('/api/dashboard', (_, res) => {
   });
   res.json({ models: summary, schedThisMonth, schedTotal });
 });
-
-// ── 파일 업로드 (Files) ──────────────────────────────────────
-app.get('/api/models/:id/files', sr((req, res) => {
-  const id = Number(req.params.id);
-  if (!DB.files) DB.files = {};
-  const list = (DB.files[id] || []).map(f => ({
-    id: f.id, name: f.name, size: f.size, type: f.type, uploadedAt: f.uploadedAt,
-    // data는 목록에서 제외 (용량 절약)
-  }));
-  res.json(list);
-}));
-
-app.post('/api/models/:id/files', sr((req, res) => {
-  const id = Number(req.params.id);
-  if (!DB.files) DB.files = {};
-  if (!DB.files[id]) DB.files[id] = [];
-  const { name, size, type, data } = req.body;
-  if (!name || !data) return res.status(400).json({ error: 'name, data required' });
-  const item = { id: nextId(), name, size: Number(size)||0, type: type||'', data, uploadedAt: new Date().toISOString() };
-  DB.files[id].push(item);
-  save();
-  res.json({ id: item.id, name: item.name, size: item.size, type: item.type, uploadedAt: item.uploadedAt });
-}));
-
-app.get('/api/files/:id', sr((req, res) => {
-  const id = Number(req.params.id);
-  if (!DB.files) return res.status(404).json({ error: 'not found' });
-  for (const mid in DB.files) {
-    const f = (DB.files[mid] || []).find(x => x.id === id);
-    if (f) {
-      const buf = Buffer.from(f.data, 'base64');
-      const encodedName = encodeURIComponent(f.name).replace(/'/g, "%27");
-      res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodedName}`);
-      res.setHeader('Content-Type', f.type || 'application/octet-stream');
-      res.setHeader('Content-Length', buf.length);
-      return res.send(buf);
-    }
-  }
-  res.status(404).json({ error: 'not found' });
-}));
-
-app.delete('/api/files/:id', sr((req, res) => {
-  const id = Number(req.params.id);
-  if (!DB.files) return res.status(404).json({ error: 'not found' });
-  for (const mid in DB.files) {
-    const before = (DB.files[mid]||[]).length;
-    DB.files[mid] = (DB.files[mid]||[]).filter(x => x.id !== id);
-    if ((DB.files[mid]||[]).length < before) { save(); return res.json({ ok: true }); }
-  }
-  res.status(404).json({ error: 'not found' });
-}));
 
 // ── 주요 일정 점검 (Schedules) ───────────────────────────────
 app.get('/api/schedules', (_, res) => {

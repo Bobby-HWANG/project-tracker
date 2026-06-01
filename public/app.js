@@ -86,17 +86,14 @@ function closeModal() {
 }
 
 // 모니터링과 동일한 탭 구성(일정표·메모장·설정만)을 공유하는 카테고리 목록
-const MONITORING_LIKE = ['monitoring', 'audit', 'audit_cert', 'audit_process', 'sec_exterior', 'sec_list'];
+const MONITORING_LIKE = ['monitoring', 'audit', 'sec_exterior'];
 
 // 카테고리별 표시 정보
 const CATEGORY_META = {
-  monitoring:    { icon: '📡', label: '상시 모니터링' },
-  model:         { icon: '📦', label: '주요 모델 이벤트 현황' },
-  audit:         { icon: '🔍', label: '주요 인증심사 및 AUDIT 일정' },
-  audit_cert:    { icon: '📋', label: '인증심사 일정' },
-  audit_process: { icon: '🔎', label: 'AUDIT 일정' },
-  sec_exterior:  { icon: '🏷', label: 'SEC 외관 한도 컨펌 현황' },
-  sec_list:      { icon: '📋', label: 'LIST' },
+  monitoring:   { icon: '📡', label: '상시 모니터링' },
+  model:        { icon: '📦', label: '주요 모델 이벤트 현황' },
+  audit:        { icon: '🔍', label: '주요 인증심사 및 AUDIT 일정' },
+  sec_exterior: { icon: '🏷', label: 'SEC 외관 한도 컨펌 현황' },
 };
 
 // ── Sidebar ──────────────────────────────────────────────────
@@ -104,13 +101,10 @@ function renderSidebar() {
   const list = document.getElementById('model-list');
   list.innerHTML = '';
 
-  const monitoring    = state.models.filter(m => m.category === 'monitoring').sort((a,b)=>a.order-b.order);
-  const audit         = state.models.filter(m => m.category === 'audit').sort((a,b)=>a.order-b.order);
-  const audit_cert    = state.models.filter(m => m.category === 'audit_cert').sort((a,b)=>a.order-b.order);
-  const audit_process = state.models.filter(m => m.category === 'audit_process').sort((a,b)=>a.order-b.order);
-  const sec_exterior  = state.models.filter(m => m.category === 'sec_exterior').sort((a,b)=>a.order-b.order);
-  const sec_list      = state.models.filter(m => m.category === 'sec_list').sort((a,b)=>a.order-b.order);
-  const models        = state.models.filter(m => !['monitoring','schedule','audit','audit_cert','audit_process','sec_exterior','sec_list'].includes(m.category)).sort((a,b)=>a.order-b.order);
+  const monitoring   = state.models.filter(m => m.category === 'monitoring').sort((a,b)=>a.order-b.order);
+  const audit        = state.models.filter(m => m.category === 'audit').sort((a,b)=>a.order-b.order);
+  const sec_exterior = state.models.filter(m => m.category === 'sec_exterior').sort((a,b)=>a.order-b.order);
+  const models       = state.models.filter(m => !['monitoring','schedule','audit','sec_exterior'].includes(m.category)).sort((a,b)=>a.order-b.order);
 
   const isMemo = state.view === 'dashboard' && state._sidebarMemo;
 
@@ -156,43 +150,16 @@ function renderSidebar() {
   // ── 3. 주요 인증심사 및 AUDIT 일정 (항목 없어도 헤더 표시) ──
   makeHeader('audit', '🔍', '주요 인증심사 및 AUDIT 일정', () => {
     state._sidebarMemo = false;
-    loadDashboard().then(() => scrollDashSection('audit-group'));
+    loadDashboard().then(() => scrollDashSection('audit'));
   });
   audit.forEach(renderItem);
 
-  // 3-1. 인증심사 일정 (하위 그룹 — 들여쓰기)
-  if (audit_cert.length) {
-    const subH1 = document.createElement('div');
-    subH1.className = 'sb-sub-label';
-    subH1.textContent = '📋 인증심사 일정';
-    list.appendChild(subH1);
-    audit_cert.forEach(renderItem);
-  }
-
-  // 3-2. AUDIT 일정 (하위 그룹 — 들여쓰기)
-  if (audit_process.length) {
-    const subH2 = document.createElement('div');
-    subH2.className = 'sb-sub-label';
-    subH2.textContent = '🔎 AUDIT 일정';
-    list.appendChild(subH2);
-    audit_process.forEach(renderItem);
-  }
-
-  // ── 4. SEC 외관 한도 컨펌 현황 ──
+  // ── 4. SEC 외관 한도 컨펌 현황 (항목 없어도 헤더 표시) ──
   makeHeader('sec_exterior', '🏷', 'SEC 외관 한도 컨펌 현황', () => {
     state._sidebarMemo = false;
-    loadDashboard().then(() => scrollDashSection('sec-ext-group'));
+    loadDashboard().then(() => scrollDashSection('sec_exterior'));
   });
   sec_exterior.forEach(renderItem);
-
-  // 4-1. LIST (하위 그룹)
-  if (sec_list.length) {
-    const subHL = document.createElement('div');
-    subHL.className = 'sb-sub-label';
-    subHL.textContent = '📋 LIST';
-    list.appendChild(subHL);
-    sec_list.forEach(renderItem);
-  }
 
   // ── 5. 메모장 (공용 게시판) ──
   const memoBtn = document.createElement('button');
@@ -304,13 +271,10 @@ function renderDashboardData(wrap, res) {
   };
 
   // 카테고리별 분류
-  const monitoring    = data.filter(m => m.category === 'monitoring').sort((a,b)=>a.order-b.order);
-  const models        = data.filter(m => !['monitoring','schedule','audit','audit_cert','audit_process','sec_exterior','sec_list'].includes(m.category)).sort((a,b)=>a.order-b.order);
-  const audit         = data.filter(m => m.category === 'audit').sort((a,b)=>a.order-b.order);
-  const audit_cert    = data.filter(m => m.category === 'audit_cert').sort((a,b)=>a.order-b.order);
-  const audit_process = data.filter(m => m.category === 'audit_process').sort((a,b)=>a.order-b.order);
-  const sec_exterior  = data.filter(m => m.category === 'sec_exterior').sort((a,b)=>a.order-b.order);
-  const sec_list      = data.filter(m => m.category === 'sec_list').sort((a,b)=>a.order-b.order);
+  const monitoring   = data.filter(m => m.category === 'monitoring').sort((a,b)=>a.order-b.order);
+  const models       = data.filter(m => !['monitoring','schedule','audit','sec_exterior'].includes(m.category)).sort((a,b)=>a.order-b.order);
+  const audit        = data.filter(m => m.category === 'audit').sort((a,b)=>a.order-b.order);
+  const sec_exterior = data.filter(m => m.category === 'sec_exterior').sort((a,b)=>a.order-b.order);
 
   // ── 주요 일정 점검 + 상시 모니터링 → 한 줄(flex row) ──
   // 각 카드 폭이 동일하도록: schedule=flex:1, monitoring=flex:N(카드수)
@@ -339,65 +303,16 @@ function renderDashboardData(wrap, res) {
     insertBeforeMemo(sec);
     enableDashCardDrag(sec);
   }
-  // ── 주요 인증심사 및 AUDIT 일정 그룹 (audit + audit_cert + audit_process) ──
+  // 새 카테고리: 항목 없어도 항상 표시 (추가 버튼 노출)
   {
-    const auditGroup = document.createElement('div');
-    auditGroup.className = 'dash-audit-group';
-    auditGroup.id = 'audit-group';
-
-    // 상위 audit 모델이 있으면 표시
-    if (audit.length) {
-      const sec = makeDashSection('audit', '', audit);
-      if (audit.length) enableDashCardDrag(sec);
-      auditGroup.appendChild(sec);
-    }
-
-    // 인증심사 일정 하위 섹션
-    {
-      const sec = makeDashSection('audit_cert', '📋 인증심사 일정', audit_cert);
-      if (audit_cert.length) enableDashCardDrag(sec);
-      auditGroup.appendChild(sec);
-    }
-
-    // AUDIT 일정 하위 섹션
-    {
-      const sec = makeDashSection('audit_process', '🔎 AUDIT 일정', audit_process);
-      if (audit_process.length) enableDashCardDrag(sec);
-      auditGroup.appendChild(sec);
-    }
-
-    // 그룹 헤더 추가
-    const groupHeader = document.createElement('div');
-    groupHeader.className = 'dash-audit-group-header';
-    groupHeader.innerHTML = `<span class="dag-title">🔍 주요 인증심사 및 AUDIT 일정</span>`;
-    auditGroup.prepend(groupHeader);
-
-    insertBeforeMemo(auditGroup);
+    const sec = makeDashSection('audit', '🔍 주요 인증심사 및 AUDIT 일정', audit);
+    insertBeforeMemo(sec);
+    if (audit.length) enableDashCardDrag(sec);
   }
-  // ── SEC 외관 한도 컨펌 현황 그룹 (sec_exterior + sec_list) ──
   {
-    const secGroup = document.createElement('div');
-    secGroup.className = 'dash-sec-ext-group';
-    secGroup.id = 'sec-ext-group';
-
-    const groupHeader = document.createElement('div');
-    groupHeader.className = 'dash-audit-group-header';
-    groupHeader.innerHTML = `<span class="dag-title" style="color:#92400e">🏷 SEC 외관 한도 컨펌 현황</span>`;
-    secGroup.appendChild(groupHeader);
-
-    if (sec_exterior.length) {
-      const sec = makeDashSection('sec_exterior', '', sec_exterior);
-      enableDashCardDrag(sec);
-      secGroup.appendChild(sec);
-    }
-
-    {
-      const sec = makeDashSection('sec_list', '📋 LIST', sec_list);
-      if (sec_list.length) enableDashCardDrag(sec);
-      secGroup.appendChild(sec);
-    }
-
-    insertBeforeMemo(secGroup);
+    const sec = makeDashSection('sec_exterior', '🏷 SEC 외관 한도 컨펌 현황', sec_exterior);
+    insertBeforeMemo(sec);
+    if (sec_exterior.length) enableDashCardDrag(sec);
   }
 
   if (!memo) wrap.appendChild(makeDashMemoSection());
@@ -1207,20 +1122,17 @@ async function selectModel(id) {
   // - 모니터링: 체크시트·Claim 숨김
   // - 주요 일정 점검: "일정표"(캘린더) + "일정 현황"(목록) 만 표시
   const isSchedMdl    = m.category === 'schedule' || (m.name && m.name.replace(/\s/g,'').includes('일정점검'));
-  const isMonLike     = MONITORING_LIKE.includes(m.category);
-  const isSecList     = m.category === 'sec_list'; // 파일 탭 표시 카테고리
+  const isMonLike     = MONITORING_LIKE.includes(m.category); // 일정표·메모장·설정만 표시
 
   const msStatusTab  = document.querySelector('.tab[data-tab="ms-status"]');
   const checklistTab = document.querySelector('.tab[data-tab="checklist"]');
   const claimTab     = document.querySelector('.tab[data-tab="claim"]');
-  const filesTab     = document.querySelector('.tab[data-tab="files"]');
   const memoTab      = document.querySelector('.tab[data-tab="memo"]');
   const settingsTab  = document.querySelector('.tab[data-tab="settings"]');
 
   if (msStatusTab)  msStatusTab.style.display  = isSchedMdl ? '' : 'none';
   if (checklistTab) checklistTab.style.display = (isMonLike || isSchedMdl) ? 'none' : '';
   if (claimTab)     claimTab.style.display     = (isMonLike || isSchedMdl) ? 'none' : '';
-  if (filesTab)     filesTab.style.display     = isSecList ? '' : 'none';  // sec_list만 파일 탭 노출
   if (memoTab)      memoTab.style.display      = isSchedMdl ? 'none' : '';
   if (settingsTab)  settingsTab.style.display  = isSchedMdl ? 'none' : '';
 
@@ -1249,7 +1161,7 @@ async function loadTab(tab) {
 
   // 메모·설정 탭은 filterbar 불필요 → 비움
   const filterbar = document.getElementById('tab-filterbar');
-  if (tab === 'memo' || tab === 'settings' || tab === 'files') {
+  if (tab === 'memo' || tab === 'settings') {
     if (filterbar) filterbar.innerHTML = '';
   }
 
@@ -1264,7 +1176,6 @@ async function loadTab(tab) {
   if (tab === 'ms-status') await renderMilestone(body);
   if (tab === 'checklist') await renderChecklist(body);
   if (tab === 'claim')     await renderClaim(body);
-  if (tab === 'files')     await renderFiles(body);
   if (tab === 'memo')      await renderMemo(body);
   if (tab === 'settings')  await renderSettings(body);
 }
@@ -3041,9 +2952,7 @@ function openAddModelModal(defaultCategory = 'model') {
       <select class="form-select" id="new-model-cat">
         <option value="model"         ${sel('model')}>📦 주요 모델 이벤트 현황</option>
         <option value="monitoring"    ${sel('monitoring')}>📡 상시 모니터링</option>
-        <option value="audit"         ${sel('audit')}>🔍 주요 인증심사 및 AUDIT 일정 (공통)</option>
-        <option value="audit_cert"    ${sel('audit_cert')}>  ↳ 📋 인증심사 일정</option>
-        <option value="audit_process" ${sel('audit_process')}>  ↳ 🔎 AUDIT 일정</option>
+        <option value="audit"         ${sel('audit')}>🔍 주요 인증심사 및 AUDIT 일정</option>
         <option value="sec_exterior"  ${sel('sec_exterior')}>🏷 SEC 외관 한도 컨펌 현황</option>
       </select>
     </div>
@@ -3828,129 +3737,6 @@ function openScheduleModal(item, allItems) {
     } catch(e) {
       toast(e.message || '저장 실패', 'error');
     }
-  });
-}
-
-/* ── 파일 탭 (📁 파일 업로드 / 목록) ──────────────────────────── */
-async function renderFiles(body) {
-  const mid = state.activeModel.id;
-  const files = await GET(`/api/models/${mid}/files`);
-
-  const fmtSize = (n) => n > 1024*1024 ? (n/1024/1024).toFixed(1)+'MB' : n > 1024 ? (n/1024).toFixed(0)+'KB' : n+'B';
-  const fmtDate = (s) => s ? new Date(s).toLocaleDateString('ko-KR') : '';
-  const fileIcon = (type) => {
-    if (!type) return '📄';
-    if (type.startsWith('image/')) return '🖼';
-    if (type === 'application/pdf') return '📑';
-    if (type.includes('word') || type.includes('document')) return '📝';
-    if (type.includes('excel') || type.includes('sheet')) return '📊';
-    if (type.includes('zip') || type.includes('rar') || type.includes('7z')) return '🗜';
-    return '📄';
-  };
-
-  body.innerHTML = `
-    <div class="files-tab-wrap">
-      <div class="files-upload-zone" id="files-drop-zone">
-        <input type="file" id="file-input" multiple style="display:none">
-        <div class="files-upload-inner">
-          <span class="files-upload-icon">📎</span>
-          <label for="file-input" class="files-upload-btn">파일 선택 / 여기에 드래그</label>
-          <span class="files-size-hint">파일당 최대 10MB</span>
-        </div>
-      </div>
-      <div id="files-progress" style="display:none">
-        <div class="files-prog-bar"><div class="files-prog-fill" id="files-prog-fill"></div></div>
-        <span class="files-prog-label" id="files-prog-label">업로드 중...</span>
-      </div>
-      <div class="files-list-wrap">
-        <div class="files-list-header">
-          <span class="files-count">${files.length}개 파일</span>
-        </div>
-        <div class="files-list" id="files-list">
-          ${files.length === 0 ? '<div class="empty-state"><div class="empty-icon">📂</div>업로드된 파일이 없습니다</div>' : ''}
-        </div>
-      </div>
-    </div>
-  `;
-
-  const listEl = body.querySelector('#files-list');
-
-  const renderList = (list) => {
-    if (!list.length) {
-      listEl.innerHTML = '<div class="empty-state"><div class="empty-icon">📂</div>업로드된 파일이 없습니다</div>';
-      return;
-    }
-    listEl.innerHTML = '';
-    list.forEach(f => {
-      const item = document.createElement('div');
-      item.className = 'file-item';
-      item.innerHTML = `
-        <span class="file-icon-lg">${fileIcon(f.type)}</span>
-        <div class="file-info">
-          <a class="file-name" href="/api/files/${f.id}" download="${escHtml(f.name)}">${escHtml(f.name)}</a>
-          <span class="file-meta">${fmtSize(f.size)} · ${fmtDate(f.uploadedAt)}</span>
-        </div>
-        <button class="btn-xs danger file-del-btn" data-fid="${f.id}" title="삭제">🗑</button>
-      `;
-      listEl.appendChild(item);
-    });
-  };
-  renderList(files);
-
-  // 삭제
-  listEl.addEventListener('click', async (e) => {
-    const btn = e.target.closest('.file-del-btn');
-    if (!btn) return;
-    if (!confirm('파일을 삭제할까요?')) return;
-    await DEL(`/api/files/${btn.dataset.fid}`);
-    toast('삭제되었습니다', 'success');
-    const updated = await GET(`/api/models/${mid}/files`);
-    renderList(updated);
-    body.querySelector('.files-count').textContent = `${updated.length}개 파일`;
-  });
-
-  // 파일 업로드 처리
-  const doUpload = async (fileList) => {
-    const progWrap = body.querySelector('#files-progress');
-    const progFill = body.querySelector('#files-prog-fill');
-    const progLabel = body.querySelector('#files-prog-label');
-    const MAX = 10 * 1024 * 1024; // 10MB
-    const valid = [...fileList].filter(f => {
-      if (f.size > MAX) { toast(`${f.name}: 10MB 초과`, 'error'); return false; }
-      return true;
-    });
-    if (!valid.length) return;
-    progWrap.style.display = '';
-    for (let i = 0; i < valid.length; i++) {
-      const f = valid[i];
-      progLabel.textContent = `${i+1}/${valid.length} ${f.name} 업로드 중...`;
-      progFill.style.width = `${Math.round((i/valid.length)*100)}%`;
-      const data = await new Promise(res => {
-        const r = new FileReader();
-        r.onload = e => res(e.target.result.split(',')[1]);
-        r.readAsDataURL(f);
-      });
-      await POST(`/api/models/${mid}/files`, { name: f.name, size: f.size, type: f.type, data });
-    }
-    progFill.style.width = '100%';
-    progLabel.textContent = '완료!';
-    setTimeout(() => { progWrap.style.display = 'none'; }, 800);
-    toast(`${valid.length}개 파일 업로드 완료`, 'success');
-    const updated = await GET(`/api/models/${mid}/files`);
-    renderList(updated);
-    body.querySelector('.files-count').textContent = `${updated.length}개 파일`;
-  };
-
-  body.querySelector('#file-input').addEventListener('change', e => doUpload(e.target.files));
-
-  // 드래그&드롭
-  const dropZone = body.querySelector('#files-drop-zone');
-  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
-  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
-  dropZone.addEventListener('drop', e => {
-    e.preventDefault();
-    dropZone.classList.remove('drag-over');
-    if (e.dataTransfer.files.length) doUpload(e.dataTransfer.files);
   });
 }
 
