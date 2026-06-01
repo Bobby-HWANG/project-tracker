@@ -1765,7 +1765,7 @@ function openMsModal(item, subs) {
     </div>
     <div class="form-group">
       <label class="form-label">설명</label>
-      <textarea class="form-textarea" id="ms-desc" placeholder="상세 내용">${escHtml(item?.description || '')}</textarea>
+      <textarea class="form-textarea" id="ms-desc" placeholder="상세 내용">${escVal(item?.description || '')}</textarea>
     </div>
     ${secExtFields}
     <div class="form-group">
@@ -2040,6 +2040,13 @@ function escHtml(s) {
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
     .replace(/"/g,'&quot;').replace(/'/g,'&#39;')
     .replace(/\n/g,'<br>');
+}
+// textarea / input value용 — \n → <br> 변환 없음 (줄바꿈 보존)
+function escVal(s) {
+  if (s == null) return '';
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
 // ══════════════════════════════════════════════════════════
@@ -2482,7 +2489,7 @@ function openCheckModal(item) {
     </div>
     <div class="form-group">
       <label class="form-label">세부 진행사항</label>
-      <textarea class="form-textarea" id="cl-detail" placeholder="진행 내용 / 작업 사항">${escHtml(item?.detail || '')}</textarea>
+      <textarea class="form-textarea" id="cl-detail" placeholder="진행 내용 / 작업 사항">${escVal(item?.detail || '')}</textarea>
     </div>
     ${buildDatePickerHTML('cl', '목표일', item?.due_date, item?.due_date_end)}
     <div class="form-group">
@@ -2495,7 +2502,7 @@ function openCheckModal(item) {
     </div>
     <div class="form-group">
       <label class="form-label">비고 (메모)</label>
-      <textarea class="form-textarea" id="cl-note" placeholder="추가 메모, 참고사항 등">${escHtml(item?.note || '')}</textarea>
+      <textarea class="form-textarea" id="cl-note" placeholder="추가 메모, 참고사항 등">${escVal(item?.note || '')}</textarea>
     </div>
   `;
   const footer = `
@@ -2682,12 +2689,12 @@ function openClaimModal(item) {
     </div>
     <div class="form-group">
       <label class="form-label">클레임 내용</label>
-      <textarea class="form-textarea" id="clm-content" placeholder="클레임 상세 내용">${escHtml(item?.content || '')}</textarea>
+      <textarea class="form-textarea" id="clm-content" placeholder="클레임 상세 내용">${escVal(item?.content || '')}</textarea>
     </div>
     ${buildDatePickerHTML('clm', '발생일', item?.occurred_date, item?.occurred_date_end)}
     <div class="form-group">
       <label class="form-label">조치 사항</label>
-      <textarea class="form-textarea" id="clm-action" placeholder="대응/조치 사항">${escHtml(item?.action || '')}</textarea>
+      <textarea class="form-textarea" id="clm-action" placeholder="대응/조치 사항">${escVal(item?.action || '')}</textarea>
     </div>
     ${buildDatePickerHTML('clm-imp', '개선일정', item?.improvement_start, item?.improvement_end)}
     <div class="form-group">
@@ -2700,7 +2707,7 @@ function openClaimModal(item) {
     </div>
     <div class="form-group">
       <label class="form-label">비고</label>
-      <textarea class="form-textarea" id="clm-note" placeholder="추가 메모, 참고사항">${escHtml(item?.note || '')}</textarea>
+      <textarea class="form-textarea" id="clm-note" placeholder="추가 메모, 참고사항">${escVal(item?.note || '')}</textarea>
     </div>
   `;
   const footer = `
@@ -3602,7 +3609,7 @@ function openScheduleModal(item, allItems) {
     </div>
     <div class="form-group">
       <label class="form-label">내용 / 메모</label>
-      <textarea class="form-textarea" id="sc-desc" rows="2" placeholder="상세 내용을 입력하세요">${escHtml(item?.description||'')}</textarea>
+      <textarea class="form-textarea" id="sc-desc" rows="2" placeholder="상세 내용을 입력하세요">${escVal(item?.description||'')}</textarea>
     </div>
 
     <!-- ▼ 날짜 모드 선택 -->
