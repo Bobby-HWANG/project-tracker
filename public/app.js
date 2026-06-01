@@ -158,19 +158,27 @@ function renderSidebar() {
   });
   audit.forEach(renderItem);
 
-  // 3-1. 주요 인증심사 일정 (하위)
-  const subH1 = document.createElement('div');
-  subH1.className = 'sb-sub-label';
-  subH1.textContent = '📋 주요 인증심사 일정';
+  // 3-1. 주요 인증심사 일정 (클릭 가능 버튼, 세부 항목은 숨김)
+  const subH1 = document.createElement('button');
+  subH1.className = 'sb-sub-btn';
+  subH1.innerHTML = '📋 주요 인증심사 일정 <span class="sb-sub-arrow">›</span>';
+  subH1.addEventListener('click', () => {
+    state._sidebarMemo = false;
+    loadDashboard().then(() => scrollDashSection('audit_cert'));
+  });
   list.appendChild(subH1);
-  audit_cert.forEach(renderItem);
+  // 세부 항목은 대시보드에만 표시 (사이드바에서 숨김)
 
-  // 3-2. AUDIT 일정 (하위)
-  const subH2 = document.createElement('div');
-  subH2.className = 'sb-sub-label';
-  subH2.textContent = '🔎 AUDIT 일정';
+  // 3-2. AUDIT 일정 (클릭 가능 버튼, 세부 항목은 숨김)
+  const subH2 = document.createElement('button');
+  subH2.className = 'sb-sub-btn';
+  subH2.innerHTML = '🔎 AUDIT 일정 <span class="sb-sub-arrow">›</span>';
+  subH2.addEventListener('click', () => {
+    state._sidebarMemo = false;
+    loadDashboard().then(() => scrollDashSection('audit_process'));
+  });
   list.appendChild(subH2);
-  audit_process.forEach(renderItem);
+  // 세부 항목은 대시보드에만 표시 (사이드바에서 숨김)
 
   // ── 4. SEC 외관 한도 컨펌 현황 (항목 없어도 헤더 표시) ──
   makeHeader('sec_exterior', '🏷', 'SEC 외관 한도 컨펌 현황', () => {
@@ -195,7 +203,9 @@ function renderSidebar() {
 function scrollDashSection(category) {
   const grid = document.getElementById('dashboard-grid');
   if (!grid) return;
-  const sec = grid.querySelector(`.dash-section.${category}`);
+  // id로 먼저 찾고, 없으면 class로 찾음 (그룹 래퍼 포함)
+  const sec = grid.querySelector(`#${category}`) ||
+              grid.querySelector(`.dash-section.${category}`);
   if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 

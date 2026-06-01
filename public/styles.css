@@ -820,6 +820,37 @@ body {
   opacity: .85;
 }
 
+/* 클릭 가능한 하위 메뉴 버튼 */
+.sb-sub-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 5px 14px 5px 22px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #7DD3FC;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  border-radius: 6px;
+  transition: background .12s, opacity .12s;
+}
+.sb-sub-btn:hover {
+  background: rgba(125, 211, 252, 0.1);
+  opacity: 1;
+}
+.sb-sub-arrow {
+  font-size: 12px;
+  opacity: .5;
+  transition: opacity .12s, transform .12s;
+}
+.sb-sub-btn:hover .sb-sub-arrow {
+  opacity: .9;
+  transform: translateX(2px);
+}
+
 .dash-section.sec_exterior {
   background: linear-gradient(180deg, #FEF3C7 0%, #FFFBEB 100%);
   border-color: #FCD34D;
