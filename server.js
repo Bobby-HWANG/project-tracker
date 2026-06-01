@@ -294,7 +294,21 @@ function migrate() {
   // 3) schedules 배열 초기화
   if (!Array.isArray(DB.schedules)) { DB.schedules = []; changed = true; }
 
-  // 4) '일정 점검' 이름을 포함한 모델 → category를 'schedule'로 강제 변환
+  // 4) 주요 인증심사/AUDIT 하위 카테고리 초기화 (없으면 빈 그룹 생성)
+  const auditSubDefaults = [
+    { category: 'audit_cert',    marker: '__audit_cert_init__'    },
+    { category: 'audit_process', marker: '__audit_process_init__' },
+  ];
+  auditSubDefaults.forEach(def => {
+    // 해당 카테고리 모델이 전혀 없고 마커도 없으면 → 빈 그룹으로 초기화
+    const hasAny = (DB.models||[]).some(m => m.category === def.category);
+    if (!hasAny) {
+      // 빈 카테고리 자체를 DB에 기록하지 않아도 됨 — 프론트가 항상 표시
+      changed = true;
+    }
+  });
+
+  // 5) '일정 점검' 이름을 포함한 모델 → category를 'schedule'로 강제 변환
   (DB.models || []).forEach(m => {
     if (m.category !== 'schedule' && m.name && m.name.replace(/\s/g,'').includes('일정점검')) {
       m.category = 'schedule';

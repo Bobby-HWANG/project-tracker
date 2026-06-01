@@ -783,6 +783,43 @@ body {
   background: linear-gradient(180deg, #CCFBF1 0%, #F0FDFA 100%);
   border-color: #5EEAD4;
 }
+/* 인증심사 하위 섹션 */
+.dash-section.audit_cert {
+  background: linear-gradient(180deg, #E0F2FE 0%, #F0F9FF 100%);
+  border-color: #7DD3FC;
+}
+.dash-section.audit_process {
+  background: linear-gradient(180deg, #FEF9C3 0%, #FFFBEB 100%);
+  border-color: #FDE68A;
+}
+
+/* 주요 인증심사 및 AUDIT 일정 그룹 래퍼 */
+.dash-audit-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: linear-gradient(180deg, #F0FDFA 0%, #F8FFFE 100%);
+  border: 1.5px solid #5EEAD4;
+  border-radius: 16px;
+  padding: 14px;
+}
+.dash-audit-group-header { margin-bottom: 2px; }
+.dag-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: #0f766e;
+}
+.dash-audit-group .dash-section { border-radius: 10px; }
+
+/* 사이드바 하위 그룹 레이블 */
+.sb-sub-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text3);
+  padding: 3px 14px 2px 22px;
+  opacity: .85;
+}
+
 .dash-section.sec_exterior {
   background: linear-gradient(180deg, #FEF3C7 0%, #FFFBEB 100%);
   border-color: #FCD34D;
@@ -1049,6 +1086,8 @@ body {
 .dash-section.monitoring    .dash-section-title { color: #1e40af; }
 .dash-section.model         .dash-section-title { color: #6b21a8; }
 .dash-section.audit         .dash-section-title { color: #0f766e; }
+.dash-section.audit_cert    .dash-section-title { color: #0369a1; }
+.dash-section.audit_process .dash-section-title { color: #92400e; }
 .dash-section.sec_exterior  .dash-section-title { color: #92400e; }
 .dash-section-count {
   font-size: 12px;
