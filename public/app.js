@@ -93,8 +93,8 @@ const CATEGORY_META = {
   monitoring:    { icon: '📡', label: '상시 모니터링' },
   model:         { icon: '📦', label: '주요 모델 이벤트 현황' },
   audit:         { icon: '🔍', label: '주요 인증심사 및 AUDIT 일정' },
-  audit_cert:    { icon: '📋', label: '인증심사 일정' },
-  audit_process: { icon: '🔎', label: 'AUDIT 일정' },
+  audit_cert:    { icon: '📋', label: '주요 인증 심사 일정' },
+  audit_process: { icon: '🔎', label: 'AUDIT 심사 일정' },
   sec_exterior:  { icon: '🏷', label: 'SEC 외관 한도 컨펌 현황' },
   sec_list:      { icon: '📋', label: 'LIST' },
 };
@@ -164,7 +164,7 @@ function renderSidebar() {
   if (audit_cert.length) {
     const subH1 = document.createElement('div');
     subH1.className = 'sb-sub-label';
-    subH1.textContent = '📋 인증심사 일정';
+    subH1.textContent = '📋 주요 인증 심사 일정';
     list.appendChild(subH1);
     audit_cert.forEach(renderItem);
   }
@@ -173,7 +173,7 @@ function renderSidebar() {
   if (audit_process.length) {
     const subH2 = document.createElement('div');
     subH2.className = 'sb-sub-label';
-    subH2.textContent = '🔎 AUDIT 일정';
+    subH2.textContent = '🔎 AUDIT 심사 일정';
     list.appendChild(subH2);
     audit_process.forEach(renderItem);
   }
@@ -354,14 +354,14 @@ function renderDashboardData(wrap, res) {
 
     // 인증심사 일정 하위 섹션
     {
-      const sec = makeDashSection('audit_cert', '📋 인증심사 일정', audit_cert);
+      const sec = makeDashSection('audit_cert', '📋 주요 인증 심사 일정', audit_cert);
       if (audit_cert.length) enableDashCardDrag(sec);
       auditGroup.appendChild(sec);
     }
 
     // AUDIT 일정 하위 섹션
     {
-      const sec = makeDashSection('audit_process', '🔎 AUDIT 일정', audit_process);
+      const sec = makeDashSection('audit_process', '🔎 AUDIT 심사 일정', audit_process);
       if (audit_process.length) enableDashCardDrag(sec);
       auditGroup.appendChild(sec);
     }
@@ -3042,8 +3042,8 @@ function openAddModelModal(defaultCategory = 'model') {
         <option value="model"         ${sel('model')}>📦 주요 모델 이벤트 현황</option>
         <option value="monitoring"    ${sel('monitoring')}>📡 상시 모니터링</option>
         <option value="audit"         ${sel('audit')}>🔍 주요 인증심사 및 AUDIT 일정 (공통)</option>
-        <option value="audit_cert"    ${sel('audit_cert')}>  ↳ 📋 인증심사 일정</option>
-        <option value="audit_process" ${sel('audit_process')}>  ↳ 🔎 AUDIT 일정</option>
+        <option value="audit_cert"    ${sel('audit_cert')}>  ↳ 📋 주요 인증 심사 일정</option>
+        <option value="audit_process" ${sel('audit_process')}>  ↳ 🔎 AUDIT 심사 일정</option>
         <option value="sec_exterior"  ${sel('sec_exterior')}>🏷 SEC 외관 한도 컨펌 현황</option>
       </select>
     </div>
