@@ -338,10 +338,8 @@ function makeSchedDashSection(thisMonth, total) {
 
   const grid = sec.querySelector('.sched-dash-grid');
 
-  // 그리드 컬럼: 데이터 카드 1개(전폭) + 바로가기 카드
-  if (window.innerWidth > 900) {
-    grid.style.gridTemplateColumns = `minmax(0, 1fr) var(--add-w)`;
-  }
+  // 그리드 컬럼: 데이터 카드 1개(전폭) — add-w 컬럼 제거하여 모니터링 카드와 동일 폭 확보
+  grid.style.gridTemplateColumns = `minmax(0, 1fr)`;
 
   // 카드 한 장: 이달 일정 수 — 모니터링 카드와 동일 dc-stats 구조
   const pct = total > 0 ? Math.round(thisMonth / total * 100) : 0;
@@ -370,20 +368,11 @@ function makeSchedDashSection(thisMonth, total) {
         <div class="progress-fill" style="width:${pct}%;background:#3B82F6"></div>
       </div>
     </div>
+    <div class="sched-goto-link">📋 세부 일정 목록 →</div>
   `;
   card.addEventListener('click', () => { closeSidebar(); loadScheduleView(); });
   card.addEventListener('keydown', e => { if (e.key==='Enter'||e.key===' ') loadScheduleView(); });
   grid.appendChild(card);
-
-  // 달력 바로가기 버튼 (add-card 기본 스타일 그대로)
-  const goCard = document.createElement('div');
-  goCard.className = 'dashboard-card add-card sched-go-card';
-  goCard.setAttribute('role', 'button');
-  goCard.setAttribute('tabindex', '0');
-  goCard.innerHTML = `<div class="add-card-icon">📋</div><div class="add-card-label">세부 일정 목록</div>`;
-  goCard.addEventListener('click', () => { closeSidebar(); loadScheduleView(); });
-  if (window.innerWidth > 900) goCard.style.gridColumn = '2'; // 우측 고정
-  grid.appendChild(goCard);
 
   // 토글
   const toggleBtn = sec.querySelector('.dash-section-toggle');

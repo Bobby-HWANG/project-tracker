@@ -3331,6 +3331,19 @@ body.eye-care .dt-confirm-result {
   line-height: 1.1;
 }
 
+/* 세부 일정 목록 바로가기 링크 (카드 내부 하단) */
+.sched-goto-link {
+  margin-top: auto;
+  padding-top: 8px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #3B82F6;
+  opacity: .75;
+  text-align: right;
+  white-space: nowrap;
+}
+.sched-dash-card:hover .sched-goto-link { opacity: 1; }
+
 /* go 카드 — add-card 기본 스타일 그대로 */
 
 /* 모바일 */
