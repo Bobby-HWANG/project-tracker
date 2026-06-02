@@ -1663,7 +1663,7 @@ function makeMsItem(it, today) {
   }
 
   const cmts = _commentsCache[`milestone_${it.id}`] || [];
-  const isSecExt = state.activeModel?.category === 'sec_exterior';
+  const isSecExt = ['sec_exterior', 'sec_confirm'].includes(state.activeModel?.category);
   // SEC 외관 한도 컨펌 현황: 의뢰건수/OK/NG 배지
   const countBadge = (isSecExt && (it.request_count != null || it.ok_count != null || it.ng_count != null))
     ? `<div class="ms-count-badges">
@@ -1753,7 +1753,7 @@ document.getElementById('tab-body').addEventListener('click', async e => {
 
 function openMsModal(item, subs) {
   const myName = getCommenterName();
-  const isSecExt = state.activeModel?.category === 'sec_exterior';
+  const isSecExt = ['sec_exterior', 'sec_confirm'].includes(state.activeModel?.category);
 
   // SEC 외관 한도 컨펌 현황 전용 — 의뢰건수/OK/NG 입력 필드
   const secExtFields = isSecExt ? `
