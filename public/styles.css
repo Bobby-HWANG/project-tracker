@@ -724,7 +724,7 @@ body {
 /* 주요 일정 점검 + 상시 모니터링 한 줄 배치 */
 .dash-top-row {
   display: flex;
-  gap: 16px;
+  gap: 48px;                /* 16px × 3 */
   align-items: stretch;
   width: 100%;
   box-sizing: border-box;
