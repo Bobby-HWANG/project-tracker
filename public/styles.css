@@ -2975,9 +2975,9 @@ body.eye-care .memo-post {
 /* ── 월별 캘린더 ── */
 .sched-monthly {
   /* 2026년 6월 기준 고정 너비 (셀 120px × 7열 + 테두리) */
-  width: 1080px;
-  min-width: 1080px;
-  max-width: 1080px;
+  width: 1280px;
+  min-width: 1280px;
+  max-width: 1280px;
   display: flex;
   flex-direction: column;
   gap: 0;
