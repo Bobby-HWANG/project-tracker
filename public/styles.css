@@ -2962,7 +2962,7 @@ body.eye-care .memo-post {
 /* 본문 스크롤 영역 */
 .sched-body {
   flex: 1;
-  overflow: auto;
+  overflow: auto;        /* 달력 고정폭 초과 시 가로 스크롤 */
   padding: 0 8px 16px;
 }
 
@@ -2974,8 +2974,10 @@ body.eye-care .memo-post {
 
 /* ── 월별 캘린더 ── */
 .sched-monthly {
-  width: 83.33%;          /* 최대 5/6 너비 */
-  max-width: 83.33%;
+  /* 2026년 6월 기준 고정 너비 (셀 120px × 7열 + 테두리) */
+  width: 910px;
+  min-width: 910px;
+  max-width: 910px;
   display: flex;
   flex-direction: column;
   gap: 0;
