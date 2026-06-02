@@ -1341,6 +1341,53 @@ app.use((err, req, res, next) => {
   }
 });
 
+// ── 임시 복구 API (Gist 히스토리 조회 및 복원) ──────────────
+app.get('/api/admin/gist-revisions', async (req, res) => {
+  if (!GIST_ENABLED) return res.json({ error: 'Gist 미설정' });
+  try {
+    const r = await fetch(`https://api.github.com/gists/${GIST_ID}/commits?per_page=30`, {
+      headers: {
+        'Authorization': `Bearer ${GITHUB_TOKEN}`,
+        'Accept': 'application/vnd.github+json',
+        'User-Agent': 'intops-fms-tracker',
+      },
+    });
+    const commits = await r.json();
+    res.json(commits.map(c => ({
+      version: c.version,
+      committed_at: c.committed_at,
+      change_status: c.change_status,
+    })));
+  } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
+app.post('/api/admin/restore-gist-version/:version', async (req, res) => {
+  if (!GIST_ENABLED) return res.json({ error: 'Gist 미설정' });
+  const { version } = req.params;
+  try {
+    const r = await fetch(`https://api.github.com/gists/${GIST_ID}/${version}`, {
+      headers: {
+        'Authorization': `Bearer ${GITHUB_TOKEN}`,
+        'Accept': 'application/vnd.github+json',
+        'User-Agent': 'intops-fms-tracker',
+      },
+    });
+    const json = await r.json();
+    const file = json.files && json.files[GIST_FILENAME];
+    if (!file) return res.status(404).json({ error: 'file not found in revision' });
+    let content = file.content;
+    if (file.truncated && file.raw_url) {
+      const r2 = await fetch(file.raw_url, { headers: { 'User-Agent': 'intops-fms-tracker' } });
+      content = await r2.text();
+    }
+    const restored = JSON.parse(content);
+    DB = restored;
+    save();
+    res.json({ ok: true, committed_at: json.committed_at, models: DB.models?.length });
+    console.log(`[Admin] DB 복원 완료 from Gist version ${version}`);
+  } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
 app.listen(PORT, '0.0.0.0', () => {
   console.log('\n┌──────────────────────────────────────────────┐');
   console.log('│   ✅  INTOPS FMS 품질팀 업무현황 서버 실행 중           │');
