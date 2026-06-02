@@ -294,34 +294,30 @@ function migrate() {
   // 3) schedules 배열 초기화
   if (!Array.isArray(DB.schedules)) { DB.schedules = []; changed = true; }
 
-  // 4) 주요 인증심사/AUDIT 하위 모델 자동 생성
-  const auditModelDefaults = [
-    // audit_cert — 주요 인증심사 일정
-    { name: 'ISO13485 (INTOPS : 6/15~19)', color: '#14B8A6', category: 'audit_cert',    order: 0,
-      milestones: [{ title: 'ISO13485 인증심사', description: 'INTOPS', dueDate: '2026-06-15', dueDateEnd: '2026-06-19', status: 'pending' }] },
-    { name: 'ISO13485 (OBM : 7/24~7/27)',  color: '#0EA5E9', category: 'audit_cert',    order: 1,
-      milestones: [{ title: 'ISO13485 인증심사', description: 'OBM',    dueDate: '2026-07-24', dueDateEnd: '2026-07-27', status: 'pending' }] },
-    // audit_process — AUDIT 일정
-    { name: '용산 JG1 공정감사 (6/2)',      color: '#F59E0B', category: 'audit_process', order: 0,
-      milestones: [{ title: '용산 JG1 공정감사', dueDate: '2026-06-02', status: 'pending' }] },
-  ];
-  auditModelDefaults.forEach(def => {
-    if ((DB.models||[]).some(m => m.name === def.name)) return; // 이미 존재하면 스킵
-    const id = nextId();
-    DB.models.push({ id, name: def.name, color: def.color, order: def.order, category: def.category });
-    DB.subItems[id]   = [];
-    DB.milestones[id] = (def.milestones||[]).map(ms => ({
-      id: nextId(), author: null,
-      title: ms.title, description: ms.description || '', note: '',
-      subItemId: null, dueDate: ms.dueDate || null, dueDateEnd: ms.dueDateEnd || null,
-      status: ms.status || 'pending',
-    }));
-    DB.checklists[id] = [];
-    DB.claims[id]     = [];
-    DB.memos[id]      = '';
-    changed = true;
-    console.log(`[migrate] audit model created: ${def.name}`);
+  // 4) audit_cert 중복 카드 제거 — 이름이 같은 항목은 첫 번째만 남김
+  //    (자동 생성 코드 제거: 삭제한 카드가 재생성되지 않도록)
+  const certModels = (DB.models||[]).filter(m => m.category === 'audit_cert');
+  const seenCertNames = new Set();
+  const dupCertIds = [];
+  certModels.forEach(m => {
+    if (seenCertNames.has(m.name)) {
+      dupCertIds.push(m.id);
+    } else {
+      seenCertNames.add(m.name);
+    }
   });
+  if (dupCertIds.length) {
+    DB.models = (DB.models||[]).filter(m => !dupCertIds.includes(m.id));
+    dupCertIds.forEach(id => {
+      delete DB.milestones[id];
+      delete DB.checklists[id];
+      delete DB.claims[id];
+      delete DB.memos[id];
+      delete DB.subItems[id];
+    });
+    changed = true;
+    console.log(`[migrate] audit_cert 중복 카드 ${dupCertIds.length}개 제거`);
+  }
 
   // 5) '일정 점검' 이름을 포함한 모델 → category를 'schedule'로 강제 변환
   (DB.models || []).forEach(m => {
