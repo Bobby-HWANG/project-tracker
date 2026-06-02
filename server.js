@@ -1135,6 +1135,60 @@ app.put('/api/models/:id/memo', (req, res) => {
   res.json({ok:true});
 });
 
+// ── 메모 항목 (작성자·시각 기록) ─────────────────────────────
+app.get('/api/models/:id/memo-entries', sr((req, res) => {
+  const id = Number(req.params.id);
+  if (!DB.memoEntries) DB.memoEntries = {};
+  const list = (DB.memoEntries[id] || []).slice().reverse(); // 최신순
+  res.json(list);
+}));
+
+app.post('/api/models/:id/memo-entries', sr((req, res) => {
+  const id = Number(req.params.id);
+  if (!DB.memoEntries) DB.memoEntries = {};
+  if (!DB.memoEntries[id]) DB.memoEntries[id] = [];
+  const { author, content } = req.body;
+  if (!content?.trim()) return res.status(400).json({ error: '내용을 입력하세요' });
+  const entry = {
+    id: nextId(),
+    author: author?.trim() || '작성자 미상',
+    content: content.trim(),
+    created_at: new Date().toISOString(),
+  };
+  DB.memoEntries[id].push(entry);
+  save();
+  res.json(entry);
+}));
+
+app.put('/api/memo-entries/:id', sr((req, res) => {
+  const id = Number(req.params.id);
+  if (!DB.memoEntries) return res.status(404).json({ error: 'not found' });
+  for (const mid in DB.memoEntries) {
+    const idx = DB.memoEntries[mid].findIndex(x => x.id === id);
+    if (idx >= 0) {
+      DB.memoEntries[mid][idx] = {
+        ...DB.memoEntries[mid][idx],
+        content: req.body.content?.trim() || DB.memoEntries[mid][idx].content,
+        updated_at: new Date().toISOString(),
+      };
+      save();
+      return res.json(DB.memoEntries[mid][idx]);
+    }
+  }
+  res.status(404).json({ error: 'not found' });
+}));
+
+app.delete('/api/memo-entries/:id', sr((req, res) => {
+  const id = Number(req.params.id);
+  if (!DB.memoEntries) return res.status(404).json({ error: 'not found' });
+  for (const mid in DB.memoEntries) {
+    const before = DB.memoEntries[mid].length;
+    DB.memoEntries[mid] = DB.memoEntries[mid].filter(x => x.id !== id);
+    if (DB.memoEntries[mid].length < before) { save(); return res.json({ ok: true }); }
+  }
+  res.status(404).json({ error: 'not found' });
+}));
+
 // ── Dashboard ───────────────────────────────────────────────
 app.get('/api/dashboard', (_, res) => {
   const today = new Date().toISOString().slice(0,10);

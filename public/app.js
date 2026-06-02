@@ -2782,50 +2782,117 @@ function openClaimModal(item) {
 
 // ── ④ 메모장 ─────────────────────────────────────────────────
 async function renderMemo(body) {
-  const mid  = state.activeModel.id;
-  const memo = await GET(`/api/models/${mid}/memo`);
+  const mid = state.activeModel.id;
+  const myName = getCommenterName();
 
-  const upd = memo.updated_at
-    ? `마지막 저장: ${memo.updated_at.slice(0,16).replace('T',' ')}`
-    : '';
-
-  body.innerHTML = `
-    <div class="memo-wrap">
-      <div class="memo-toolbar">
-        <div class="memo-toolbar-left">
-          <span class="memo-title">📝 메모장</span>
-          <span class="memo-save-status" id="memo-status">${upd}</span>
-        </div>
-        <button class="btn-primary" id="btn-save-memo" style="padding:6px 14px;font-size:13px">저장</button>
-      </div>
-      <textarea class="memo-textarea" id="memo-ta" placeholder="자유롭게 메모하세요...&#10;&#10;회의록, 이슈, 참고사항 등을 기록하세요.">${memo.content || ''}</textarea>
-    </div>
-  `;
-
-  const ta     = document.getElementById('memo-ta');
-  const status = document.getElementById('memo-status');
-
-  const save = async () => {
-    status.textContent = '저장 중...';
-    status.className   = 'memo-save-status saving';
-    await PUT(`/api/models/${mid}/memo`, { content: ta.value });
-    const now = new Date().toLocaleString('ko-KR', { hour12: false }).slice(0,-3);
-    status.textContent = `마지막 저장: ${now}`;
-    status.className   = 'memo-save-status saved';
+  const fmtDT = (s) => {
+    if (!s) return '';
+    const d = new Date(s);
+    return d.toLocaleString('ko-KR', { hour12: false, year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' });
   };
 
-  // 자동 저장 (2초 디바운스)
-  ta.addEventListener('input', () => {
-    clearTimeout(state.memoTimer);
-    status.textContent = '입력 중...';
-    status.className   = 'memo-save-status';
-    state.memoTimer = setTimeout(save, 2000);
-  });
+  const renderList = async () => {
+    const entries = await GET(`/api/models/${mid}/memo-entries`);
 
-  document.getElementById('btn-save-memo').addEventListener('click', save);
+    body.innerHTML = `
+      <div class="me-wrap">
+        <div class="me-toolbar">
+          <span class="me-title">📝 메모장</span>
+          <button class="btn-primary me-add-btn" id="me-add-btn">＋ 새 메모 작성</button>
+        </div>
+        <div class="me-list" id="me-list">
+          ${entries.length === 0
+            ? '<div class="empty-state"><div class="empty-icon">📝</div>작성된 메모가 없습니다</div>'
+            : entries.map(e => `
+              <div class="me-item" data-eid="${e.id}">
+                <div class="me-item-header">
+                  <span class="me-author">👤 ${escHtml(e.author)}</span>
+                  <span class="me-date">🕐 ${fmtDT(e.updated_at || e.created_at)}</span>
+                  <div class="me-item-actions">
+                    <button class="btn-xs me-edit-btn" data-eid="${e.id}" title="수정">✎</button>
+                    <button class="btn-xs danger me-del-btn" data-eid="${e.id}" title="삭제">✕</button>
+                  </div>
+                </div>
+                <div class="me-content">${escHtml(e.content)}</div>
+              </div>
+            `).join('')}
+        </div>
+      </div>
+    `;
 
-  // 메모장 textarea에 OCR 부착
-  attachOcrToTextarea(ta);
+    // 새 메모 작성
+    document.getElementById('me-add-btn').addEventListener('click', () => openMemoForm(null));
+
+    // 수정 버튼
+    body.querySelectorAll('.me-edit-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const eid = Number(btn.dataset.eid);
+        const entry = entries.find(e => e.id === eid);
+        if (entry) openMemoForm(entry);
+      });
+    });
+
+    // 삭제 버튼
+    body.querySelectorAll('.me-del-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (!confirm('이 메모를 삭제할까요?')) return;
+        await DEL(`/api/memo-entries/${btn.dataset.eid}`);
+        toast('삭제되었습니다', 'success');
+        renderList();
+      });
+    });
+  };
+
+  const openMemoForm = (entry) => {
+    const isEdit = !!entry;
+    body.innerHTML = `
+      <div class="me-wrap">
+        <div class="me-toolbar">
+          <span class="me-title">📝 ${isEdit ? '메모 수정' : '새 메모 작성'}</span>
+          <button class="btn-secondary me-back-btn" id="me-back-btn">← 목록</button>
+        </div>
+        <div class="me-form">
+          <div class="form-group">
+            <label class="form-label">작성자 *</label>
+            <input class="form-input" id="me-author" value="${escHtml(entry?.author || myName)}" maxlength="40" placeholder="이름 입력">
+          </div>
+          <div class="form-group">
+            <label class="form-label">내용 *</label>
+            <textarea class="form-textarea me-textarea" id="me-content" rows="10" placeholder="메모 내용을 입력하세요...">${escVal(entry?.content || '')}</textarea>
+          </div>
+          <div class="me-form-footer">
+            <button class="btn-secondary" id="me-cancel-btn">취소</button>
+            <button class="btn-primary" id="me-save-btn">${isEdit ? '수정 저장' : '저장'}</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('me-back-btn').addEventListener('click', renderList);
+    document.getElementById('me-cancel-btn').addEventListener('click', renderList);
+
+    document.getElementById('me-save-btn').addEventListener('click', async () => {
+      const author  = document.getElementById('me-author').value.trim();
+      const content = document.getElementById('me-content').value.trim();
+      if (!author)  { toast('작성자를 입력하세요', 'error'); return; }
+      if (!content) { toast('내용을 입력하세요', 'error'); return; }
+      setCommenterName(author);
+      if (isEdit) {
+        await PUT(`/api/memo-entries/${entry.id}`, { content });
+        toast('수정되었습니다', 'success');
+      } else {
+        await POST(`/api/models/${mid}/memo-entries`, { author, content });
+        toast('저장되었습니다', 'success');
+      }
+      renderList();
+    });
+
+    // OCR 부착
+    const ta = document.getElementById('me-content');
+    if (ta) attachOcrToTextarea(ta);
+  };
+
+  await renderList();
 }
 
 // ── ④ 설정 ────────────────────────────────────────────────────
