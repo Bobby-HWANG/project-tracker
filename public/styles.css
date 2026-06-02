@@ -3637,9 +3637,14 @@ body.eye-care .welcome p { color: var(--text3); }
 #view-model #clm-tbody,
 #view-model .milestone-toolbar,
 #view-model .checklist-overall,
-#view-model .cl-table-wrap,
 #view-model .memo-wrap {
   width: 100% !important;
+  max-width: none !important;
+  box-sizing: border-box !important;
+}
+/* 체크시트 테이블: 현재의 4/3 너비 고정 */
+#view-model .cl-table-wrap {
+  width: 133.33% !important;
   max-width: none !important;
   box-sizing: border-box !important;
 }
