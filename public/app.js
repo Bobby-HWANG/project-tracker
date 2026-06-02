@@ -868,7 +868,7 @@ function makeDashCard(m) {
       <div class="dc-stats">
         <div class="dc-stat">
           <div class="dc-stat-val" style="color:${m.color}">${m.milestone_total}</div>
-          <div class="dc-stat-label">전체 의뢰건</div>
+          <div class="dc-stat-label">전체일정</div>
         </div>
         <div class="dc-stat">
           <div class="dc-stat-val" style="color:#10b981">${m.milestone_done}</div>
