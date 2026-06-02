@@ -2974,7 +2974,8 @@ body.eye-care .memo-post {
 
 /* ── 월별 캘린더 ── */
 .sched-monthly {
-  width: 100%;
+  width: 83.33%;          /* 최대 5/6 너비 */
+  max-width: 83.33%;
   display: flex;
   flex-direction: column;
   gap: 0;
