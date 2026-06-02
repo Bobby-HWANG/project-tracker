@@ -855,6 +855,11 @@ body {
   background: linear-gradient(180deg, #FEF3C7 0%, #FFFBEB 100%);
   border-color: #FCD34D;
 }
+.dash-section.sec_confirm {
+  background: linear-gradient(180deg, #ECFDF5 0%, #F0FFF4 100%);
+  border-color: #6EE7B7;
+}
+.dash-section.sec_confirm .dash-section-title { color: #065f46; }
 .dash-section.memo {
   background: linear-gradient(180deg, #FEF9C3 0%, #FEFCE8 100%);
   border-color: #FDE68A;

@@ -86,7 +86,7 @@ function closeModal() {
 }
 
 // 모니터링과 동일한 탭 구성(일정표·메모장·설정만)을 공유하는 카테고리 목록
-const MONITORING_LIKE = ['monitoring', 'audit', 'audit_cert', 'audit_process', 'sec_exterior'];
+const MONITORING_LIKE = ['monitoring', 'audit', 'audit_cert', 'audit_process', 'sec_exterior', 'sec_confirm'];
 
 // 카테고리별 표시 정보
 const CATEGORY_META = {
@@ -96,6 +96,7 @@ const CATEGORY_META = {
   audit_cert:    { icon: '📋', label: '주요 인증심사 일정' },
   audit_process: { icon: '🔎', label: 'AUDIT 일정' },
   sec_exterior:  { icon: '🏷', label: 'SEC 외관 한도 컨펌 현황' },
+  sec_confirm:   { icon: '✅', label: '모델별 한도 컨펌현황' },
 };
 
 // ── Sidebar ──────────────────────────────────────────────────
@@ -108,7 +109,8 @@ function renderSidebar() {
   const audit_cert    = state.models.filter(m => m.category === 'audit_cert').sort((a,b)=>a.order-b.order);
   const audit_process = state.models.filter(m => m.category === 'audit_process').sort((a,b)=>a.order-b.order);
   const sec_exterior  = state.models.filter(m => m.category === 'sec_exterior').sort((a,b)=>a.order-b.order);
-  const models        = state.models.filter(m => !['monitoring','schedule','audit','audit_cert','audit_process','sec_exterior'].includes(m.category)).sort((a,b)=>a.order-b.order);
+  const sec_confirm   = state.models.filter(m => m.category === 'sec_confirm').sort((a,b)=>a.order-b.order);
+  const models        = state.models.filter(m => !['monitoring','schedule','audit','audit_cert','audit_process','sec_exterior','sec_confirm'].includes(m.category)).sort((a,b)=>a.order-b.order);
 
   const isMemo = state.view === 'dashboard' && state._sidebarMemo;
 
@@ -180,12 +182,23 @@ function renderSidebar() {
   list.appendChild(subH2);
   // 세부 항목은 대시보드에만 표시 (사이드바에서 숨김)
 
-  // ── 4. SEC 외관 한도 컨펌 현황 (항목 없어도 헤더 표시) ──
+  // ── 4. SEC 외관 한도 컨펌 현황 ──
   makeHeader('sec_exterior', '🏷', 'SEC 외관 한도 컨펌 현황', () => {
     state._sidebarMemo = false;
-    loadDashboard().then(() => scrollDashSection('sec_exterior'));
+    loadDashboard().then(() => scrollDashSection('sec-ext-group'));
   });
   sec_exterior.forEach(renderItem);
+
+  // 4-1. 모델별 한도 컨펌현황 (하위 클릭 버튼)
+  const subHSec = document.createElement('button');
+  subHSec.className = 'sb-sub-btn';
+  subHSec.innerHTML = '✅ 모델별 한도 컨펌현황 <span class="sb-sub-arrow">›</span>';
+  subHSec.addEventListener('click', () => {
+    state._sidebarMemo = false;
+    loadDashboard().then(() => scrollDashSection('sec_confirm'));
+  });
+  list.appendChild(subHSec);
+  sec_confirm.forEach(renderItem);
 
   // ── 5. 메모장 (공용 게시판) ──
   const memoBtn = document.createElement('button');
@@ -300,11 +313,12 @@ function renderDashboardData(wrap, res) {
 
   // 카테고리별 분류
   const monitoring    = data.filter(m => m.category === 'monitoring').sort((a,b)=>a.order-b.order);
-  const models        = data.filter(m => !['monitoring','schedule','audit','audit_cert','audit_process','sec_exterior'].includes(m.category)).sort((a,b)=>a.order-b.order);
+  const models        = data.filter(m => !['monitoring','schedule','audit','audit_cert','audit_process','sec_exterior','sec_confirm'].includes(m.category)).sort((a,b)=>a.order-b.order);
   const audit         = data.filter(m => m.category === 'audit').sort((a,b)=>a.order-b.order);
   const audit_cert    = data.filter(m => m.category === 'audit_cert').sort((a,b)=>a.order-b.order);
   const audit_process = data.filter(m => m.category === 'audit_process').sort((a,b)=>a.order-b.order);
   const sec_exterior  = data.filter(m => m.category === 'sec_exterior').sort((a,b)=>a.order-b.order);
+  const sec_confirm   = data.filter(m => m.category === 'sec_confirm').sort((a,b)=>a.order-b.order);
 
   // ── 주요 일정 점검 + 상시 모니터링 → 한 줄(flex row) ──
   // 각 카드 폭이 동일하도록: schedule=flex:1, monitoring=flex:N(카드수)
@@ -354,10 +368,23 @@ function renderDashboardData(wrap, res) {
     }
     insertBeforeMemo(grp);
   }
+  // ── SEC 외관 한도 컨펌 현황 그룹 ──
   {
-    const sec = makeDashSection('sec_exterior', '🏷 SEC 외관 한도 컨펌 현황', sec_exterior);
-    insertBeforeMemo(sec);
-    if (sec_exterior.length) enableDashCardDrag(sec);
+    const grp = document.createElement('div');
+    grp.className = 'dash-audit-group';
+    grp.id = 'sec-ext-group';
+    grp.style.borderColor = '#FCD34D';
+    grp.innerHTML = `<div class="dash-audit-group-header"><span class="dag-title" style="color:#92400e">🏷 SEC 외관 한도 컨펌 현황</span></div>`;
+
+    if (sec_exterior.length) {
+      const s = makeDashSection('sec_exterior', '', sec_exterior);
+      enableDashCardDrag(s); grp.appendChild(s);
+    }
+    {
+      const s = makeDashSection('sec_confirm', '✅ 모델별 한도 컨펌현황', sec_confirm);
+      if (sec_confirm.length) enableDashCardDrag(s); grp.appendChild(s);
+    }
+    insertBeforeMemo(grp);
   }
 
   if (!memo) wrap.appendChild(makeDashMemoSection());
@@ -3008,6 +3035,7 @@ function openAddModelModal(defaultCategory = 'model') {
         <option value="audit_cert"    ${sel('audit_cert')}>  ↳ 📋 주요 인증심사 일정</option>
         <option value="audit_process" ${sel('audit_process')}>  ↳ 🔎 AUDIT 일정</option>
         <option value="sec_exterior"  ${sel('sec_exterior')}>🏷 SEC 외관 한도 컨펌 현황</option>
+        <option value="sec_confirm"   ${sel('sec_confirm')}>  ↳ ✅ 모델별 한도 컨펌현황</option>
       </select>
     </div>
     <div class="form-group">
