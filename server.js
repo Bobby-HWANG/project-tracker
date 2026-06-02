@@ -294,19 +294,40 @@ function migrate() {
   // 3) schedules 배열 초기화
   if (!Array.isArray(DB.schedules)) { DB.schedules = []; changed = true; }
 
-  // 4) 주요 인증심사/AUDIT 하위 모델 자동 생성
+  // 4) 동일 이름 중복 모델 제거 (이름 기준 첫 번째만 유지, 데이터는 첫 번째에 보존)
+  const seenNames = new Map(); // name → 첫 번째 id
+  const dupIds = [];
+  (DB.models || []).forEach(m => {
+    if (seenNames.has(m.name)) {
+      dupIds.push(m.id); // 두 번째 이후 → 삭제 대상
+    } else {
+      seenNames.set(m.name, m.id);
+    }
+  });
+  if (dupIds.length) {
+    DB.models = (DB.models || []).filter(m => !dupIds.includes(m.id));
+    dupIds.forEach(id => {
+      delete DB.milestones[id];
+      delete DB.checklists[id];
+      delete DB.claims[id];
+      delete DB.memos[id];
+      delete DB.subItems[id];
+    });
+    changed = true;
+    console.log(`[migrate] 중복 모델 ${dupIds.length}개 제거:`, dupIds);
+  }
+
+  // 4-1) 주요 인증심사/AUDIT 하위 모델 자동 생성 (삭제된 경우에만)
   const auditModelDefaults = [
-    // audit_cert — 주요 인증심사 일정
     { name: 'ISO13485 (INTOPS : 6/15~19)', color: '#14B8A6', category: 'audit_cert',    order: 0,
       milestones: [{ title: 'ISO13485 인증심사', description: 'INTOPS', dueDate: '2026-06-15', dueDateEnd: '2026-06-19', status: 'pending' }] },
     { name: 'ISO13485 (OBM : 7/24~7/27)',  color: '#0EA5E9', category: 'audit_cert',    order: 1,
       milestones: [{ title: 'ISO13485 인증심사', description: 'OBM',    dueDate: '2026-07-24', dueDateEnd: '2026-07-27', status: 'pending' }] },
-    // audit_process — AUDIT 일정
     { name: '용산 JG1 공정감사 (6/2)',      color: '#F59E0B', category: 'audit_process', order: 0,
       milestones: [{ title: '용산 JG1 공정감사', dueDate: '2026-06-02', status: 'pending' }] },
   ];
   auditModelDefaults.forEach(def => {
-    if ((DB.models||[]).some(m => m.name === def.name)) return; // 이미 존재하면 스킵
+    if ((DB.models||[]).some(m => m.name === def.name)) return;
     const id = nextId();
     DB.models.push({ id, name: def.name, color: def.color, order: def.order, category: def.category });
     DB.subItems[id]   = [];
