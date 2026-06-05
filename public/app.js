@@ -507,7 +507,7 @@ function makeDashMemoSection() {
 
   sec.innerHTML = `
     <div class="dash-section-header">
-      <h2 class="dash-section-title">📝 메모장 (공용 게시판)</h2>
+      <h2 class="dash-section-title">📝 메모 or 공지사항</h2>
       <span class="dash-section-count" id="dash-memo-count">로딩...</span>
       <button class="dash-section-toggle" type="button"
               title="${collapsed ? '펼치기' : '접기'}"
