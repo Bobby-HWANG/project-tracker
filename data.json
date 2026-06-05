@@ -100,6 +100,40 @@
       "updated_by": 0,
       "updated_by_name": "관리자",
       "updated_at": "2026-05-20T02:12:26.711Z"
+    },
+    {
+      "id": 10088,
+      "name": "OSSTEM",
+      "color": "#84CC16",
+      "order": 8,
+      "category": "model",
+      "created_by": 0,
+      "created_by_name": "관리자",
+      "created_at": "2026-05-22T08:05:58.620Z",
+      "updated_by": 0,
+      "updated_by_name": "관리자",
+      "updated_at": "2026-05-22T08:05:58.620Z"
+    },
+    {
+      "id": 10116,
+      "name": "ISO13485 (INTOPS : 6/15~19)",
+      "color": "#14B8A6",
+      "order": 0,
+      "category": "audit_cert"
+    },
+    {
+      "id": 10118,
+      "name": "ISO13485 (OBM : 7/24~7/27)",
+      "color": "#0EA5E9",
+      "order": 1,
+      "category": "audit_cert"
+    },
+    {
+      "id": 10120,
+      "name": "용산 JG1 공정감사 (6/2)",
+      "color": "#F59E0B",
+      "order": 0,
+      "category": "audit_process"
     }
   ],
   "subItems": {
@@ -454,7 +488,42 @@
         "name": "완료",
         "order": 4
       }
-    ]
+    ],
+    "10088": [
+      {
+        "id": 10089,
+        "modelId": 10088,
+        "name": "기획",
+        "order": 0
+      },
+      {
+        "id": 10090,
+        "modelId": 10088,
+        "name": "설계/개발",
+        "order": 1
+      },
+      {
+        "id": 10091,
+        "modelId": 10088,
+        "name": "검증",
+        "order": 2
+      },
+      {
+        "id": 10092,
+        "modelId": 10088,
+        "name": "양산준비",
+        "order": 3
+      },
+      {
+        "id": 10093,
+        "modelId": 10088,
+        "name": "완료",
+        "order": 4
+      }
+    ],
+    "10116": [],
+    "10118": [],
+    "10120": []
   },
   "milestones": {
     "1": [
@@ -513,12 +582,13 @@
       {
         "id": 10027,
         "title": "#PV2 검증과제 진행",
-        "description": "1차 고객사 수원 검증",
-        "note": "수원 검증일: 5/27, 5/28",
+        "description": "1차 고객사 수율 검증 (모수 200EA이상\nPV2 블랙/블루 각 70EA, 민트 110EA 제출",
+        "note": "조립계획: ~5/26\n부품품질 수율검증: 5/27 (목표수율 RTY 70%)",
         "subItemId": null,
         "dueDate": "2026-05-19",
         "dueDateEnd": "2026-05-28",
-        "status": "in_progress"
+        "status": "completed",
+        "author": "권창해"
       },
       {
         "id": 10028,
@@ -526,9 +596,10 @@
         "description": "개선 코어 입고 예정",
         "note": "",
         "subItemId": null,
-        "dueDate": "2026-05-28",
+        "dueDate": "2026-06-01",
         "dueDateEnd": null,
-        "status": "pending"
+        "status": "completed",
+        "author": "권창해"
       },
       {
         "id": 10029,
@@ -558,9 +629,35 @@
         "description": "150 set 출하 절차 진행중",
         "note": "자재 입고 지연 관련 - 출하일정 재협의중",
         "subItemId": null,
-        "dueDate": null,
+        "dueDate": "2026-05-28",
         "dueDateEnd": null,
-        "status": "delayed"
+        "status": "completed",
+        "author": "권창해"
+      },
+      {
+        "id": 10109,
+        "author": "권창해",
+        "title": "5/29 계획품 CARTI100 10대 출하완료",
+        "description": "",
+        "note": "",
+        "subItemId": null,
+        "dueDate": "2026-05-29",
+        "dueDateEnd": null,
+        "status": "completed"
+      },
+      {
+        "id": 10123,
+        "author": "권창해",
+        "title": "5/27 계획품 CARTI100 3대 출하완료",
+        "description": "",
+        "note": "",
+        "subItemId": null,
+        "dueDate": "2026-05-27",
+        "dueDateEnd": null,
+        "status": "completed",
+        "requestCount": null,
+        "okCount": null,
+        "ngCount": null
       }
     ],
     "4": [
@@ -622,23 +719,25 @@
     "10001": [
       {
         "id": 10055,
-        "title": "R14 #PV1 전차수 CPK 측정",
+        "title": "R14 #PV1 전치수 측정",
         "description": "측정 완료 - 16 point NG",
         "note": "금형수리 및 전산화 검토중 → 코어 신작 결정",
         "subItemId": null,
         "dueDate": null,
         "dueDateEnd": null,
-        "status": "in_progress"
+        "status": "completed",
+        "author": "권창해"
       },
       {
         "id": 10056,
         "title": "NM3·NM4 Cam BRK 변화량 / KMD 치수 측정",
         "description": "Cam BRK 변화량 및 KMD 치수 측정",
-        "note": "NM4 측정 완료 / NM3 측정중 (~5/22)",
+        "note": "NM4 측정 완료 / NM3 측정완료",
         "subItemId": null,
         "dueDate": "2026-05-22",
         "dueDateEnd": null,
-        "status": "in_progress"
+        "status": "completed",
+        "author": "권창해"
       },
       {
         "id": 10070,
@@ -664,13 +763,14 @@
     "10007": [
       {
         "id": 10057,
-        "title": "R14 #PV1 단기 OK / 장기 NG",
-        "description": "단기 시험 OK, 장기 시험 NG",
-        "note": "Mint 단면 내하강 NG (1/5ea) → 도막 축소 개선 검토중",
+        "title": "R14 #PV1 신뢰성 TEST",
+        "description": "",
+        "note": "Mint 단말 내화장품 NG (1/5ea) → 도막 축소 개선 완료 (0/5ea)\nMint 내화장품 얼룩 NG (2/5ea) → 도료 실리콘 첨가제 축소 개선완료 (0/5ea)",
         "subItemId": null,
-        "dueDate": null,
+        "dueDate": "2026-05-19",
         "dueDateEnd": null,
-        "status": "in_progress"
+        "status": "completed",
+        "author": "권창해"
       },
       {
         "id": 10058,
@@ -683,14 +783,15 @@
         "status": "completed"
       },
       {
-        "id": 10059,
-        "title": "R14 신뢰성 개선자재 Test",
-        "description": "신뢰성 개선자재 Test 진행",
-        "note": "내하강도 NG (2/5ea) → 개선 SPL Test (~5/19)",
+        "id": 10106,
+        "author": "권창해",
+        "title": "R14 #PV2 신뢰성 TEST",
+        "description": "",
+        "note": "단품 시험 ~5/29\n조립품 시험 ~6/1",
         "subItemId": null,
-        "dueDate": "2026-05-19",
+        "dueDate": "2026-06-01",
         "dueDateEnd": null,
-        "status": "in_progress"
+        "status": "completed"
       }
     ],
     "10013": [
@@ -755,6 +856,16 @@
         "dueDate": "2026-05-28",
         "dueDateEnd": null,
         "status": "in_progress"
+      },
+      {
+        "id": 10087,
+        "title": "JG1 ISIR 자료 준비 및 공정감사",
+        "description": "1.ISIR자료 (검사협정서,검사기준서,검사성적서,작업표준서,관리계획서)\n   한보 접수 검토 후 용산 제출 (~5/29)\n2.한보 공정감사 6/2 예정.출장 및 대응",
+        "note": "",
+        "subItemId": null,
+        "dueDate": "2026-05-25",
+        "dueDateEnd": "2026-06-02",
+        "status": "pending"
       }
     ],
     "10040": [
@@ -766,6 +877,46 @@
         "subItemId": null,
         "dueDate": "2026-07-24",
         "dueDateEnd": "2026-07-27",
+        "status": "pending"
+      }
+    ],
+    "10088": [],
+    "10116": [
+      {
+        "id": 10117,
+        "author": null,
+        "title": "ISO13485 인증심사",
+        "description": "INTOPS",
+        "note": "",
+        "subItemId": null,
+        "dueDate": "2026-06-15",
+        "dueDateEnd": "2026-06-19",
+        "status": "pending"
+      }
+    ],
+    "10118": [
+      {
+        "id": 10119,
+        "author": null,
+        "title": "ISO13485 인증심사",
+        "description": "OBM",
+        "note": "",
+        "subItemId": null,
+        "dueDate": "2026-07-24",
+        "dueDateEnd": "2026-07-27",
+        "status": "pending"
+      }
+    ],
+    "10120": [
+      {
+        "id": 10121,
+        "author": null,
+        "title": "용산 JG1 공정감사",
+        "description": "",
+        "note": "",
+        "subItemId": null,
+        "dueDate": "2026-06-02",
+        "dueDateEnd": null,
         "status": "pending"
       }
     ]
@@ -791,7 +942,11 @@
     "10007": [],
     "10013": [],
     "10032": [],
-    "10040": []
+    "10040": [],
+    "10088": [],
+    "10116": [],
+    "10118": [],
+    "10120": []
   },
   "memos": {
     "1": "",
@@ -804,9 +959,13 @@
     "10007": "",
     "10013": "",
     "10032": "",
-    "10040": ""
+    "10040": "",
+    "10088": "■  OSTEM N/BOTTLE 스크라치 관련 포장 개선 件\n\n- 스크라치 불량 세척공정 현 10K 발생\n- 출하용 트레이 사용 포장 검증 예정 300장 / 1장 =52EA\n  차후 생산분 진행.세척공정 우선지급 검증\n- 검증 시 취급성 및 포장방법 시간 등 추가검토\n- 검증결과 확인 후 양호 시 사출공정 적용. \n  공정용 트레이로 사용 (세척 공정 전달 후 사출 회수 방식)\n- 공정용 트레이 개발팀 지급 1,000 장\n  발주 후 최소 3주 소모. 차주 중 신청",
+    "10116": "",
+    "10118": "",
+    "10120": ""
   },
-  "nextId": 10086,
+  "nextId": 10123,
   "users": [
     {
       "id": 10019,
@@ -867,7 +1026,11 @@
     "10007": [],
     "10013": [],
     "10032": [],
-    "10040": []
+    "10040": [],
+    "10088": [],
+    "10116": [],
+    "10118": [],
+    "10120": []
   },
   "comments": {
     "milestone_12345": [],
@@ -926,6 +1089,15 @@
         "author": "김현석",
         "content": "PV#2 자재 진행시 상기 도료 및 도막 두께 개선에 대한 유효성 검증 진행 해 봅시다",
         "created_at": "2026-05-21T01:16:15.027Z"
+      },
+      {
+        "id": 10112,
+        "type": "milestone",
+        "item_id": 10029,
+        "parent_comment_id": null,
+        "author": "권창해",
+        "content": "PV2 자재 신뢰성 유효성 TEST 시, 신뢰성 양호 합니다.",
+        "created_at": "2026-05-29T07:18:10.600Z"
       }
     ],
     "dpost_10081": [
@@ -959,6 +1131,77 @@
         "content": "고객사 공유 완료.  강도 보강 및 리웍관련 협력사(어나더앤) 회의 2026.05.22 10시",
         "created_at": "2026-05-21T22:55:53.972Z"
       }
+    ],
+    "milestone_10049": [
+      {
+        "id": 10107,
+        "type": "milestone",
+        "item_id": 10049,
+        "parent_comment_id": null,
+        "author": "권창해",
+        "content": "출하자재 준비완료. 5/28 출하예정",
+        "created_at": "2026-05-26T23:34:26.732Z"
+      },
+      {
+        "id": 10108,
+        "type": "milestone",
+        "item_id": 10049,
+        "parent_comment_id": null,
+        "author": "권창해",
+        "content": "5/28 출하완료",
+        "created_at": "2026-05-29T07:09:45.488Z"
+      }
+    ],
+    "milestone_10027": [
+      {
+        "id": 10110,
+        "type": "milestone",
+        "item_id": 10027,
+        "parent_comment_id": null,
+        "author": "권창해",
+        "content": "블랙: 56.7% / 블루: 34.1% / 민트: 54.8%",
+        "created_at": "2026-05-29T07:11:35.725Z"
+      }
+    ],
+    "milestone_10028": [
+      {
+        "id": 10111,
+        "type": "milestone",
+        "item_id": 10028,
+        "parent_comment_id": null,
+        "author": "권창해",
+        "content": "6/1 금형 사내 이동 예정",
+        "created_at": "2026-05-29T07:17:51.663Z"
+      },
+      {
+        "id": 10114,
+        "type": "milestone",
+        "item_id": 10028,
+        "parent_comment_id": null,
+        "author": "권창해",
+        "content": "6/1 시사출 완료 : 살두께 축소로 인한 성형성 저하 (전폭 하단 치수 미달 및 상하 편차 0.15수준 심함)",
+        "created_at": "2026-06-01T06:55:38.605Z"
+      },
+      {
+        "id": 10122,
+        "type": "milestone",
+        "item_id": 10028,
+        "parent_comment_id": null,
+        "author": "권창해",
+        "content": "해당 코어 미사용 결정",
+        "created_at": "2026-06-04T02:12:56.108Z"
+      }
+    ],
+    "milestone_10106": [
+      {
+        "id": 10115,
+        "type": "milestone",
+        "item_id": 10106,
+        "parent_comment_id": null,
+        "author": "권창해",
+        "content": "PV2 TEST 합격",
+        "created_at": "2026-06-01T07:41:30.198Z"
+      }
     ]
   },
   "dashboardMemo": "",
@@ -971,5 +1214,9 @@
       "content": "TEST",
       "created_at": "2026-05-21T01:30:28.849Z"
     }
-  ]
+  ],
+  "memoUpdatedAt": {
+    "10088": "2026-05-22T08:07:01.867Z"
+  },
+  "schedules": []
 }
