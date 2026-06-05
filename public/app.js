@@ -203,7 +203,7 @@ function renderSidebar() {
   // ── 5. 메모장 (공용 게시판) ──
   const memoBtn = document.createElement('button');
   memoBtn.className = 'sb-group-label memo' + (isMemo ? ' active' : '');
-  memoBtn.innerHTML = `📝 메모장 <span style="font-size:11px;opacity:.7">(공용 게시판)</span><span class="sb-arrow">›</span>`;
+  memoBtn.innerHTML = `📝 메모 or 공지사항<span class="sb-arrow">›</span>`;
   memoBtn.addEventListener('click', () => {
     state._sidebarMemo = true;
     loadDashboard().then(() => scrollDashSection('memo'));
