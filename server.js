@@ -317,32 +317,8 @@ function migrate() {
     console.log(`[migrate] 중복 모델 ${dupIds.length}개 제거:`, dupIds);
   }
 
-  // 4-1) 주요 인증심사/AUDIT 하위 모델 자동 생성 (삭제된 경우에만)
-  const auditModelDefaults = [
-    { name: 'ISO13485 (INTOPS : 6/15~19)', color: '#14B8A6', category: 'audit_cert',    order: 0,
-      milestones: [{ title: 'ISO13485 인증심사', description: 'INTOPS', dueDate: '2026-06-15', dueDateEnd: '2026-06-19', status: 'pending' }] },
-    { name: 'ISO13485 (OBM : 7/24~7/27)',  color: '#0EA5E9', category: 'audit_cert',    order: 1,
-      milestones: [{ title: 'ISO13485 인증심사', description: 'OBM',    dueDate: '2026-07-24', dueDateEnd: '2026-07-27', status: 'pending' }] },
-    { name: '용산 JG1 공정감사 (6/2)',      color: '#F59E0B', category: 'audit_process', order: 0,
-      milestones: [{ title: '용산 JG1 공정감사', dueDate: '2026-06-02', status: 'pending' }] },
-  ];
-  auditModelDefaults.forEach(def => {
-    if ((DB.models||[]).some(m => m.name === def.name)) return;
-    const id = nextId();
-    DB.models.push({ id, name: def.name, color: def.color, order: def.order, category: def.category });
-    DB.subItems[id]   = [];
-    DB.milestones[id] = (def.milestones||[]).map(ms => ({
-      id: nextId(), author: null,
-      title: ms.title, description: ms.description || '', note: '',
-      subItemId: null, dueDate: ms.dueDate || null, dueDateEnd: ms.dueDateEnd || null,
-      status: ms.status || 'pending',
-    }));
-    DB.checklists[id] = [];
-    DB.claims[id]     = [];
-    DB.memos[id]      = '';
-    changed = true;
-    console.log(`[migrate] audit model created: ${def.name}`);
-  });
+  // 4-1) 주요 인증심사/AUDIT 하위 모델 자동 생성 로직 제거
+  // (data.json에 이미 존재하므로 서버 재시작 시 중복 생성 방지)
 
   // 5) '일정 점검' 이름을 포함한 모델 → category를 'schedule'로 강제 변환
   (DB.models || []).forEach(m => {
