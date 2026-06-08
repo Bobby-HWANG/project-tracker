@@ -62,6 +62,70 @@ const POST = (path, b)  => api('POST',   path, b);
 const PUT  = (path, b)  => api('PUT',    path, b);
 const DEL  = path       => api('DELETE', path);
 
+// ── 드래그 정렬 헬퍼 ─────────────────────────────────────────
+function initSortable(container, rowSelector, onReorder) {
+  let dragSrc = null;
+  let placeholder = null;
+
+  function getMainRows() {
+    return [...container.querySelectorAll(rowSelector)];
+  }
+
+  function setupRow(row) {
+    row.setAttribute('draggable', 'true');
+
+    row.addEventListener('dragstart', e => {
+      dragSrc = row;
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', row.dataset.id || '');
+      setTimeout(() => row.classList.add('dragging'), 0);
+    });
+
+    row.addEventListener('dragend', () => {
+      row.classList.remove('dragging');
+      if (placeholder && placeholder.parentNode) placeholder.parentNode.removeChild(placeholder);
+      placeholder = null;
+      container.querySelectorAll('.drag-over-top, .drag-over-bot').forEach(el => {
+        el.classList.remove('drag-over-top', 'drag-over-bot');
+      });
+      // 새 순서 추출 후 저장
+      const ids = getMainRows().map(r => Number(r.dataset.id)).filter(Boolean);
+      if (ids.length) onReorder(ids);
+      dragSrc = null;
+    });
+
+    row.addEventListener('dragover', e => {
+      e.preventDefault();
+      if (!dragSrc || dragSrc === row) return;
+      const rect = row.getBoundingClientRect();
+      const after = e.clientY > rect.top + rect.height / 2;
+      if (after) {
+        if (row.nextSibling !== dragSrc) row.after(dragSrc);
+      } else {
+        if (row.previousSibling !== dragSrc) row.before(dragSrc);
+      }
+    });
+
+    // 드래그 핸들만 잡을 때 드래그 활성화
+    const handle = row.querySelector('.drag-handle');
+    if (handle) {
+      // 핸들 외의 영역 dragstart 차단
+      row.addEventListener('mousedown', e => {
+        if (!e.target.closest('.drag-handle')) {
+          row.setAttribute('draggable', 'false');
+        } else {
+          row.setAttribute('draggable', 'true');
+        }
+      });
+      row.addEventListener('dragstart', () => {
+        row.setAttribute('draggable', 'true');
+      });
+    }
+  }
+
+  getMainRows().forEach(setupRow);
+}
+
 // ── Toast ────────────────────────────────────────────────────
 function toast(msg, type = '') {
   const c = document.getElementById('toast-container');
@@ -1647,6 +1711,16 @@ async function renderMilestone(body) {
     applyMsFilter(msList, pending, total);
   }
 
+  // 드래그 정렬 초기화 (완료 항목 제외)
+  if (total) {
+    const mid2 = state.activeModel.id;
+    initSortable(msList, '.milestone-item', async ids => {
+      try {
+        await POST(`/api/models/${mid2}/milestones/reorder`, { ids });
+      } catch(e) { toast('순서 저장 실패', 'error'); }
+    });
+  }
+
   refreshCommentCounts();
   attachInlineCommentsHandler(document.getElementById('tab-body'));
 }
@@ -1654,6 +1728,7 @@ async function renderMilestone(body) {
 function makeMsItem(it, today) {
   const div = document.createElement('div');
   div.className = 'milestone-item';
+  div.dataset.id = it.id;
 
   // 기간형이면 종료일로 지연 판정, 단일형이면 due_date로 판정
   const compareDate = it.due_date_end || it.due_date;
@@ -1679,6 +1754,7 @@ function makeMsItem(it, today) {
     : '';
 
   div.innerHTML = `
+    <div class="drag-handle" title="드래그하여 순서 변경">⠿</div>
     <div class="ms-status-dot" style="background:${STATUS_DOT[it.status]}"></div>
     <div class="ms-body">
       <div class="ms-title-row">
@@ -2027,6 +2103,17 @@ async function renderChecklist(body) {
   });
 
   document.getElementById('btn-add-cl').addEventListener('click', () => openCheckModal(null));
+
+  // 드래그 정렬 초기화
+  if (items.length) {
+    const mid2 = state.activeModel.id;
+    initSortable(tbody, 'tr.cl-row', async ids => {
+      try {
+        await POST(`/api/models/${mid2}/checklist/reorder`, { ids });
+      } catch(e) { toast('순서 저장 실패', 'error'); }
+    });
+  }
+
   refreshCommentCounts();
   attachInlineCommentsHandler(document.getElementById('tab-body'));
 }
@@ -2035,13 +2122,14 @@ function makeClRow(it, today) {
   const frag = document.createDocumentFragment();
   const tr = document.createElement('tr');
   tr.className = 'cl-row';
+  tr.dataset.id = it.id;
   if (it.status === 'completed') tr.classList.add('row-done');
   const effectiveDate = it.due_date_end || it.due_date;
   const overdue = effectiveDate && effectiveDate < today && it.status !== 'completed';
   const dateDisplay = formatDateStr(it.due_date, it.due_date_end) + (overdue ? ' ⚠' : '');
 
   tr.innerHTML = `
-    <td class="cl-no">${it.no}</td>
+    <td class="cl-no"><span class="drag-handle" title="드래그하여 순서 변경">⠿</span>${it.no}</td>
     <td class="cl-ttl">
       ${escHtml(it.title) || '-'}
       ${it.author ? `<div class="row-author">👤 ${escHtml(it.author)}</div>` : ''}
@@ -2660,6 +2748,17 @@ async function renderClaim(body) {
   });
 
   document.getElementById('btn-add-clm').addEventListener('click', () => openClaimModal(null));
+
+  // 드래그 정렬 초기화
+  if (items.length) {
+    const mid2 = state.activeModel.id;
+    initSortable(tbody, 'tr.cl-row', async ids => {
+      try {
+        await POST(`/api/models/${mid2}/claims/reorder`, { ids });
+      } catch(e) { toast('순서 저장 실패', 'error'); }
+    });
+  }
+
   refreshCommentCounts();
   attachInlineCommentsHandler(document.getElementById('tab-body'));
 }
@@ -2668,6 +2767,7 @@ function makeClmRow(it, today) {
   const frag = document.createDocumentFragment();
   const tr = document.createElement('tr');
   tr.className = 'cl-row';
+  tr.dataset.id = it.id;
   if (it.status === 'completed') tr.classList.add('row-done');
 
   // 발생일 표시 (overdue 판정은 개선일정 우선)
@@ -2681,7 +2781,7 @@ function makeClmRow(it, today) {
     : '-';
 
   tr.innerHTML = `
-    <td class="cl-no">${it.no}</td>
+    <td class="cl-no"><span class="drag-handle" title="드래그하여 순서 변경">⠿</span>${it.no}</td>
     <td class="cl-ttl">
       ${escHtml(it.customer) || '-'}
       ${it.author ? `<div class="row-author">👤 ${escHtml(it.author)}</div>` : ''}

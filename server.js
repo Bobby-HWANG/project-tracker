@@ -746,7 +746,14 @@ app.get('/api/models/:id/milestones', (req, res) => {
     request_count: it.requestCount ?? null,
     ok_count:      it.okCount      ?? null,
     ng_count:      it.ngCount      ?? null,
+    sort_order:    it.sortOrder    ?? null,
+    updated_at:    it.updatedAt    ?? it.createdAt ?? null,
+    created_at:    it.createdAt    ?? null,
   })).sort((a,b)=>{
+    // sortOrder가 지정된 경우 우선
+    if (a.sort_order != null && b.sort_order != null) return a.sort_order - b.sort_order;
+    if (a.sort_order != null) return -1;
+    if (b.sort_order != null) return 1;
     if(!a.due_date) return 1;
     if(!b.due_date) return -1;
     return a.due_date.localeCompare(b.due_date);
@@ -770,6 +777,9 @@ app.post('/api/models/:id/milestones', (req, res) => {
     requestCount: req.body.request_count != null ? Number(req.body.request_count) : null,
     okCount:      req.body.ok_count      != null ? Number(req.body.ok_count)      : null,
     ngCount:      req.body.ng_count      != null ? Number(req.body.ng_count)      : null,
+    sortOrder:    DB.milestones[id].length,
+    createdAt:    new Date().toISOString(),
+    updatedAt:    new Date().toISOString(),
   };
   DB.milestones[id].push(item);
   save();
@@ -795,12 +805,25 @@ app.put('/api/milestones/:id', (req, res) => {
         requestCount: req.body.request_count != null ? Number(req.body.request_count) : (cur.requestCount ?? null),
         okCount:      req.body.ok_count      != null ? Number(req.body.ok_count)      : (cur.okCount      ?? null),
         ngCount:      req.body.ng_count      != null ? Number(req.body.ng_count)      : (cur.ngCount      ?? null),
+        updatedAt:    new Date().toISOString(),
       };
       save();
       return res.json(DB.milestones[mid][idx]);
     }
   }
   res.status(404).json({error:'not found'});
+});
+
+app.post('/api/models/:id/milestones/reorder', (req, res) => {
+  const id = Number(req.params.id);
+  const { ids } = req.body;
+  if (!Array.isArray(ids)) return res.status(400).json({error:'ids required'});
+  ids.forEach((itemId, idx) => {
+    const it = (DB.milestones[id]||[]).find(x=>x.id===Number(itemId));
+    if (it) it.sortOrder = idx;
+  });
+  save();
+  res.json({ok:true});
 });
 
 app.delete('/api/milestones/:id', (req, res) => {
@@ -872,6 +895,18 @@ app.put('/api/checklist/:id', (req, res) => {
     }
   }
   res.status(404).json({error:'not found'});
+});
+
+app.post('/api/models/:id/checklist/reorder', (req, res) => {
+  const id = Number(req.params.id);
+  const { ids } = req.body;
+  if (!Array.isArray(ids)) return res.status(400).json({error:'ids required'});
+  ids.forEach((itemId, idx) => {
+    const it = (DB.checklists[id]||[]).find(x=>x.id===Number(itemId));
+    if (it) it.order = idx;
+  });
+  save();
+  res.json({ok:true});
 });
 
 app.delete('/api/checklist/:id', (req, res) => {
@@ -966,6 +1001,18 @@ app.put('/api/claims/:id', (req, res) => {
     }
   }
   res.status(404).json({error:'not found'});
+});
+
+app.post('/api/models/:id/claims/reorder', (req, res) => {
+  const id = Number(req.params.id);
+  const { ids } = req.body;
+  if (!Array.isArray(ids)) return res.status(400).json({error:'ids required'});
+  ids.forEach((itemId, idx) => {
+    const it = (DB.claims[id]||[]).find(x=>x.id===Number(itemId));
+    if (it) it.order = idx;
+  });
+  save();
+  res.json({ok:true});
 });
 
 app.delete('/api/claims/:id', (req, res) => {
