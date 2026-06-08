@@ -1581,7 +1581,12 @@ async function renderMilestone(body) {
     const sa = STATUS_ORDER[a.status] ?? 2;
     const sb = STATUS_ORDER[b.status] ?? 2;
     if (sa !== sb) return sa - sb;
-    return (a.due_date || '').localeCompare(b.due_date || ''); // 같은 상태면 날짜 오름차순
+    // 완료 항목은 날짜 오름차순 유지
+    if (a.status === 'completed') return (a.due_date || '').localeCompare(b.due_date || '');
+    // 진행중·지연·대기중은 최종 수정일 내림차순 (최근 수정 항목이 최상위)
+    const ua = a.updated_at || a.created_at || '';
+    const ub = b.updated_at || b.created_at || '';
+    return ub.localeCompare(ua);
   });
 
   // 댓글 일괄 페치
