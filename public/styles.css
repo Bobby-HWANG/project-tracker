@@ -354,7 +354,7 @@ body.eye-care .top-theme-btn:hover { box-shadow: 0 4px 10px rgba(15,23,42,.5); }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --sb-w: 260px;
+  --sb-w: 200px;
   --sb-bg: #0f172a;
   --sb-border: #1e293b;
   --sb-text: #94a3b8;
@@ -645,7 +645,7 @@ body {
 .page-header {
   background: var(--surface);
   border-bottom: 1px solid var(--border);
-  padding: 20px 28px 0;
+  padding: 20px 10px 0;
   flex-shrink: 0;
 }
 
@@ -703,8 +703,9 @@ body {
 .tab-body {
   flex: 1;
   min-height: 0;      /* flex child가 줄어들 수 있어야 스크롤 작동 */
-  padding: 24px 28px;
+  padding: 24px 10px;
   overflow-y: auto;   /* 실제 스크롤 컨테이너 */
+  overflow-x: auto;   /* 1.5배 콘텐츠 가로 스크롤 허용 */
   -webkit-overflow-scrolling: touch; /* iOS 관성 스크롤 */
   overscroll-behavior-y: contain;    /* 상/하단 도달 시 body로 전파 안 됨 */
   width: 100%;
@@ -3657,28 +3658,36 @@ body.eye-care .welcome p { color: var(--text3); }
   align-self: stretch !important;
 }
 #view-model .tab-body {
-  padding: 16px 20px 24px !important;
+  padding: 16px 6px 24px !important;
 }
 #view-model .tab-body > * {
   width: 100% !important;
   max-width: none !important;
   box-sizing: border-box !important;
 }
-/* 일정/체크/클레임 항목 자체도 전폭 */
+/* 일정/체크/클레임 항목 자체도 1.5배 전폭 */
+#view-model #ms-list {
+  width: 150% !important;
+  max-width: none !important;
+  box-sizing: border-box !important;
+}
 #view-model .ms-item,
-#view-model #ms-list,
 #view-model #cl-tbody,
-#view-model #clm-tbody,
-#view-model .milestone-toolbar,
-#view-model .checklist-overall,
-#view-model .memo-wrap {
+#view-model #clm-tbody {
   width: 100% !important;
   max-width: none !important;
   box-sizing: border-box !important;
 }
-/* 체크시트 테이블: 현재의 4/3 너비 고정 */
+#view-model .milestone-toolbar,
+#view-model .checklist-overall,
+#view-model .memo-wrap {
+  width: 150% !important;
+  max-width: none !important;
+  box-sizing: border-box !important;
+}
+/* 체크시트·클레임 테이블: 탭 영역의 150% 너비 */
 #view-model .cl-table-wrap {
-  width: 133.33% !important;
+  width: 150% !important;
   max-width: none !important;
   box-sizing: border-box !important;
 }
