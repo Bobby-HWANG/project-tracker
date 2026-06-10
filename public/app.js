@@ -62,6 +62,64 @@ const POST = (path, b)  => api('POST',   path, b);
 const PUT  = (path, b)  => api('PUT',    path, b);
 const DEL  = path       => api('DELETE', path);
 
+// ── 컬럼 너비 리사이즈 헬퍼 ──────────────────────────────────
+function initResizableTable(table, storageKey) {
+  const ths = [...table.querySelectorAll('thead th')];
+
+  // 저장된 너비 복원
+  const saved = (() => {
+    try { return JSON.parse(localStorage.getItem(storageKey) || 'null'); } catch { return null; }
+  })();
+  if (saved) {
+    ths.forEach((th, i) => { if (saved[i]) th.style.width = saved[i]; });
+  }
+
+  function saveWidths() {
+    const widths = ths.map(th => th.offsetWidth + 'px');
+    localStorage.setItem(storageKey, JSON.stringify(widths));
+  }
+
+  ths.forEach((th, i) => {
+    // 마지막 컬럼(액션버튼)은 리사이즈 불필요
+    if (i === ths.length - 1) return;
+
+    th.style.position = 'relative';
+    th.style.userSelect = 'none';
+
+    const handle = document.createElement('div');
+    handle.className = 'col-resize-handle';
+    th.appendChild(handle);
+
+    let startX, startW;
+
+    handle.addEventListener('mousedown', e => {
+      e.preventDefault();
+      e.stopPropagation();
+      startX = e.clientX;
+      startW = th.offsetWidth;
+      document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = 'none';
+
+      function onMove(e) {
+        const diff = e.clientX - startX;
+        const newW = Math.max(50, startW + diff);
+        th.style.width = newW + 'px';
+      }
+
+      function onUp() {
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+        saveWidths();
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onUp);
+      }
+
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
+    });
+  });
+}
+
 // ── 드래그 정렬 헬퍼 ─────────────────────────────────────────
 function initSortable(container, rowSelector, onReorder) {
   let dragSrc = null;
@@ -2104,6 +2162,10 @@ async function renderChecklist(body) {
 
   document.getElementById('btn-add-cl').addEventListener('click', () => openCheckModal(null));
 
+  // 컬럼 너비 리사이즈 초기화
+  const clTable = document.querySelector('.cl-table:not(.cl-table--claim)');
+  if (clTable) initResizableTable(clTable, 'cl-col-widths');
+
   // 드래그 정렬 초기화
   if (items.length) {
     const mid2 = state.activeModel.id;
@@ -2748,6 +2810,10 @@ async function renderClaim(body) {
   });
 
   document.getElementById('btn-add-clm').addEventListener('click', () => openClaimModal(null));
+
+  // 컬럼 너비 리사이즈 초기화
+  const clmTable = document.querySelector('.cl-table--claim');
+  if (clmTable) initResizableTable(clmTable, 'clm-col-widths');
 
   // 드래그 정렬 초기화
   if (items.length) {

@@ -1864,10 +1864,26 @@ tr.cl-row td.cl-no {
   overflow-y: clip; /* sticky thead가 tab-body 기준으로 작동하도록 */
   margin-top: 4px;
 }
+/* 컬럼 리사이즈 핸들 */
+.col-resize-handle {
+  position: absolute;
+  right: 0; top: 0; bottom: 0;
+  width: 6px;
+  cursor: col-resize;
+  z-index: 1;
+  background: transparent;
+  transition: background 0.15s;
+}
+.col-resize-handle:hover,
+.col-resize-handle:active {
+  background: rgba(99,102,241,0.35);
+}
+
 .cl-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 13px;
+  table-layout: fixed;
 }
 .cl-table thead th {
   background: var(--bg);
