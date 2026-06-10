@@ -3692,9 +3692,9 @@ body.eye-care .welcome p { color: var(--text3); }
   max-width: none !important;
   box-sizing: border-box !important;
 }
-/* 체크시트 테이블: 현재의 4/3 너비 고정 */
+/* 체크시트·클레임 테이블: 화면 내 맞춤 */
 #view-model .cl-table-wrap {
-  width: 133.33% !important;
+  width: 100% !important;
   max-width: none !important;
   box-sizing: border-box !important;
 }
