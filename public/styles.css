@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════
-   화면 우측 상단 컨트롤 그룹 (테마 + 인쇄)
+   화면 우측 상단 컨트롤 그룹 (인쇄)
    ══════════════════════════════════════════════════════════ */
 
 /* 시계 박스 — 사용 안 함 */
@@ -20,44 +20,6 @@
   gap: 4px;
   padding: 5px;
 }
-
-/* 테마 토글 박스 — 인쇄 박스 왼쪽에 붙임 */
-.top-theme-box {
-  position: fixed;
-  top: 14px;
-  right: 120px;
-  z-index: 130;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(15,23,42,.08);
-  display: flex;
-  align-items: center;
-  padding: 5px;
-}
-
-.top-theme-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px; height: 32px;
-  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-  color: #fff;
-  border: none;
-  border-radius: 7px;
-  cursor: pointer;
-  transition: transform .15s, box-shadow .15s, background .25s;
-  box-shadow: 0 2px 4px rgba(245,158,11,.3);
-  font-size: 16px;
-}
-.top-theme-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(245,158,11,.4); }
-.top-theme-btn:active { transform: translateY(0); }
-
-body.eye-care .top-theme-btn {
-  background: linear-gradient(135deg, #475569 0%, #334155 100%);
-  box-shadow: 0 2px 4px rgba(15,23,42,.4);
-}
-body.eye-care .top-theme-btn:hover { box-shadow: 0 4px 10px rgba(15,23,42,.5); }
 
 .top-print-btn {
   display: inline-flex;
@@ -83,13 +45,10 @@ body.eye-care .top-theme-btn:hover { box-shadow: 0 4px 10px rgba(15,23,42,.5); }
 /* 모바일: 모바일 헤더 아래로 이동 */
 @media (max-width: 768px) {
   .top-print-box  { top: 64px; right: 10px; padding: 3px; }
-  .top-theme-box  { top: 64px; right: 60px; padding: 3px; }
   .top-print-btn  { padding: 4px 10px; font-size: 12px; }
-  .top-theme-btn  { width: 30px; height: 28px; font-size: 14px; }
 }
 @media (max-width: 480px) {
   .top-print-box  { right: 8px; }
-  .top-theme-box  { right: 52px; }
 }
 
 /* 인쇄 시 — 사이드바/툴바 등 숨기고 콘텐츠만 출력 */
@@ -1469,11 +1428,6 @@ body {
   text-overflow: ellipsis;
 }
 
-/* eye-care 모드 */
-body.eye-care .dc-pill-prog  { color: #93c5fd; }
-body.eye-care .dc-pill-delay { color: #94a3b8; }
-body.eye-care .dc-pill-delay.has-delay { color: #fca5a5; }
-body.eye-care .dc-pill-done  { color: #6ee7b7; }
 
 /* ── Section Blocks ─────────────────────────────────────────── */
 .section-card {
@@ -2461,9 +2415,6 @@ textarea.drag-over {
 }
 
 /* 눈 보호 모드 */
-body.eye-care .mn-item       { background: var(--bg); border-color: var(--border); }
-body.eye-care .mn-content    { background: var(--surface); border-color: var(--border); }
-body.eye-care .mn-attendees  { background: rgba(255,255,255,.06); }
 
 /* ── Settings ───────────────────────────────────────────────── */
 .settings-section { margin-bottom: 24px; }
@@ -2853,7 +2804,6 @@ body.eye-care .mn-attendees  { background: rgba(255,255,255,.06); }
 
   /* 상단 테마/인쇄 박스 — 모바일 헤더 아래 자리 */
   .top-print-box { top: 62px; right: 8px; padding: 3px; }
-  .top-theme-box { top: 62px; right: 52px; padding: 3px; }
   .top-print-btn { padding: 3px 10px; font-size: 11px; }
 
   /* 모델 상세 - 페이지 헤더 */
@@ -2985,95 +2935,6 @@ body.eye-care .mn-attendees  { background: rgba(255,255,255,.06); }
 
 /* ══════════════════════════════════════════════════════════
    👁 눈 보호 모드 (다크 + 명암 보정)
-   토글 버튼으로 활성/비활성. body.eye-care 클래스 부착 시 적용.
-   ══════════════════════════════════════════════════════════ */
-body.eye-care {
-  /* 전체 색상 변수 재정의 — 부드러운 다크 톤 */
-  --bg: #1a1d24;              /* 메인 배경 */
-  --surface: #232730;         /* 카드/모달 배경 */
-  --border: #2f3540;          /* 보더 색 */
-  --text: #d1d5db;            /* 본문 글자 */
-  --text2: #a0a6b0;           /* 보조 글자 */
-  --text3: #6b7280;           /* 약한 글자 */
-}
-body.eye-care {
-  background: var(--bg);
-  color: var(--text);
-}
-
-/* 대시보드 영역 */
-body.eye-care .main { background: var(--bg); }
-body.eye-care .page-header { background: var(--surface); border-color: var(--border); }
-body.eye-care .page-title { color: var(--text); }
-body.eye-care .tab { color: var(--text3); }
-body.eye-care .tab.active { color: #60a5fa; border-color: #60a5fa; }
-body.eye-care .tab:hover { color: var(--text2); }
-
-/* 카드 */
-body.eye-care .dashboard-card {
-  background: var(--surface);
-  color: var(--text);
-}
-body.eye-care .dc-name { color: var(--text); }
-body.eye-care .dc-stat { background: #2c313c; }
-body.eye-care .dc-stat-val { color: var(--text); }
-body.eye-care .dc-stat-label { color: var(--text3); }
-body.eye-care .dc-prog-label { color: var(--text3); }
-body.eye-care .progress-bar { background: #2f3540; }
-
-/* 섹션 배경 톤 다운 */
-body.eye-care .dash-section.monitoring {
-  background: linear-gradient(180deg, #1e2a3d 0%, #1a2331 100%);
-  border-color: #2a3e5c;
-}
-body.eye-care .dash-section.model {
-  background: linear-gradient(180deg, #2a1f3d 0%, #231a31 100%);
-  border-color: #3e2a5c;
-}
-body.eye-care .dash-section.audit {
-  background: linear-gradient(180deg, #0e2a27 0%, #0a211f 100%);
-  border-color: #1a4a44;
-}
-body.eye-care .dash-section.sec_exterior {
-  background: linear-gradient(180deg, #2f2510 0%, #261d0c 100%);
-  border-color: #4a3a18;
-}
-body.eye-care .dash-section.memo {
-  background: linear-gradient(180deg, #3d3320 0%, #2f2818 100%);
-  border-color: #5c4a28;
-}
-body.eye-care .dash-section.monitoring   .dash-section-title { color: #93c5fd; }
-body.eye-care .dash-section.model        .dash-section-title { color: #c4b5fd; }
-body.eye-care .dash-section.audit        .dash-section-title { color: #6ee7df; }
-body.eye-care .dash-section.sec_exterior .dash-section-title { color: #fde68a; }
-body.eye-care .dash-section.memo         .dash-section-title { color: #fcd34d; }
-body.eye-care .dash-section-count {
-  background: rgba(0,0,0,0.2);
-  color: var(--text3);
-}
-body.eye-care .dash-section-toggle {
-  background: rgba(0,0,0,0.25);
-  border-color: rgba(255,255,255,0.06);
-}
-body.eye-care .dash-section-toggle .toggle-icon { color: var(--text2); }
-
-/* 메모장 본문 */
-body.eye-care .memo-new-post {
-  background: #2a2418;
-  border-color: #5c4a28;
-}
-body.eye-care .memo-author-input,
-body.eye-care .memo-content-input {
-  background: #1d1d25;
-  border-color: #4a3d20;
-  color: var(--text);
-}
-body.eye-care .memo-post {
-  background: #232730;
-  border-color: #4a3d20;
-  border-left-color: #d97706;
-}
-
 /* ══════════════════════════════════════════════════════════
    주요 일정 점검 (Schedule View)
    ══════════════════════════════════════════════════════════ */
@@ -3530,11 +3391,9 @@ body.eye-care .memo-post {
   color: #b91c1c;
   margin-top: 8px;
 }
-body.eye-care .sched-conflict-warn {
   background: #3a1a1a;
   border-color: #7f1d1d;
   color: #fca5a5;
-}
 
 /* ── 커스텀 날짜+시간 피커 ── */
 .dt-pick-row {
@@ -3616,11 +3475,9 @@ body.eye-care .sched-conflict-warn {
   gap: 6px;
 }
 .dt-ok-icon { font-size: 14px; }
-body.eye-care .dt-confirm-result {
   background: #14291e;
   border-color: #166534;
   color: #86efac;
-}
 
 /* 색상 선택 */
 .sched-color-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
@@ -3710,78 +3567,35 @@ body.eye-care .dt-confirm-result {
   .sched-cal-bar-time { display: none; } /* 모바일에선 시간 생략, 제목만 */
   .sched-cal-daynum { font-size: 11px; }
 }
-body.eye-care .memo-post-body, body.eye-care .memo-cmt-body { color: var(--text); }
-body.eye-care .memo-cmt { background: #2c2418; border-color: #4a3d20; }
-body.eye-care .memo-cmt-reply { background: #232730; border-left-color: #d97706; }
-body.eye-care .memo-time { color: var(--text3); }
-body.eye-care .memo-empty, body.eye-care .memo-no-cmt {
   background: #2a2418; color: var(--text3); border-color: #4a3d20;
-}
-body.eye-care .memo-author-link { color: #93c5fd; }
-body.eye-care .memo-author-link:hover { background: #2a3e5c; }
-body.eye-care .memo-cmt-name, body.eye-care .memo-cmt-text,
-body.eye-care .memo-reply-name, body.eye-care .memo-reply-text {
   background: #1d1d25;
   border-color: #3a3f4a;
   color: var(--text);
-}
-body.eye-care .memo-reply-form { background: #1d2129; }
 
 /* 인라인 댓글 (일정/체크/클레임) */
-body.eye-care .inline-comments {
   background: #1d2129;
   border-color: #3a3f4a;
   border-left-color: #4a5c7e;
-}
-body.eye-care .inline-cmt {
   background: var(--surface);
   border-color: #3a3f4a;
-}
-body.eye-care .inline-cmt-author { color: #93c5fd; }
-body.eye-care .inline-cmt-content { color: var(--text); }
-body.eye-care .inline-cmt-name,
-body.eye-care .inline-cmt-text {
   background: #1d1d25;
   border-color: #3a3f4a;
   color: var(--text);
-}
 
 /* 일정/체크시트/클레임 */
-body.eye-care .ms-item { background: var(--surface); border-color: #3a3f4a; }
-body.eye-care .ms-title { color: var(--text); }
-body.eye-care .cl-table-wrap { background: var(--surface); }
-body.eye-care .cl-table thead th { background: #2c313c; color: var(--text2); }
-body.eye-care .milestone-toolbar { background: var(--surface); }
-body.eye-care .checklist-overall  { background: var(--surface); }
-body.eye-care .cl-table tbody td { border-color: #3a3f4a; }
-body.eye-care .cl-table tbody tr:hover { background: #2c313c; }
-body.eye-care .cl-ttl { color: var(--text); }
 
 /* 사이드바 약간 더 어둡게 */
-body.eye-care .sidebar { background: #0d1117; }
 
 /* 상단 인쇄/테마 박스 */
-body.eye-care .top-print-box,
-body.eye-care .top-theme-box {
   background: var(--surface);
   border-color: #3a3f4a;
-}
 
 /* 모달 */
-body.eye-care .modal { background: var(--surface); color: var(--text); }
-body.eye-care .modal-header { border-color: var(--border); }
-body.eye-care .form-input, body.eye-care .form-select, body.eye-care .form-textarea {
   background: #1d1d25;
   border-color: #3a3f4a;
   color: var(--text);
-}
-body.eye-care .form-label { color: var(--text2); }
 
 /* 빈 상태 */
-body.eye-care .empty-state { color: var(--text3); }
-body.eye-care .welcome { color: var(--text); }
-body.eye-care .welcome h2 { color: var(--text); }
-body.eye-care .welcome p { color: var(--text3); }
 
 /* ══════════════════════════════════════════════════════════
    🔧 모델 상세 화면 — 대시보드와 동일한 전폭 강제 적용

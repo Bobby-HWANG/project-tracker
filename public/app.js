@@ -3594,26 +3594,6 @@ function attachPrintHandler() {
   document.getElementById('btn-print')?.addEventListener('click', () => window.print());
 }
 
-// 눈 보호 모드 토글
-function attachThemeToggle() {
-  const btn = document.getElementById('btn-theme');
-  if (!btn) return;
-  const icon = btn.querySelector('.theme-icon');
-  const apply = (on) => {
-    document.body.classList.toggle('eye-care', on);
-    if (icon) icon.textContent = on ? '☀' : '🌙';
-    btn.title = on ? '밝은 모드로 전환' : '눈 보호 모드 (어둡고 부드럽게)';
-  };
-  // 초기 상태 로드
-  apply(localStorage.getItem('eye-care') === '1');
-  btn.addEventListener('click', () => {
-    const next = !document.body.classList.contains('eye-care');
-    apply(next);
-    localStorage.setItem('eye-care', next ? '1' : '0');
-    toast(next ? '🌙 눈 보호 모드 활성' : '☀ 밝은 모드', 'success');
-  });
-}
-
 // ════════════════════════════════════════════════════════════
 //  주요 일정 점검 (Schedule View)
 // ════════════════════════════════════════════════════════════
@@ -4389,6 +4369,8 @@ function attachCalDrag(container, onPrev, onNext) {
 document.addEventListener('DOMContentLoaded', async () => {
   startClock();
   attachPrintHandler();
-  attachThemeToggle();
+  // eye-care 모드 흔적 제거 (기존 사용자 localStorage 정리)
+  localStorage.removeItem('eye-care');
+  document.body.classList.remove('eye-care');
   await init();
 });
