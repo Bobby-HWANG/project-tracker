@@ -1338,12 +1338,14 @@ async function selectModel(id) {
   const msStatusTab  = document.querySelector('.tab[data-tab="ms-status"]');
   const checklistTab = document.querySelector('.tab[data-tab="checklist"]');
   const claimTab     = document.querySelector('.tab[data-tab="claim"]');
+  const minutesTab   = document.querySelector('.tab[data-tab="minutes"]');
   const memoTab      = document.querySelector('.tab[data-tab="memo"]');
   const settingsTab  = document.querySelector('.tab[data-tab="settings"]');
 
   if (msStatusTab)  msStatusTab.style.display  = isSchedMdl ? '' : 'none';
   if (checklistTab) checklistTab.style.display = (isMonLike || isSchedMdl) ? 'none' : '';
   if (claimTab)     claimTab.style.display     = (isMonLike || isSchedMdl) ? 'none' : '';
+  if (minutesTab)   minutesTab.style.display   = (isMonLike || isSchedMdl) ? 'none' : '';
   if (memoTab)      memoTab.style.display      = isSchedMdl ? 'none' : '';
   if (settingsTab)  settingsTab.style.display  = isSchedMdl ? 'none' : '';
 
@@ -1357,11 +1359,11 @@ async function loadTab(tab) {
   // 숨겨진 탭 접근 시 일정표로 리다이렉트
   const _am = state.activeModel;
   const _isSchedMdl = _am && (_am.category === 'schedule' || (_am.name && _am.name.replace(/\s/g,'').includes('일정점검')));
-  if (MONITORING_LIKE.includes(_am?.category) && (tab === 'checklist' || tab === 'claim')) {
+  if (MONITORING_LIKE.includes(_am?.category) && (tab === 'checklist' || tab === 'claim' || tab === 'minutes')) {
     tab = 'milestone';
     document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === 'milestone'));
   }
-  if (_isSchedMdl && (tab === 'checklist' || tab === 'claim' || tab === 'memo')) {
+  if (_isSchedMdl && (tab === 'checklist' || tab === 'claim' || tab === 'minutes' || tab === 'memo')) {
     tab = 'milestone';
     document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === 'milestone'));
   }
@@ -1387,6 +1389,7 @@ async function loadTab(tab) {
   if (tab === 'ms-status') await renderMilestone(body);
   if (tab === 'checklist') await renderChecklist(body);
   if (tab === 'claim')     await renderClaim(body);
+  if (tab === 'minutes')   await renderMinutes(body);
   if (tab === 'memo')      await renderMemo(body);
   if (tab === 'settings')  await renderSettings(body);
 }
@@ -2969,6 +2972,154 @@ function openClaimModal(item) {
 }
 
 // ── ④ 메모장 ─────────────────────────────────────────────────
+// ── ⑥ 회의록 ─────────────────────────────────────────────────
+async function renderMinutes(body) {
+  const mid = state.activeModel.id;
+  const myName = getCommenterName();
+
+  // filterbar 비움
+  const filterbar = document.getElementById('tab-filterbar');
+  if (filterbar) filterbar.innerHTML = '';
+
+  const fmtDate = (s) => {
+    if (!s) return '';
+    return s.slice(0, 10); // YYYY-MM-DD
+  };
+  const fmtDT = (s) => {
+    if (!s) return '';
+    const d = new Date(s);
+    return d.toLocaleString('ko-KR', { hour12: false, year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' });
+  };
+
+  const renderList = async () => {
+    const entries = await GET(`/api/models/${mid}/minutes`);
+
+    body.innerHTML = `
+      <div class="mn-wrap">
+        <div class="mn-toolbar">
+          <span class="mn-title">📄 회의록</span>
+          <button class="btn-primary mn-add-btn" id="mn-add-btn">＋ 회의록 작성</button>
+        </div>
+        <div class="mn-list" id="mn-list">
+          ${entries.length === 0
+            ? '<div class="empty-state"><div class="empty-icon">📄</div>작성된 회의록이 없습니다</div>'
+            : entries.map(e => `
+              <div class="mn-item" data-eid="${e.id}">
+                <div class="mn-item-header">
+                  <div class="mn-item-left">
+                    <span class="mn-date-badge">${fmtDate(e.meeting_date)}</span>
+                    <span class="mn-item-title">${escHtml(e.title)}</span>
+                  </div>
+                  <div class="mn-item-right">
+                    ${e.attendees ? `<span class="mn-attendees">👥 ${escHtml(e.attendees)}</span>` : ''}
+                    <span class="mn-author">✍ ${escHtml(e.author)}</span>
+                    <span class="mn-updated">🕐 ${fmtDT(e.updated_at || e.created_at)}</span>
+                    <div class="mn-item-actions">
+                      <button class="btn-xs mn-edit-btn" data-eid="${e.id}" title="수정">✎</button>
+                      <button class="btn-xs danger mn-del-btn" data-eid="${e.id}" title="삭제">✕</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="mn-content">${escHtml(e.content)}</div>
+              </div>
+            `).join('')}
+        </div>
+      </div>
+    `;
+
+    document.getElementById('mn-add-btn').addEventListener('click', () => openMinutesForm(null));
+
+    body.querySelectorAll('.mn-edit-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const eid = Number(btn.dataset.eid);
+        const entry = entries.find(e => e.id === eid);
+        if (entry) openMinutesForm(entry);
+      });
+    });
+
+    body.querySelectorAll('.mn-del-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (!confirm('이 회의록을 삭제할까요?')) return;
+        await DEL(`/api/minutes/${btn.dataset.eid}`);
+        toast('삭제되었습니다', 'success');
+        renderList();
+      });
+    });
+  };
+
+  const openMinutesForm = (entry) => {
+    const isEdit = !!entry;
+    const today = new Date().toISOString().slice(0, 10);
+    body.innerHTML = `
+      <div class="mn-wrap">
+        <div class="mn-toolbar">
+          <span class="mn-title">📄 ${isEdit ? '회의록 수정' : '회의록 작성'}</span>
+          <button class="btn-secondary mn-back-btn" id="mn-back-btn">← 목록</button>
+        </div>
+        <div class="mn-form">
+          <div class="mn-form-row">
+            <div class="form-group" style="flex:1">
+              <label class="form-label">회의 제목 *</label>
+              <input class="form-input" id="mn-title" value="${escHtml(entry?.title || '')}" maxlength="100" placeholder="회의 제목 입력">
+            </div>
+            <div class="form-group" style="width:160px;flex-shrink:0">
+              <label class="form-label">회의 일자 *</label>
+              <input class="form-input" id="mn-date" type="date" value="${entry?.meeting_date || today}">
+            </div>
+          </div>
+          <div class="mn-form-row">
+            <div class="form-group" style="flex:1">
+              <label class="form-label">참석자</label>
+              <input class="form-input" id="mn-attendees" value="${escHtml(entry?.attendees || '')}" maxlength="200" placeholder="예: 홍길동, 김철수, 이영희">
+            </div>
+            <div class="form-group" style="width:160px;flex-shrink:0">
+              <label class="form-label">작성자 *</label>
+              <input class="form-input" id="mn-author" value="${escHtml(entry?.author || myName)}" maxlength="40" placeholder="이름 입력">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">회의 내용 *</label>
+            <textarea class="form-textarea mn-textarea" id="mn-content" rows="14" placeholder="회의 내용, 결정 사항, 액션 아이템 등을 입력하세요...">${escVal(entry?.content || '')}</textarea>
+          </div>
+          <div class="mn-form-actions">
+            <button class="btn-secondary" id="mn-cancel-btn">취소</button>
+            <button class="btn-primary" id="mn-save-btn">${isEdit ? '수정 저장' : '등록'}</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('mn-back-btn').addEventListener('click', renderList);
+    document.getElementById('mn-cancel-btn').addEventListener('click', renderList);
+
+    document.getElementById('mn-save-btn').addEventListener('click', async () => {
+      const title     = document.getElementById('mn-title').value.trim();
+      const date      = document.getElementById('mn-date').value;
+      const attendees = document.getElementById('mn-attendees').value.trim();
+      const author    = document.getElementById('mn-author').value.trim();
+      const content   = document.getElementById('mn-content').value.trim();
+
+      if (!title)   { toast('제목을 입력하세요', 'error'); return; }
+      if (!content) { toast('내용을 입력하세요', 'error'); return; }
+      if (!author)  { toast('작성자를 입력하세요', 'error'); return; }
+
+      if (author) setCommenterName(author);
+
+      const payload = { title, meeting_date: date, attendees, author, content };
+      try {
+        if (isEdit) await PUT(`/api/minutes/${entry.id}`, payload);
+        else        await POST(`/api/models/${mid}/minutes`, payload);
+        toast(isEdit ? '회의록이 수정되었습니다' : '회의록이 등록되었습니다', 'success');
+        renderList();
+      } catch(e) {
+        toast(e.message || '저장 실패', 'error');
+      }
+    });
+  };
+
+  await renderList();
+}
+
 async function renderMemo(body) {
   const mid = state.activeModel.id;
   const myName = getCommenterName();
@@ -4235,23 +4386,9 @@ function attachCalDrag(container, onPrev, onNext) {
   container.addEventListener('pointerdown', container._calDragHandler);
 }
 
-async function loadVersion() {
-  try {
-    const { deployed_at } = await GET('/api/version');
-    const d = new Date(deployed_at);
-    const pad = n => String(n).padStart(2, '0');
-    const label = `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())} 배포`;
-    const el = document.getElementById('sb-version');
-    if (el) el.textContent = label;
-    // 페이지 타이틀에도 반영
-    document.title = `INTOPS FMS (${d.getMonth()+1}/${d.getDate()})`;
-  } catch { /* 무시 */ }
-}
-
 document.addEventListener('DOMContentLoaded', async () => {
   startClock();
   attachPrintHandler();
   attachThemeToggle();
   await init();
-  loadVersion();
 });
