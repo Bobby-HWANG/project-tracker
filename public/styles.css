@@ -1,10 +1,15 @@
 /* ══════════════════════════════════════════════════════════
-   화면 우측 상단 (시각 / 인쇄) — 분리된 2개 박스
+   화면 우측 상단 컨트롤 그룹 (테마 + 인쇄)
    ══════════════════════════════════════════════════════════ */
-.top-clock-box,
+
+/* 시계 박스 — 사용 안 함 */
+.top-clock-box { display: none; }
+
+/* 인쇄 박스 — 우측 고정 */
 .top-print-box {
   position: fixed;
   top: 14px;
+  right: 18px;
   z-index: 130;
   background: #ffffff;
   border: 1px solid #e2e8f0;
@@ -12,30 +17,25 @@
   box-shadow: 0 4px 12px rgba(15,23,42,.08);
   display: flex;
   align-items: center;
-}
-
-/* 인쇄 버튼 박스 — 가장 우측 */
-.top-print-box {
-  right: 18px;
+  gap: 4px;
   padding: 5px;
 }
 
-/* 시계 박스 — 가장 좌측 */
-.top-clock-box {
-  right: 188px;        /* 테마 + 인쇄 박스 폭 + 간격 */
-  padding: 8px 14px;
-  text-decoration: none;
-  cursor: pointer;
-  transition: background var(--transition), border-color var(--transition), transform .12s, box-shadow .15s;
-}
-
-/* 테마 토글 박스 — 인쇄 버튼 옆 (시계 제거됨) */
+/* 테마 토글 박스 — 인쇄 박스 왼쪽에 붙임 */
 .top-theme-box {
-  right: 100px;
+  position: fixed;
+  top: 14px;
+  right: 120px;
+  z-index: 130;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(15,23,42,.08);
+  display: flex;
+  align-items: center;
   padding: 5px;
 }
-/* 시계 박스 제거됨 - 위치 정의 무효화 */
-.top-clock-box { display: none !important; }
+
 .top-theme-btn {
   display: inline-flex;
   align-items: center;
@@ -53,44 +53,11 @@
 .top-theme-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(245,158,11,.4); }
 .top-theme-btn:active { transform: translateY(0); }
 
-/* 다크 모드 활성 시 토글 버튼 색상 변경 */
 body.eye-care .top-theme-btn {
   background: linear-gradient(135deg, #475569 0%, #334155 100%);
   box-shadow: 0 2px 4px rgba(15,23,42,.4);
 }
 body.eye-care .top-theme-btn:hover { box-shadow: 0 4px 10px rgba(15,23,42,.5); }
-.top-clock-box:hover {
-  background: #f0f9ff;
-  border-color: #93c5fd;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 14px rgba(59,130,246,.18);
-}
-.top-clock-box:hover .top-clock { color: #1e40af; }
-.top-clock-box:active { transform: translateY(0); }
-.top-clock-box::after {
-  content: '↗';
-  margin-left: 6px;
-  font-size: 11px;
-  font-weight: 700;
-  color: #94a3b8;
-  transition: color var(--transition);
-}
-.top-clock-box:hover::after { color: #3b82f6; }
-
-.top-clock {
-  font-family: 'Consolas', 'Menlo', monospace;
-  font-size: 14px;
-  font-weight: 700;
-  color: #1e293b;
-  letter-spacing: 0.5px;
-  white-space: nowrap;
-}
-.top-clock::before {
-  content: '🕐 ';
-  font-family: inherit;
-  margin-right: 2px;
-  filter: grayscale(0.2);
-}
 
 .top-print-btn {
   display: inline-flex;
@@ -115,19 +82,14 @@ body.eye-care .top-theme-btn:hover { box-shadow: 0 4px 10px rgba(15,23,42,.5); }
 
 /* 모바일: 모바일 헤더 아래로 이동 */
 @media (max-width: 768px) {
-  .top-clock-box,
-  .top-print-box {
-    top: 64px;
-  }
-  .top-print-box  { right: 10px; padding: 3px; }
-  .top-clock-box  { right: 100px; padding: 5px 10px; }
-  .top-clock      { font-size: 12px; }
+  .top-print-box  { top: 64px; right: 10px; padding: 3px; }
+  .top-theme-box  { top: 64px; right: 60px; padding: 3px; }
   .top-print-btn  { padding: 4px 10px; font-size: 12px; }
+  .top-theme-btn  { width: 30px; height: 28px; font-size: 14px; }
 }
 @media (max-width: 480px) {
-  .top-clock-box  { right: 90px; padding: 4px 8px; }
-  .top-clock      { font-size: 11px; letter-spacing: 0; }
-  .top-clock::before { content: ''; margin: 0; }
+  .top-print-box  { right: 8px; }
+  .top-theme-box  { right: 52px; }
 }
 
 /* 인쇄 시 — 사이드바/툴바 등 숨기고 콘텐츠만 출력 */
@@ -604,6 +566,20 @@ body {
   border-radius: 50%;
   flex-shrink: 0;
 }
+/* 모바일 헤더 — 현재 모델명 표시 */
+.mobile-model-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+  max-width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 0;
+}
+
+/* 탭 — JS에서 조건부로 숨겨지는 탭의 기본 상태 */
+.tab-hidden { display: none; }
 
 /* ── Overlay ────────────────────────────────────────────────── */
 .overlay {
@@ -2716,12 +2692,9 @@ textarea.drag-over {
   .dash-section.memo { padding: 12px; }
   .dash-memo-ta { min-height: 100px; font-size: 13px; }
 
-  /* 상단 시계/인쇄 박스 — 모바일 헤더 아래 자리 */
-  .top-clock-box, .top-print-box { top: 62px; }
-  .top-clock-box { right: 90px; padding: 4px 10px; }
-  .top-print-box { right: 8px; padding: 3px; }
-  .top-clock { font-size: 11px; }
-  .top-clock-box::after { font-size: 10px; margin-left: 4px; }
+  /* 상단 테마/인쇄 박스 — 모바일 헤더 아래 자리 */
+  .top-print-box { top: 62px; right: 8px; padding: 3px; }
+  .top-theme-box { top: 62px; right: 52px; padding: 3px; }
   .top-print-btn { padding: 3px 10px; font-size: 11px; }
 
   /* 모델 상세 - 페이지 헤더 */
@@ -2841,9 +2814,6 @@ textarea.drag-over {
   .dc-stat { padding: 4px 2px; }
 
   /* 상단 바 모바일 작게 */
-  .top-clock-box { right: 80px; padding: 3px 8px; }
-  .top-clock { font-size: 10.5px; letter-spacing: 0; }
-  .top-clock::before { content: ''; margin: 0; }
   .top-print-btn { padding: 3px 8px; font-size: 10.5px; }
 
   /* 페이지 타이틀 */
@@ -3631,14 +3601,12 @@ body.eye-care .cl-ttl { color: var(--text); }
 /* 사이드바 약간 더 어둡게 */
 body.eye-care .sidebar { background: #0d1117; }
 
-/* 상단 시계/인쇄 박스 */
-body.eye-care .top-clock-box,
+/* 상단 인쇄/테마 박스 */
 body.eye-care .top-print-box,
 body.eye-care .top-theme-box {
   background: var(--surface);
   border-color: #3a3f4a;
 }
-body.eye-care .top-clock { color: var(--text); }
 
 /* 모달 */
 body.eye-care .modal { background: var(--surface); color: var(--text); }
@@ -3849,126 +3817,95 @@ body.eye-care .welcome p { color: var(--text3); }
 }
 
 /* ══════════════════════════════════════════════════════════
-   대시보드 폭 확장 + 자연스러운 간격
-   ══════════════════════════════════════════════════════════ */
-#view-dashboard .page-header { padding-right: 150px !important; }
-
-/* 카드 그리드 — 갭 넉넉하게 (겹침 방지) */
-.dash-section-grid {
-  column-gap: 20px !important;
-  row-gap: 26px !important;
-}
-.dash-section.model .dash-section-grid {
-  /* 5열 + 추가 셀 컬럼 */
-  grid-template-columns: repeat(5, minmax(0, 1fr)) 68px !important;
-  column-gap: 14px !important;
-  row-gap: 20px !important;
-}
-
-/* 모델 카드 — 약간 더 넉넉한 패딩 */
-.dash-section.model .dashboard-card {
-  padding: 14px 14px !important;
-  min-height: 130px;
-}
-.dash-section.model .dc-name {
-  font-size: 13.5px !important;
-}
-.dash-section.model .dc-stat-val {
-  font-size: 18px !important;
-}
-.dash-section.model .dc-stats-3 .dc-stat-val {
-  font-size: 16px !important;
-}
-
-/* 모니터링 / 주요일정 카드 — 동일 규격 */
-.dash-section.monitoring .dashboard-card,
-.dash-section.schedule .dashboard-card {
-  padding: 14px 14px !important;
-  min-height: 130px;
-}
-.dash-section.monitoring .dc-name,
-.dash-section.schedule   .dc-name { font-size: 13.5px !important; }
-.dash-section.monitoring .dc-stat-val,
-.dash-section.schedule   .dc-stat-val { font-size: 18px !important; }
-
-/* 모델 섹션의 추가 셀 — 세로로 길게, 우측 칼럼 (5열 대응, 68px 고정폭) */
-.dash-section.model .add-card {
-  height: 100% !important;
-  width: 68px !important;
-  min-height: 0 !important;
-  min-width: 0 !important;
-  align-self: stretch !important;
-  flex-direction: column !important;
-  gap: 6px !important;
-}
-.dash-section.model .add-card .add-card-icon { font-size: 22px !important; }
-.dash-section.model .add-card .add-card-label { font-size: 10px !important; }
-
-/* 카드 row 간 자연스러운 행 높이 */
-.dash-section.model .dash-section-grid {
-  align-content: stretch;
-}
-
-/* ══════════════════════════════════════════════════════════
-   대시보드 전폭 확장 + 카드 가독성 강화
+   대시보드 레이아웃 — 통합 정의 (중복 제거)
    ══════════════════════════════════════════════════════════ */
 
-/* 섹션 내부 패딩 축소 (좌우만) */
+/* 대시보드 페이지 헤더 */
+#view-dashboard .page-header {
+  padding: 14px 130px 12px 16px;
+}
+
+/* 섹션 공통 패딩 */
 .dash-section {
-  padding: 16px 14px 18px !important;
+  padding: 16px 14px 18px;
 }
 
-/* 카드 내부 padding 키우고 텍스트 줄임표 제거 (글자 잘 보이게) */
-.dashboard-card {
-  padding: 16px 14px !important;
-  min-height: 140px;
+/* 카드 그리드 — 기본 갭 */
+.dash-section-grid {
+  column-gap: 20px;
+  row-gap: 26px;
 }
+
+/* 기본 카드 — padding + min-height 통합 */
+.dashboard-card {
+  padding: 16px 14px;
+  min-height: 165px;
+  padding-bottom: 12px;
+}
+
+/* 카드 이름 텍스트 — 줄바꿈 허용 */
 .dc-name {
-  font-size: 14.5px !important;
-  white-space: normal !important;        /* 줄바꿈 허용 — 잘림 방지 */
-  overflow: visible !important;
-  text-overflow: clip !important;
-  line-height: 1.3 !important;
+  font-size: 14.5px;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  line-height: 1.3;
   word-break: keep-all;
 }
-.dc-stat-val { font-size: 19px !important; }
-.dc-stat-label { font-size: 10px !important; }
-.dc-stats { gap: 6px !important; }
-.dc-stat { padding: 8px 4px !important; }
-.dc-prog-label { font-size: 11px !important; }
-.dc-delayed { font-size: 11px !important; }
+.dc-stat-val   { font-size: 19px; }
+.dc-stat-label { font-size: 10px; }
+.dc-stats      { gap: 6px; }
+.dc-stat       { padding: 8px 4px; }
+.dc-prog-label { font-size: 11px; }
+.dc-delayed    { font-size: 11px; }
 
-/* 모델 카드 — 5열 대응: 패딩·폰트 4/5 축소, 백색 공란 제거 */
-.dash-section.model .dashboard-card { padding: 8px 8px 6px !important; min-height: 0 !important; }
-.dash-section.model .dc-name { font-size: 12px !important; }
-.dash-section.model .dc-stat-val { font-size: 16px !important; }
-.dash-section.model .dc-stats-3 .dc-stat-val { font-size: 14px !important; }
-.dash-section.model .dc-stats   { gap: 3px !important; margin-bottom: 3px !important; }
-.dash-section.model .dc-stat    { padding: 3px 2px !important; }
-.dash-section.model .dc-prog-wrap { margin-top: 3px !important; }
-
-/* 페이지 헤더 우측 여백 추가 축소 (헤더는 폭 좁아도 OK) */
-#view-dashboard .page-header { padding: 14px 130px 12px 16px !important; }
-
-/* ══════════════════════════════════════════════════════════
-   지연 메시지 - 카드 내부 정렬 + 좌/우 균형 배치
-   ══════════════════════════════════════════════════════════ */
-
-/* 카드 높이 확보 — 지연 메시지가 안에 들어가도록 */
-.dashboard-card {
-  min-height: 165px !important;
-  padding-bottom: 12px !important;
-}
-/* 모니터링 카드는 pills 공간 필요 — min-height 유지 */
+/* 모니터링 카드 — pills 공간 확보 */
 .dash-section.monitoring .dashboard-card {
-  min-height: 140px !important;
-  padding-bottom: 12px !important;
+  min-height: 140px;
+  padding: 14px;
+  padding-bottom: 12px;
 }
-/* 모델 카드는 컨텐츠 기반 (aspect-ratio 해제로 공란 제거) */
+.dash-section.monitoring .dc-name    { font-size: 13.5px; }
+.dash-section.monitoring .dc-stat-val { font-size: 18px; }
+
+/* 일정 카드 */
+.dash-section.schedule .dashboard-card {
+  padding: 14px;
+  min-height: 130px;
+}
+.dash-section.schedule .dc-name     { font-size: 13.5px; }
+.dash-section.schedule .dc-stat-val { font-size: 18px; }
+
+/* 모델 카드 — 5열 대응: 컴팩트 */
+.dash-section.model .dash-section-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr)) 68px;
+  column-gap: 14px;
+  row-gap: 20px;
+  align-content: stretch;
+}
 .dash-section.model .dashboard-card {
-  min-height: 0 !important;
-  padding-bottom: 8px !important;
+  padding: 8px 8px 8px;
+  min-height: 0;
 }
+.dash-section.model .dc-name      { font-size: 12px; }
+.dash-section.model .dc-stat-val  { font-size: 16px; }
+.dash-section.model .dc-stats-3 .dc-stat-val { font-size: 14px; }
+.dash-section.model .dc-stats     { gap: 3px; margin-bottom: 3px; }
+.dash-section.model .dc-stat      { padding: 3px 2px; }
+.dash-section.model .dc-prog-wrap { margin-top: 3px; }
+
+/* 모델 섹션 추가 셀 — 우측 고정 컬럼 (68px) */
+.dash-section.model .add-card {
+  height: 100%;
+  width: 68px;
+  min-height: 0;
+  min-width: 0;
+  align-self: stretch;
+  flex-direction: column;
+  gap: 6px;
+}
+.dash-section.model .add-card .add-card-icon  { font-size: 22px; }
+.dash-section.model .add-card .add-card-label { font-size: 10px; }
 
 /* 지연 메시지 한 줄 (좌·우 균형 배치) */
 .dc-delayed-row {

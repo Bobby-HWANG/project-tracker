@@ -275,52 +275,59 @@ function renderSidebar() {
     models.forEach(renderItem);
   }
 
-  // ── 3. 주요 인증심사 및 AUDIT 일정 ──
-  makeHeader('audit', '🔍', '주요 인증심사 및 AUDIT 일정', () => {
-    state._sidebarMemo = false;
-    loadDashboard().then(() => scrollDashSection('audit-group'));
-  });
-  audit.forEach(renderItem);
+  // ── 3. 주요 인증심사 및 AUDIT 일정 (데이터 있을 때만 표시) ──
+  const hasAuditData = audit.length || audit_cert.length || audit_process.length;
+  if (hasAuditData) {
+    makeHeader('audit', '🔍', '주요 인증심사 및 AUDIT 일정', () => {
+      state._sidebarMemo = false;
+      loadDashboard().then(() => scrollDashSection('audit-group'));
+    });
+    audit.forEach(renderItem);
 
-  // 3-1. 주요 인증심사 일정 (클릭 가능 버튼, 세부 항목은 숨김)
-  const subH1 = document.createElement('button');
-  subH1.className = 'sb-sub-btn';
-  subH1.innerHTML = '📋 주요 인증심사 일정 <span class="sb-sub-arrow">›</span>';
-  subH1.addEventListener('click', () => {
-    state._sidebarMemo = false;
-    loadDashboard().then(() => scrollDashSection('audit_cert'));
-  });
-  list.appendChild(subH1);
-  // 세부 항목은 대시보드에만 표시 (사이드바에서 숨김)
+    if (audit_cert.length) {
+      const subH1 = document.createElement('button');
+      subH1.className = 'sb-sub-btn';
+      subH1.innerHTML = '📋 주요 인증심사 일정 <span class="sb-sub-arrow">›</span>';
+      subH1.addEventListener('click', () => {
+        state._sidebarMemo = false;
+        loadDashboard().then(() => scrollDashSection('audit_cert'));
+      });
+      list.appendChild(subH1);
+    }
 
-  // 3-2. AUDIT 일정 (클릭 가능 버튼, 세부 항목은 숨김)
-  const subH2 = document.createElement('button');
-  subH2.className = 'sb-sub-btn';
-  subH2.innerHTML = '🔎 AUDIT 일정 <span class="sb-sub-arrow">›</span>';
-  subH2.addEventListener('click', () => {
-    state._sidebarMemo = false;
-    loadDashboard().then(() => scrollDashSection('audit_process'));
-  });
-  list.appendChild(subH2);
-  // 세부 항목은 대시보드에만 표시 (사이드바에서 숨김)
+    if (audit_process.length) {
+      const subH2 = document.createElement('button');
+      subH2.className = 'sb-sub-btn';
+      subH2.innerHTML = '🔎 AUDIT 일정 <span class="sb-sub-arrow">›</span>';
+      subH2.addEventListener('click', () => {
+        state._sidebarMemo = false;
+        loadDashboard().then(() => scrollDashSection('audit_process'));
+      });
+      list.appendChild(subH2);
+    }
+  }
 
-  // ── 4. SEC 외관 한도 컨펌 현황 ──
-  makeHeader('sec_exterior', '🏷', 'SEC 외관 한도 컨펌 현황', () => {
-    state._sidebarMemo = false;
-    loadDashboard().then(() => scrollDashSection('sec-ext-group'));
-  });
-  sec_exterior.forEach(renderItem);
+  // ── 4. SEC 외관 한도 컨펌 현황 (데이터 있을 때만 표시) ──
+  const hasSecData = sec_exterior.length || sec_confirm.length;
+  if (hasSecData) {
+    makeHeader('sec_exterior', '🏷', 'SEC 외관 한도 컨펌 현황', () => {
+      state._sidebarMemo = false;
+      loadDashboard().then(() => scrollDashSection('sec-ext-group'));
+    });
+    sec_exterior.forEach(renderItem);
 
-  // 4-1. 모델별 한도 컨펌현황 (하위 클릭 버튼)
-  const subHSec = document.createElement('button');
-  subHSec.className = 'sb-sub-btn';
-  subHSec.innerHTML = '✅ 모델별 한도 컨펌현황 <span class="sb-sub-arrow">›</span>';
-  subHSec.addEventListener('click', () => {
-    state._sidebarMemo = false;
-    loadDashboard().then(() => scrollDashSection('sec_confirm'));
-  });
-  list.appendChild(subHSec);
-  sec_confirm.forEach(renderItem);
+    if (sec_confirm.length) {
+      const subHSec = document.createElement('button');
+      subHSec.className = 'sb-sub-btn';
+      subHSec.innerHTML = '✅ 모델별 한도 컨펌현황 <span class="sb-sub-arrow">›</span>';
+      subHSec.addEventListener('click', () => {
+        state._sidebarMemo = false;
+        loadDashboard().then(() => scrollDashSection('sec_confirm'));
+      });
+      list.appendChild(subHSec);
+      sec_confirm.forEach(renderItem);
+    }
+  }
 
   // ── 5. 메모장 (공용 게시판) ──
   const memoBtn = document.createElement('button');
@@ -358,6 +365,14 @@ function showView(name) {
   const btnSched = document.getElementById('btn-schedule');
   if (btnSched) btnSched.classList.toggle('active', name === 'schedule');
 
+  // 대시보드/일정 화면에서 모바일 모델명 초기화
+  if (name === 'dashboard' || name === 'schedule' || name === 'welcome') {
+    const mn = document.getElementById('mobile-model-name');
+    if (mn) mn.textContent = '';
+    const mb = document.getElementById('mobile-badge');
+    if (mb) mb.style.background = 'transparent';
+  }
+
   // 대시보드를 떠나면 자동 갱신 타이머 중단
   if (name !== 'dashboard') stopDashRefresh();
 
@@ -378,7 +393,7 @@ function startDashRefresh() {
   stopDashRefresh();
   _dashRefreshTimer = setInterval(() => {
     if (state.view === 'dashboard') refreshDashboard();
-  }, 5000); // 5초마다 자동 갱신 (다른 사용자/탭 변경 즉각 반영)
+  }, 30000); // 30초마다 자동 갱신 (불필요한 서버 부하 감소)
 }
 
 async function refreshDashboard() {
@@ -1311,6 +1326,8 @@ async function selectModel(id) {
   document.getElementById('hdr-dot').style.background = m.color;
   document.getElementById('hdr-title').textContent    = m.name;
   document.getElementById('mobile-badge').style.background = m.color;
+  const mobileModelName = document.getElementById('mobile-model-name');
+  if (mobileModelName) mobileModelName.textContent = m.name;
 
   // 탭 표시 제어
   // - 모니터링: 체크시트·Claim 숨김
@@ -3162,6 +3179,8 @@ async function renderSettings(body) {
     document.getElementById('hdr-title').textContent     = updated.name;
     const mb = document.getElementById('mobile-badge');
     if (mb) mb.style.background = updated.color;
+    const mn = document.getElementById('mobile-model-name');
+    if (mn) mn.textContent = updated.name;
     toast('저장되었습니다', 'success');
     // 대시보드 즉시 갱신 (state.view !== 'dashboard'이라도 다음 진입 시 fresh fetch)
     notifyDataChanged();
