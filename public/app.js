@@ -4235,9 +4235,23 @@ function attachCalDrag(container, onPrev, onNext) {
   container.addEventListener('pointerdown', container._calDragHandler);
 }
 
+async function loadVersion() {
+  try {
+    const { deployed_at } = await GET('/api/version');
+    const d = new Date(deployed_at);
+    const pad = n => String(n).padStart(2, '0');
+    const label = `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())} 배포`;
+    const el = document.getElementById('sb-version');
+    if (el) el.textContent = label;
+    // 페이지 타이틀에도 반영
+    document.title = `INTOPS FMS (${d.getMonth()+1}/${d.getDate()})`;
+  } catch { /* 무시 */ }
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   startClock();
   attachPrintHandler();
   attachThemeToggle();
   await init();
+  loadVersion();
 });

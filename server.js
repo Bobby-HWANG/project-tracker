@@ -23,6 +23,7 @@ process.on('unhandledRejection', (reason, promise) => {
 });
 
 const app = express();
+const SERVER_START = new Date().toISOString(); // 서버 시작(배포) 시각
 
 // ════════════════════════════════════════════════════════════
 //  PostgreSQL 백엔드 (Railway 내장 DB)
@@ -583,6 +584,11 @@ const stampUpdate = (req) => ({
   updated_by:      req.user.id,
   updated_by_name: req.user.name,
   updated_at:      nowISO(),
+});
+
+// ── 버전 (배포 시각) ─────────────────────────────────────────
+app.get('/api/version', (_, res) => {
+  res.json({ deployed_at: SERVER_START });
 });
 
 app.get('/api/models', (_, res) => {
