@@ -108,6 +108,7 @@ const defaultDB = () => ({
   milestones: {1:[],2:[],3:[],4:[],5:[],6:[]},
   checklists: {1:[],2:[],3:[],4:[],5:[],6:[]},
   claims:     {1:[],2:[],3:[],4:[],5:[],6:[]},
+  minutes:    {1:[],2:[],3:[],4:[],5:[],6:[]},
   memos: {1:'',2:'',3:'',4:'',5:'',6:''},
   schedules: [],
   nextId: 10000,
@@ -295,6 +296,12 @@ function migrate() {
   // 3) schedules 배열 초기화
   if (!Array.isArray(DB.schedules)) { DB.schedules = []; changed = true; }
 
+  // 3-1) minutes 객체 초기화
+  if (!DB.minutes) { DB.minutes = {}; changed = true; }
+  (DB.models || []).forEach(m => {
+    if (!Array.isArray(DB.minutes[m.id])) { DB.minutes[m.id] = []; changed = true; }
+  });
+
   // 4) 동일 이름 중복 모델 제거 (이름 기준 첫 번째만 유지, 데이터는 첫 번째에 보존)
   const seenNames = new Map(); // name → 첫 번째 id
   const dupIds = [];
@@ -450,6 +457,16 @@ cleanupDuplicates();
   let changed = false;
   (DB.models||[]).forEach(m => {
     if (!Array.isArray(DB.claims[m.id])) { DB.claims[m.id] = []; changed = true; }
+  });
+  if (changed) save();
+})();
+
+// ── minutes 키 자동 생성 (모델별 빈 배열 보장) ──
+(function ensureMinutes(){
+  if (!DB.minutes) DB.minutes = {};
+  let changed = false;
+  (DB.models||[]).forEach(m => {
+    if (!Array.isArray(DB.minutes[m.id])) { DB.minutes[m.id] = []; changed = true; }
   });
   if (changed) save();
 })();
@@ -1168,6 +1185,72 @@ app.delete('/api/dashboard-posts/:id', (req, res) => {
   save();
   res.json({ ok: true });
 });
+
+// ── 회의록 (Minutes) ────────────────────────────────────────
+app.get('/api/models/:id/minutes', sr((req, res) => {
+  const id = Number(req.params.id);
+  if (!DB.minutes) DB.minutes = {};
+  const list = (DB.minutes[id] || []).slice().sort((a,b) =>
+    (b.meeting_date || b.created_at || '').localeCompare(a.meeting_date || a.created_at || '')
+  );
+  res.json(list);
+}));
+
+app.post('/api/models/:id/minutes', sr((req, res) => {
+  const id = Number(req.params.id);
+  if (!DB.minutes) DB.minutes = {};
+  if (!DB.minutes[id]) DB.minutes[id] = [];
+  const { title, meeting_date, attendees, content, author } = req.body;
+  if (!title?.trim())   return res.status(400).json({ error: '제목을 입력하세요' });
+  if (!content?.trim()) return res.status(400).json({ error: '내용을 입력하세요' });
+  const entry = {
+    id:           nextId(),
+    title:        title.trim(),
+    meeting_date: meeting_date || new Date().toISOString().slice(0,10),
+    attendees:    (attendees || '').trim(),
+    content:      content.trim(),
+    author:       (author || '').trim() || '작성자 미상',
+    created_at:   nowISO(),
+    updated_at:   nowISO(),
+  };
+  DB.minutes[id].push(entry);
+  save();
+  res.json(entry);
+}));
+
+app.put('/api/minutes/:id', sr((req, res) => {
+  const id = Number(req.params.id);
+  if (!DB.minutes) return res.status(404).json({ error: 'not found' });
+  for (const mid in DB.minutes) {
+    const idx = DB.minutes[mid].findIndex(x => x.id === id);
+    if (idx >= 0) {
+      const cur = DB.minutes[mid][idx];
+      DB.minutes[mid][idx] = {
+        ...cur,
+        title:        (req.body.title?.trim())        || cur.title,
+        meeting_date: req.body.meeting_date            ?? cur.meeting_date,
+        attendees:    (req.body.attendees ?? cur.attendees),
+        content:      (req.body.content?.trim())       || cur.content,
+        author:       (req.body.author?.trim())        || cur.author,
+        updated_at:   nowISO(),
+      };
+      save();
+      return res.json(DB.minutes[mid][idx]);
+    }
+  }
+  res.status(404).json({ error: 'not found' });
+}));
+
+app.delete('/api/minutes/:id', sr((req, res) => {
+  const id = Number(req.params.id);
+  if (!DB.minutes) return res.status(404).json({ error: 'not found' });
+  for (const mid in DB.minutes) {
+    const before = DB.minutes[mid].length;
+    DB.minutes[mid] = DB.minutes[mid].filter(x => x.id !== id);
+    if (DB.minutes[mid].length < before) { save(); return res.json({ ok: true }); }
+  }
+  res.status(404).json({ error: 'not found' });
+}));
 
 // ── Memo ────────────────────────────────────────────────────
 app.get('/api/models/:id/memo', (req, res) => {
