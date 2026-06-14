@@ -2848,8 +2848,8 @@ textarea.drag-over {
     /* 테이블 가로 스크롤 시 끝에서 바운스 방지 */
     overscroll-behavior-x: contain;
   }
-  .cl-table { font-size: 12px; min-width: 720px; }
-  .cl-table.cl-table--claim { min-width: 960px; } /* Claim: 개선일정 열 추가 */
+  .cl-table { font-size: 12px; min-width: 540px; }
+  .cl-table.cl-table--claim { min-width: 720px; } /* Claim: 개선일정 열 추가 */
   .cl-table thead th, .cl-table tbody td { padding: 8px 6px; }
 
   /* 인라인 댓글 - 입력 폼 세로 배치 */

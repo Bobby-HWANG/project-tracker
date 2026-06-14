@@ -2788,15 +2788,15 @@ async function renderClaim(body) {
       <table class="cl-table cl-table--claim">
         <thead>
           <tr>
-            <th style="width:48px">NO</th>
-            <th style="width:12%">고객사</th>
-            <th style="min-width:180px">클레임 내용</th>
-            <th style="width:120px">발생일</th>
-            <th style="min-width:150px">조치 사항</th>
-            <th style="width:130px">개선일정</th>
-            <th style="width:90px">상태</th>
-            <th style="min-width:120px">비고</th>
-            <th style="width:60px"></th>
+            <th style="width:36px">NO</th>
+            <th style="width:9%">고객사</th>
+            <th style="min-width:135px">클레임 내용</th>
+            <th style="width:90px">발생일</th>
+            <th style="min-width:113px">조치 사항</th>
+            <th style="width:98px">개선일정</th>
+            <th style="width:68px">상태</th>
+            <th style="min-width:90px">비고</th>
+            <th style="width:45px"></th>
           </tr>
         </thead>
         <tbody id="clm-tbody"></tbody>
@@ -2831,6 +2831,8 @@ async function renderClaim(body) {
 
   document.getElementById('btn-add-clm').addEventListener('click', () => openClaimModal(null));
 
+  // 기존 저장된 컬럼 너비 초기화 (크기 변경 반영)
+  localStorage.removeItem('clm-col-widths');
   // 컬럼 너비 리사이즈 초기화
   const clmTable = document.querySelector('.cl-table--claim');
   if (clmTable) initResizableTable(clmTable, 'clm-col-widths');
