@@ -567,6 +567,27 @@ body {
 .view { flex: 1; display: flex; flex-direction: column; min-height: 0; }
 .view.hidden { display: none !important; }
 
+/* ── 전체 뷰 너비 통일 ─────────────────────────────────────────
+   모든 화면(대시보드/일정/모델상세)의 콘텐츠가 동일한 전폭을 쓰도록 강제.
+   세로 flex 컨테이너에서 자식이 가로로 줄어드는 현상 방지. */
+.main > .view,
+.view {
+  width: 100%;
+  max-width: none;
+  align-self: stretch;
+  box-sizing: border-box;
+}
+.view > .page-header,
+.view > .tab-body,
+.view > .dashboard-grid,
+.view > .sched-body,
+.view > #sched-body {
+  width: 100%;
+  max-width: none;
+  align-self: stretch;
+  box-sizing: border-box;
+}
+
 /* ── Welcome ────────────────────────────────────────────────── */
 .welcome {
   justify-content: center;
@@ -2943,8 +2964,6 @@ textarea.drag-over {
 }
 
 /* ══════════════════════════════════════════════════════════
-   👁 눈 보호 모드 (다크 + 명암 보정)
-/* ══════════════════════════════════════════════════════════
    주요 일정 점검 (Schedule View)
    ══════════════════════════════════════════════════════════ */
 
@@ -3015,10 +3034,10 @@ textarea.drag-over {
   padding: 0 8px 16px;
 }
 
-/* 일정 뷰 — 페이지 헤더 패딩 최소화 (캘린더 최대 너비) */
+/* 일정 뷰 — 페이지 헤더 패딩 통일 */
 #view-schedule .page-header {
-  padding-left: 12px;
-  padding-right: 12px;
+  padding-left: var(--content-pad);
+  padding-right: var(--content-pad);
 }
 
 /* ── 월별 캘린더 ── */
@@ -3623,7 +3642,7 @@ textarea.drag-over {
   align-self: stretch !important;
 }
 #view-model .tab-body {
-  padding: 16px 20px 24px !important;
+  padding: 24px var(--content-pad) !important;
 }
 #view-model .tab-body > * {
   width: 100% !important;
