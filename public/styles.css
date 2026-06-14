@@ -302,6 +302,9 @@
   --shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
   --shadow-md: 0 4px 12px rgba(0,0,0,.12);
   --transition: 0.18s ease;
+
+  /* 콘텐츠 좌우 패딩 — 대시보드 기준으로 전체 통일 */
+  --content-pad: 16px;
 }
 
 body {
@@ -580,15 +583,15 @@ body {
 .page-header {
   background: var(--surface);
   border-bottom: 1px solid var(--border);
-  padding: 20px 28px 0;
+  padding: 20px var(--content-pad) 0;
   flex-shrink: 0;
 }
 
 /* 3번째 행: 필터바 / 요약바 — page-header 안에 붙음 */
 #tab-filterbar:not(:empty) {
   border-top: 1px solid var(--border);
-  margin: 0 -28px;        /* page-header 좌우 패딩 상쇄 → 전체 너비 */
-  padding: 10px 28px;
+  margin: 0 calc(-1 * var(--content-pad));  /* page-header 좌우 패딩 상쇄 → 전체 너비 */
+  padding: 10px var(--content-pad);
 }
 .page-title { font-size: 22px; font-weight: 700; color: var(--text); }
 .page-title-row {
@@ -638,7 +641,7 @@ body {
 .tab-body {
   flex: 1;
   min-height: 0;      /* flex child가 줄어들 수 있어야 스크롤 작동 */
-  padding: 24px 28px;
+  padding: 24px var(--content-pad);
   overflow-y: auto;   /* 실제 스크롤 컨테이너 */
   -webkit-overflow-scrolling: touch; /* iOS 관성 스크롤 */
   overscroll-behavior-y: contain;    /* 상/하단 도달 시 body로 전파 안 됨 */
@@ -653,7 +656,7 @@ body {
 
 /* ── Dashboard (전체 화면 활용) ─────────────────────── */
 #view-dashboard { display: flex; flex-direction: column; min-height: 0; }
-#view-dashboard .page-header { padding: 16px 16px 12px; }
+#view-dashboard .page-header { padding: 16px var(--content-pad) 12px; }
 #view-dashboard .page-title  { font-size: 22px; }
 
 /* 주요 일정 점검 + 상시 모니터링 한 줄 배치 */
@@ -680,7 +683,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 24px;                /* 섹션 간 여백 (겹침 방지용 여유 확보) */
-  padding: 20px 16px 32px;  /* 상하 패딩도 충분히 */
+  padding: 20px var(--content-pad) 32px;  /* 상하 패딩도 충분히 */
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
@@ -2679,12 +2682,20 @@ textarea.drag-over {
 }
 
 /* ══════════════════════════════════════════════════════════
-   페이지 헤더 — 우측 시계/인쇄 바와 겹치지 않도록 여백 확보
+   페이지 헤더 — 제목줄만 우측 인쇄바와 겹치지 않도록 여백 확보
+   (헤더/탭/필터바 전체 너비는 콘텐츠와 동일하게 유지)
    ══════════════════════════════════════════════════════════ */
 .page-header {
-  padding-right: 150px !important;   /* 시계 제거됨 — 테마(40) + 인쇄(80) + 여유만 */
   box-sizing: border-box;
   overflow: visible;
+}
+/* 제목줄에만 우측 여백 (인쇄 버튼 회피) */
+.page-title-row {
+  padding-right: 116px;
+}
+/* page-title-row 없이 page-title이 직속인 경우 (대시보드/일정 헤더) */
+.page-header > .page-title {
+  padding-right: 116px;
 }
 .page-title {
   white-space: nowrap;
@@ -2692,12 +2703,10 @@ textarea.drag-over {
   text-overflow: ellipsis;
   max-width: 100%;
 }
-@media (max-width: 1100px) {
-  .page-header { padding-right: 130px !important; }
-}
 @media (max-width: 768px) {
-  /* 모바일에서는 시계/인쇄가 헤더 아래로 가서 페이지 헤더는 여유 필요 없음 */
-  .page-header { padding-right: 16px !important; }
+  /* 모바일에서는 인쇄가 헤더 아래로 가서 여백 불필요 */
+  .page-title-row { padding-right: 0; }
+  .page-header > .page-title { padding-right: 0; }
 }
 
 /* ══════════════════════════════════════════════════════════
@@ -3793,14 +3802,14 @@ textarea.drag-over {
    대시보드 레이아웃 — 통합 정의 (중복 제거)
    ══════════════════════════════════════════════════════════ */
 
-/* 대시보드 페이지 헤더 */
+/* 대시보드 페이지 헤더 — 좌우 패딩 통일 (제목 우측 여백은 공통 .page-title-row 규칙 적용) */
 #view-dashboard .page-header {
-  padding: 14px 130px 12px 16px;
+  padding: 14px var(--content-pad) 12px;
 }
 
-/* 섹션 공통 패딩 */
+/* 섹션 공통 패딩 — 모든 대시보드 섹션 동일 (좌우 16px) */
 .dash-section {
-  padding: 16px 14px 18px;
+  padding: 16px 16px 18px;
 }
 
 /* 카드 그리드 — 기본 갭 */
