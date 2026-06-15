@@ -608,8 +608,47 @@ app.get('/api/version', (_, res) => {
   res.json({ deployed_at: SERVER_START });
 });
 
+// 모델별 최근 활동 시각 계산 (일정/체크리스트/클레임/회의록/댓글 통합)
+function computeLastActivity(modelId) {
+  let latest = null;
+  const upd = (t) => { if (t && (!latest || t > latest)) latest = t; };
+
+  // 항목 ID → 모델 매핑 (댓글 역추적용)
+  const itemToModel = {};
+
+  const scan = (coll) => {
+    const arr = (coll && coll[modelId]) || [];
+    arr.forEach(it => {
+      upd(it.updated_at || it.updatedAt);
+      upd(it.created_at || it.createdAt);
+      itemToModel[it.id] = true;
+    });
+  };
+  scan(DB.milestones);
+  scan(DB.checklists);
+  scan(DB.claims);
+  scan(DB.minutes);
+
+  // 이 모델 하위 항목에 달린 댓글들의 최근 시각
+  for (const key in (DB.comments || {})) {
+    const arr = DB.comments[key] || [];
+    arr.forEach(c => {
+      if (itemToModel[c.item_id]) {
+        upd(c.created_at);
+        upd(c.updated_at);
+      }
+    });
+  }
+  return latest;
+}
+
 app.get('/api/models', (_, res) => {
-  res.json([...(DB.models||[])].sort((a,b)=>a.order-b.order));
+  const models = [...(DB.models||[])].sort((a,b)=>a.order-b.order);
+  const withActivity = models.map(m => ({
+    ...m,
+    last_activity: computeLastActivity(m.id),
+  }));
+  res.json(withActivity);
 });
 
 app.post('/api/models', (req, res) => {
