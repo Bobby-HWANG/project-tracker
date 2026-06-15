@@ -788,13 +788,10 @@ app.get('/api/models/:id/milestones', (req, res) => {
     updated_at:    it.updatedAt    ?? it.createdAt ?? null,
     created_at:    it.createdAt    ?? null,
   })).sort((a,b)=>{
-    // sortOrder가 지정된 경우 우선
-    if (a.sort_order != null && b.sort_order != null) return a.sort_order - b.sort_order;
-    if (a.sort_order != null) return -1;
-    if (b.sort_order != null) return 1;
-    if(!a.due_date) return 1;
-    if(!b.due_date) return -1;
-    return a.due_date.localeCompare(b.due_date);
+    // 항상 sort_order 기준 (위치 자동 변경 방지)
+    const ao = a.sort_order != null ? a.sort_order : 0;
+    const bo = b.sort_order != null ? b.sort_order : 0;
+    return ao - bo;
   });
   res.json(items);
 });
@@ -802,6 +799,10 @@ app.get('/api/models/:id/milestones', (req, res) => {
 app.post('/api/models/:id/milestones', (req, res) => {
   const id = Number(req.params.id);
   if (!DB.milestones[id]) DB.milestones[id] = [];
+  // 새 항목을 맨 위로: 기존 최소 sortOrder보다 작은 값 부여
+  const minOrder = DB.milestones[id].reduce(
+    (m, x) => Math.min(m, x.sortOrder ?? 0), 0
+  );
   const item = {
     id: nextId(),
     author: req.body.author || null,
@@ -815,7 +816,7 @@ app.post('/api/models/:id/milestones', (req, res) => {
     requestCount: req.body.request_count != null ? Number(req.body.request_count) : null,
     okCount:      req.body.ok_count      != null ? Number(req.body.ok_count)      : null,
     ngCount:      req.body.ng_count      != null ? Number(req.body.ng_count)      : null,
-    sortOrder:    DB.milestones[id].length,
+    sortOrder:    minOrder - 1,   // 맨 위
     createdAt:    new Date().toISOString(),
     updatedAt:    new Date().toISOString(),
   };
@@ -895,7 +896,8 @@ app.get('/api/models/:id/checklist', (req, res) => {
 app.post('/api/models/:id/checklist', (req, res) => {
   const id = Number(req.params.id);
   if (!DB.checklists[id]) DB.checklists[id] = [];
-  const maxO = (DB.checklists[id]||[]).reduce((m,x)=>Math.max(m,x.order??0),-1);
+  // 새 항목을 맨 위로
+  const minO = (DB.checklists[id]||[]).reduce((m,x)=>Math.min(m,x.order??0),0);
   const item = {
     id: nextId(),
     author:     req.body.author       || null,
@@ -905,7 +907,7 @@ app.post('/api/models/:id/checklist', (req, res) => {
     dueDateEnd: req.body.due_date_end || null,
     status:     req.body.status       || 'pending',
     note:       req.body.note         || '',
-    order:      maxO + 1,
+    order:      minO - 1,
   };
   DB.checklists[id].push(item);
   save();
@@ -993,7 +995,8 @@ app.get('/api/models/:id/claims', (req, res) => {
 app.post('/api/models/:id/claims', (req, res) => {
   const id = Number(req.params.id);
   if (!DB.claims[id]) DB.claims[id] = [];
-  const maxO = (DB.claims[id]||[]).reduce((m,x)=>Math.max(m,x.order??0),-1);
+  // 새 항목을 맨 위로
+  const minO = (DB.claims[id]||[]).reduce((m,x)=>Math.min(m,x.order??0),0);
   const item = {
     id: nextId(),
     author:           req.body.author             || null,
@@ -1006,7 +1009,7 @@ app.post('/api/models/:id/claims', (req, res) => {
     improvementEnd:   req.body.improvement_end    || null,
     status:           req.body.status             || 'pending',
     note:             req.body.note               || '',
-    order:            maxO + 1,
+    order:            minO - 1,
     ...stampCreate(req),
   };
   DB.claims[id].push(item);
@@ -1229,9 +1232,12 @@ app.delete('/api/dashboard-posts/:id', (req, res) => {
 app.get('/api/models/:id/minutes', sr((req, res) => {
   const id = Number(req.params.id);
   if (!DB.minutes) DB.minutes = {};
-  const list = (DB.minutes[id] || []).slice().sort((a,b) =>
-    (b.meeting_date || b.created_at || '').localeCompare(a.meeting_date || a.created_at || '')
-  );
+  const list = (DB.minutes[id] || []).slice().sort((a,b) => {
+    // 회의 날짜 내림차순, 같으면 작성/수정 시각 내림차순
+    const dc = (b.meeting_date || '').localeCompare(a.meeting_date || '');
+    if (dc !== 0) return dc;
+    return (b.updated_at || b.created_at || '').localeCompare(a.updated_at || a.created_at || '');
+  });
   res.json(list);
 }));
 
