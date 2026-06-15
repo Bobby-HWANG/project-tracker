@@ -1727,19 +1727,8 @@ async function renderMilestone(body) {
   window._milestoneItems = items;   // 상태 직접 변경 시 사용
   const subs   = []; // 더 이상 그룹 분류 안함
 
-  // 상태 정렬: 진행중 → 지연 → 대기 → 완료
-  const STATUS_ORDER = { in_progress: 0, delayed: 1, pending: 2, completed: 3 };
-  items.sort((a, b) => {
-    const sa = STATUS_ORDER[a.status] ?? 2;
-    const sb = STATUS_ORDER[b.status] ?? 2;
-    if (sa !== sb) return sa - sb;
-    // 완료 항목은 날짜 오름차순 유지
-    if (a.status === 'completed') return (a.due_date || '').localeCompare(b.due_date || '');
-    // 진행중·지연·대기중은 최종 수정일 내림차순 (최근 수정 항목이 최상위)
-    const ua = a.updated_at || a.created_at || '';
-    const ub = b.updated_at || b.created_at || '';
-    return ub.localeCompare(ua);
-  });
+  // 정렬은 서버의 sort_order 순서를 그대로 따름 (자동 재정렬 안 함)
+  // - 추가/수정 시 위치 유지, 드래그로만 순서 변경
 
   // 댓글 일괄 페치
   await batchFetchComments(items.map(it => ({ type: 'milestone', id: it.id })));
