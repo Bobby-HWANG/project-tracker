@@ -222,6 +222,14 @@ const CATEGORY_META = {
 };
 
 // ── Sidebar ──────────────────────────────────────────────────
+// 24시간 이내 업데이트 여부 (사이드바 NEW 배지용)
+function isRecentlyUpdated(ts) {
+  if (!ts) return false;
+  const t = new Date(ts).getTime();
+  if (isNaN(t)) return false;
+  return (Date.now() - t) < 24 * 60 * 60 * 1000;  // 24시간
+}
+
 function renderSidebar() {
   const list = document.getElementById('model-list');
   list.innerHTML = '';
@@ -240,9 +248,11 @@ function renderSidebar() {
   const renderItem = m => {
     const div = document.createElement('div');
     div.className = 'model-item' + (state.activeModel?.id === m.id ? ' active' : '');
+    const isNew = isRecentlyUpdated(m.last_activity);
     div.innerHTML = `
       <div class="model-dot" style="background:${m.color}"></div>
       <span class="model-name">${m.name}</span>
+      ${isNew ? '<span class="model-new-badge">+ NEW</span>' : ''}
     `;
     div.addEventListener('click', () => selectModel(m.id));
     list.appendChild(div);
@@ -2284,7 +2294,7 @@ function buildInlineCommentsHTML(type, itemId, comments) {
       ${list ? `<div class="inline-cmt-list">${list}</div>` : ''}
       <div class="inline-cmt-form">
         <input class="inline-cmt-name" placeholder="이름" value="${escHtml(name)}" maxlength="40">
-        <input class="inline-cmt-text" placeholder="💬 댓글 추가 (Enter로 등록)" maxlength="500">
+        <textarea class="inline-cmt-text" placeholder="💬 댓글 추가 (Enter 등록 · Shift+Enter 줄바꿈)" maxlength="500" rows="1"></textarea>
         <button class="inline-cmt-add" type="button">등록</button>
       </div>
     </div>
@@ -2341,11 +2351,41 @@ function attachInlineCommentsHandler(rootEl) {
     if (e.key !== 'Enter') return;
     const inputEl = e.target;
     if (!inputEl.classList) return;
-    if (!inputEl.classList.contains('inline-cmt-text') && !inputEl.classList.contains('inline-cmt-name')) return;
+    const isText = inputEl.classList.contains('inline-cmt-text');
+    const isName = inputEl.classList.contains('inline-cmt-name');
+    if (!isText && !isName) return;
+
+    // 댓글 입력칸(textarea)에서 Alt/Shift/Ctrl + Enter → 줄바꿈 (등록 안 함)
+    if (isText && (e.altKey || e.shiftKey || e.ctrlKey || e.metaKey)) {
+      // textarea 기본 줄바꿈 동작 허용 (단, Alt/Ctrl은 기본 줄바꿈이 안 되므로 수동 삽입)
+      if (e.altKey || e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        const ta = inputEl;
+        const start = ta.selectionStart, end = ta.selectionEnd;
+        ta.value = ta.value.slice(0, start) + '\n' + ta.value.slice(end);
+        ta.selectionStart = ta.selectionEnd = start + 1;
+        // 높이 자동 확장
+        ta.style.height = 'auto';
+        ta.style.height = ta.scrollHeight + 'px';
+      }
+      // Shift+Enter는 textarea 기본 줄바꿈이라 그대로 둠
+      return;
+    }
+
+    // 일반 Enter → 등록
     e.preventDefault();
     e.stopPropagation();
     const block = inputEl.closest('.inline-comments');
     await submitInlineComment(block);
+  });
+
+  // textarea 입력 시 높이 자동 확장
+  rootEl.addEventListener('input', (e) => {
+    if (e.target.classList?.contains('inline-cmt-text')) {
+      const ta = e.target;
+      ta.style.height = 'auto';
+      ta.style.height = Math.min(ta.scrollHeight, 120) + 'px';
+    }
   });
 }
 
@@ -2362,6 +2402,7 @@ async function submitInlineComment(block) {
   try {
     await POST(`/api/comments/${type}/${id}`, { author, content });
     contentEl.value = '';
+    contentEl.style.height = '';  // textarea 높이 초기화
     toast('등록되었습니다', 'success');
     await refreshInlineCommentsBlock(block);
   } catch (err) {

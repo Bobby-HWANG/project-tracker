@@ -470,6 +470,26 @@ body {
   flex-shrink: 0;
 }
 .model-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* 24시간 이내 업데이트 NEW 배지 */
+.model-new-badge {
+  flex-shrink: 0;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  color: #fff;
+  background: linear-gradient(135deg, #f97316 0%, #ef4444 100%);
+  padding: 1px 6px;
+  border-radius: 8px;
+  line-height: 1.5;
+  white-space: nowrap;
+  box-shadow: 0 1px 3px rgba(239,68,68,.4);
+  animation: newBadgePulse 2s ease-in-out infinite;
+}
+@keyframes newBadgePulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: .75; transform: scale(.94); }
+}
 .model-progress-mini {
   font-size: 11px;
   color: #475569;
@@ -2062,7 +2082,7 @@ tr.cl-row td.cl-no {
 .inline-cmt-form {
   display: flex;
   gap: 6px;
-  align-items: center;
+  align-items: flex-start;
 }
 .inline-cmt-name,
 .inline-cmt-text {
@@ -2079,10 +2099,18 @@ tr.cl-row td.cl-no {
   width: 100px;
   flex-shrink: 0;
   font-weight: 600;
+  height: 30px;
+  box-sizing: border-box;
 }
 .inline-cmt-text {
   flex: 1;
   min-width: 0;
+  resize: none;
+  overflow-y: hidden;
+  line-height: 1.5;
+  min-height: 30px;
+  max-height: 120px;
+  box-sizing: border-box;
 }
 .inline-cmt-name:focus, .inline-cmt-text:focus {
   border-color: var(--blue);
@@ -2098,6 +2126,7 @@ tr.cl-row td.cl-no {
   font-weight: 700;
   cursor: pointer;
   flex-shrink: 0;
+  align-self: stretch;
   transition: background .15s;
 }
 .inline-cmt-add:hover { background: #2563eb; }
