@@ -406,6 +406,21 @@ function startDashRefresh() {
   }, 30000); // 30초마다 자동 갱신 (불필요한 서버 부하 감소)
 }
 
+// 사이드바 NEW 배지 갱신 타이머 (화면 무관, 60초마다 last_activity 재확인)
+let _sidebarNewTimer = null;
+function startSidebarNewRefresh() {
+  if (_sidebarNewTimer) return;
+  _sidebarNewTimer = setInterval(async () => {
+    try {
+      const fresh = await GET('/api/models');
+      if (Array.isArray(fresh)) {
+        state.models = fresh;
+        renderSidebar();
+      }
+    } catch (e) { /* 무시 */ }
+  }, 60000); // 60초
+}
+
 async function refreshDashboard() {
   if (state.view !== 'dashboard') return;
   try {
@@ -422,6 +437,15 @@ async function refreshDashboard() {
 
 // 데이터 변경 직후 호출 — 대시보드에 있으면 즉시 갱신, 다음 진입 시 무조건 신규 fetch (loadDashboard가 항상 fresh)
 async function notifyDataChanged() {
+  // 모델별 최근활동(last_activity) 갱신 → 사이드바 NEW 배지 실시간 반영
+  try {
+    const freshModels = await GET('/api/models');
+    if (Array.isArray(freshModels)) {
+      state.models = freshModels;
+      renderSidebar();
+    }
+  } catch (e) { /* 무시 */ }
+
   if (state.view === 'dashboard') {
     await refreshDashboard();
   }
@@ -3553,6 +3577,7 @@ async function init() {
   state.models = await GET('/api/models');
   renderSidebar();
   showView('welcome');
+  startSidebarNewRefresh();   // NEW 배지 자동 갱신 타이머 시작
 
   // 이벤트
   document.getElementById('btn-dashboard').addEventListener('click', loadDashboard);
