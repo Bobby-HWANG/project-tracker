@@ -608,12 +608,14 @@ app.get('/api/version', (_, res) => {
   res.json({ deployed_at: SERVER_START });
 });
 
-// 모델별 최근 활동 시각 계산 (일정/체크리스트/클레임/회의록/댓글 통합)
-function computeLastActivity(modelId) {
+// 모델별 최근 활동 시각 계산 (모든 변경 소스 통합)
+function computeLastActivity(model) {
+  const modelId = typeof model === 'object' ? model.id : model;
+  const category = typeof model === 'object' ? model.category : null;
   let latest = null;
   const upd = (t) => { if (t && (!latest || t > latest)) latest = t; };
 
-  // 항목 ID → 모델 매핑 (댓글 역추적용)
+  // 이 모델 하위 항목 ID 모음 (댓글 역추적용)
   const itemToModel = {};
 
   const scan = (coll) => {
@@ -624,31 +626,53 @@ function computeLastActivity(modelId) {
       itemToModel[it.id] = true;
     });
   };
-  scan(DB.milestones);
-  scan(DB.checklists);
-  scan(DB.claims);
-  scan(DB.minutes);
+  scan(DB.milestones);   // 일정표
+  scan(DB.checklists);   // 체크시트
+  scan(DB.claims);       // 고객 Claim
+  scan(DB.minutes);      // 회의록
+  scan(DB.memoEntries);  // 모델 메모 글타래(공지)
+  scan(DB.subItems);     // 세부 항목
 
-  // 이 모델 하위 항목에 달린 댓글들의 최근 시각
+  // 메모장 본문(memos) 수정 시각 반영
+  if (DB.memoUpdatedAt && DB.memoUpdatedAt[modelId]) {
+    upd(DB.memoUpdatedAt[modelId]);
+  }
+
+  // 이 모델 하위 항목에 달린 댓글
   for (const key in (DB.comments || {})) {
-    const arr = DB.comments[key] || [];
-    arr.forEach(c => {
+    (DB.comments[key] || []).forEach(c => {
       if (itemToModel[c.item_id]) {
         upd(c.created_at);
         upd(c.updated_at);
       }
     });
   }
+
+  // schedule 카테고리(주요 일정 점검) 모델 → 전역 캘린더 일정 변경 반영
+  if (category === 'schedule') {
+    (DB.schedules || []).forEach(s => {
+      upd(s.updated_at);
+      upd(s.created_at);
+    });
+  }
+
   return latest;
 }
 
 app.get('/api/models', (_, res) => {
   const models = [...(DB.models||[])].sort((a,b)=>a.order-b.order);
+  // 전역 캘린더(주요 일정 점검) 최근 활동 시각
+  let schedActivity = null;
+  (DB.schedules || []).forEach(s => {
+    const t = s.updated_at || s.created_at;
+    if (t && (!schedActivity || t > schedActivity)) schedActivity = t;
+  });
   const withActivity = models.map(m => ({
     ...m,
-    last_activity: computeLastActivity(m.id),
+    last_activity: computeLastActivity(m),
   }));
-  res.json(withActivity);
+  // 메타 정보를 헤더가 아닌 첫 요소로 넣지 않고, 별도 래핑 대신 각 모델에 공통 필드로 첨부
+  res.json(withActivity.map(m => ({ ...m, _schedule_activity: schedActivity })));
 });
 
 app.post('/api/models', (req, res) => {
@@ -723,7 +747,7 @@ app.post('/api/models/:id/sub-items', (req, res) => {
   const id = Number(req.params.id);
   if (!DB.subItems[id]) DB.subItems[id] = [];
   const maxO = (DB.subItems[id]||[]).reduce((m,x)=>Math.max(m,x.order??0),-1);
-  const sub = { id:nextId(), modelId:id, name:req.body.name, order:maxO+1 };
+  const sub = { id:nextId(), modelId:id, name:req.body.name, order:maxO+1, created_at: nowISO(), updated_at: nowISO() };
   DB.subItems[id].push(sub);
   save();
   res.json(sub);
@@ -1448,6 +1472,7 @@ app.post('/api/schedules', (req, res) => {
     color:       color || '#3B82F6',
     author:      (author || '').trim() || null,
     created_at:  nowISO(),
+    updated_at:  nowISO(),
   };
   DB.schedules.push(item);
   save();
