@@ -425,6 +425,7 @@ body {
 }
 .sidebar-dashboard-btn:hover { background: var(--sb-hover); color: var(--sb-text-h); }
 .sidebar-dashboard-btn.active { background: var(--sb-active); color: var(--sb-text-h); }
+.sidebar-dashboard-btn .model-new-badge { margin-left: auto; }
 .si-icon { font-size: 16px; }
 
 /* 대시보드 ↔ 주요 일정 점검 사이 간격 (1/2) */

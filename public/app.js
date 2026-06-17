@@ -244,6 +244,20 @@ function renderSidebar() {
 
   const isMemo = state.view === 'dashboard' && state._sidebarMemo;
 
+  // "주요 일정 점검" 버튼 NEW 배지 (전역 캘린더 변경 24h 이내)
+  const schedBtn = document.getElementById('btn-schedule');
+  if (schedBtn) {
+    const schedAct = state.models[0]?._schedule_activity || null;
+    const oldBadge = schedBtn.querySelector('.model-new-badge');
+    if (oldBadge) oldBadge.remove();
+    if (isRecentlyUpdated(schedAct)) {
+      const badge = document.createElement('span');
+      badge.className = 'model-new-badge';
+      badge.textContent = '+ NEW';
+      schedBtn.appendChild(badge);
+    }
+  }
+
   // 모델 아이템 생성
   const renderItem = m => {
     const div = document.createElement('div');
@@ -2418,6 +2432,7 @@ async function submitInlineComment(block) {
     contentEl.style.height = '';  // textarea 높이 초기화
     toast('등록되었습니다', 'success');
     await refreshInlineCommentsBlock(block);
+    notifyDataChanged();
   } catch (err) {
     toast(err.message || '등록 실패', 'error');
   }
@@ -3167,6 +3182,7 @@ async function renderMinutes(body) {
         else        await POST(`/api/models/${mid}/minutes`, payload);
         toast(isEdit ? '회의록이 수정되었습니다' : '회의록이 등록되었습니다', 'success');
         renderList();
+        notifyDataChanged();
       } catch(e) {
         toast(e.message || '저장 실패', 'error');
       }
@@ -3280,6 +3296,7 @@ async function renderMemo(body) {
         toast('저장되었습니다', 'success');
       }
       renderList();
+      notifyDataChanged();
     });
 
     // OCR 부착
@@ -4002,6 +4019,7 @@ function renderSchedList(items, container) {
       await DEL(`/api/schedules/${it.id}`);
       toast('일정 삭제됨', 'success');
       renderScheduleMain();
+      notifyDataChanged();
     });
   });
 }
@@ -4222,6 +4240,7 @@ function openScheduleModal(item, allItems) {
       closeModal();
       toast('일정 삭제됨', 'success');
       renderScheduleMain();
+      notifyDataChanged();
     });
   }
 
@@ -4261,6 +4280,7 @@ function openScheduleModal(item, allItems) {
       closeModal();
       toast(isEdit ? '일정 수정됨' : '일정 추가됨', 'success');
       renderScheduleMain();
+      notifyDataChanged();
     } catch(e) {
       toast(e.message || '저장 실패', 'error');
     }
