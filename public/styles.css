@@ -487,9 +487,49 @@ body {
   box-shadow: 0 1px 3px rgba(239,68,68,.4);
   animation: newBadgePulse 2s ease-in-out infinite;
 }
+
+/* 항목/셀 단위 NEW 배지 (일정표·체크시트·Claim·회의록 행) */
+.item-new-badge {
+  display: inline-block;
+  flex-shrink: 0;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  color: #fff;
+  background: linear-gradient(135deg, #f97316 0%, #ef4444 100%);
+  padding: 1px 6px;
+  border-radius: 8px;
+  line-height: 1.5;
+  white-space: nowrap;
+  vertical-align: middle;
+  margin-left: 6px;
+  box-shadow: 0 1px 3px rgba(239,68,68,.35);
+  animation: newBadgePulse 2s ease-in-out infinite;
+}
 @keyframes newBadgePulse {
   0%, 100% { opacity: 1; transform: scale(1); }
   50%      { opacity: .75; transform: scale(.94); }
+}
+
+/* 대시보드 카드 NEW 배지 (우상단) */
+.dashboard-card { position: relative; }
+.card-new-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 3;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  color: #fff;
+  background: linear-gradient(135deg, #f97316 0%, #ef4444 100%);
+  padding: 1px 6px;
+  border-radius: 8px;
+  line-height: 1.5;
+  white-space: nowrap;
+  box-shadow: 0 1px 4px rgba(239,68,68,.45);
+  animation: newBadgePulse 2s ease-in-out infinite;
+  pointer-events: none;
 }
 .model-progress-mini {
   font-size: 11px;

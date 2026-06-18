@@ -230,6 +230,26 @@ function isRecentlyUpdated(ts) {
   return (Date.now() - t) < 24 * 60 * 60 * 1000;  // 24시간
 }
 
+// 항목 + 그 항목의 댓글까지 포함한 최근활동이 24시간 내인지 (셀 NEW 배지용)
+function isItemNew(item, type) {
+  // 1) 항목 자체 timestamp
+  if (isRecentlyUpdated(item.updated_at || item.updatedAt)) return true;
+  if (isRecentlyUpdated(item.created_at || item.createdAt)) return true;
+  // 2) 그 항목의 댓글 (캐시에서 조회)
+  if (type && item.id != null && typeof _commentsCache === 'object') {
+    const arr = _commentsCache[`${type}_${item.id}`] || [];
+    for (const c of arr) {
+      if (isRecentlyUpdated(c.updated_at) || isRecentlyUpdated(c.created_at)) return true;
+    }
+  }
+  return false;
+}
+
+// NEW 배지 HTML (셀/항목용)
+function newBadgeHtml() {
+  return '<span class="item-new-badge">+ NEW</span>';
+}
+
 function renderSidebar() {
   const list = document.getElementById('model-list');
   list.innerHTML = '';
@@ -1188,6 +1208,16 @@ function makeDashCard(m) {
       selectModel(m.id);
     }
   });
+
+  // 24시간 이내 활동 시 카드 우상단 NEW 배지
+  if (isRecentlyUpdated(m.last_activity)) {
+    const badge = document.createElement('span');
+    badge.className = 'card-new-badge';
+    badge.textContent = '+ NEW';
+    card.appendChild(badge);
+    card.classList.add('has-new');
+  }
+
   return card;
 }
 
@@ -1874,6 +1904,7 @@ function makeMsItem(it, today) {
     <div class="ms-body">
       <div class="ms-title-row">
         <span class="ms-title">${escHtml(it.title)}</span>
+        ${isItemNew(it, 'milestone') ? newBadgeHtml() : ''}
         ${it.author ? `<span class="ms-author">👤 ${escHtml(it.author)}</span>` : ''}
       </div>
       ${it.description ? `<div class="ms-desc">${escHtml(it.description)}</div>` : ''}
@@ -2251,6 +2282,7 @@ function makeClRow(it, today) {
     <td class="cl-no"><span class="drag-handle" title="드래그하여 순서 변경">⠿</span>${it.no}</td>
     <td class="cl-ttl">
       ${escHtml(it.title) || '-'}
+      ${isItemNew(it, 'checklist') ? newBadgeHtml() : ''}
       ${it.author ? `<div class="row-author">👤 ${escHtml(it.author)}</div>` : ''}
     </td>
     <td class="cl-detail">${escHtml(it.detail) || '<span style="color:#cbd5e1">-</span>'}</td>
@@ -2941,6 +2973,7 @@ function makeClmRow(it, today) {
     <td class="cl-no"><span class="drag-handle" title="드래그하여 순서 변경">⠿</span>${it.no}</td>
     <td class="cl-ttl">
       ${escHtml(it.customer) || '-'}
+      ${isItemNew(it, 'claim') ? newBadgeHtml() : ''}
       ${it.author ? `<div class="row-author">👤 ${escHtml(it.author)}</div>` : ''}
     </td>
     <td class="cl-detail">${escHtml(it.content) || '<span style="color:#cbd5e1">-</span>'}</td>
@@ -3080,6 +3113,7 @@ async function renderMinutes(body) {
                   <div class="mn-item-left">
                     <span class="mn-date-badge">${fmtDate(e.meeting_date)}</span>
                     <span class="mn-item-title">${escHtml(e.title)}</span>
+                    ${isItemNew(e, null) ? newBadgeHtml() : ''}
                   </div>
                   <div class="mn-item-right">
                     ${e.attendees ? `<span class="mn-attendees">👥 ${escHtml(e.attendees)}</span>` : ''}
