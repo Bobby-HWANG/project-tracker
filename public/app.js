@@ -1154,9 +1154,9 @@ function makeDashCard(m) {
     const clmTotal = m.claim_total || 0;
     const clmDone  = m.claim_done  || 0;
 
-    // 카드 전체 진행률: (일정+체크시트+클레임) 전체 건수 대비 완료 건수
-    const totalAll = (m.milestone_total || 0) + (m.checklist_total || 0) + clmTotal;
-    const doneAll  = (m.milestone_done  || 0) + (m.checklist_done  || 0) + clmDone;
+    // 카드 전체 진행률: (일정 + 클레임) 전체 건수 대비 완료 건수
+    const totalAll = (m.milestone_total || 0) + clmTotal;
+    const doneAll  = (m.milestone_done  || 0) + clmDone;
     const allPct   = totalAll ? Math.round(doneAll / totalAll * 100) : 0;
 
     card.innerHTML = `
@@ -1427,6 +1427,11 @@ async function selectModel(id) {
 
 // ── Tab Switching ────────────────────────────────────────────
 async function loadTab(tab) {
+  // 체크시트 메뉴 제거됨 → 항상 일정표로 리다이렉트
+  if (tab === 'checklist') {
+    tab = 'milestone';
+    document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === 'milestone'));
+  }
   // 숨겨진 탭 접근 시 일정표로 리다이렉트
   const _am = state.activeModel;
   const _isSchedMdl = _am && (_am.category === 'schedule' || (_am.name && _am.name.replace(/\s/g,'').includes('일정점검')));
