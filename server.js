@@ -913,6 +913,8 @@ app.get('/api/models/:id/checklist', (req, res) => {
     note:         it.note || '',
     checked:      it.status === 'completed' ? 1 : 0,  // 호환
     order:        it.order ?? idx,
+    created_at:   it.created_at || null,
+    updated_at:   it.updated_at || null,
   })).sort((a,b)=>a.order-b.order);
   res.json(items);
 });
@@ -932,6 +934,8 @@ app.post('/api/models/:id/checklist', (req, res) => {
     status:     req.body.status       || 'pending',
     note:       req.body.note         || '',
     order:      minO - 1,
+    created_at: nowISO(),
+    updated_at: nowISO(),
   };
   DB.checklists[id].push(item);
   save();
@@ -953,6 +957,7 @@ app.put('/api/checklist/:id', (req, res) => {
         dueDateEnd: req.body.due_date_end !== undefined ? req.body.due_date_end : cur.dueDateEnd,
         status:     req.body.status       !== undefined ? req.body.status       : cur.status,
         note:       req.body.note         !== undefined ? req.body.note         : cur.note,
+        updated_at: nowISO(),
       };
       save();
       return res.json(DB.checklists[mid][idx]);
@@ -1012,6 +1017,8 @@ app.get('/api/models/:id/claims', (req, res) => {
     status:              it.status            || 'pending',
     note:                it.note              || '',
     order:               it.order             ?? idx,
+    created_at:          it.created_at        || null,
+    updated_at:          it.updated_at        || null,
   })).sort((a,b)=>a.order-b.order);
   res.json(items);
 });
@@ -1438,9 +1445,19 @@ app.get('/api/dashboard', (_, res) => {
       claim_done:         cm.filter(isDone).length,
       claim_delayed:      cm.filter(isClaimDelayed).length,
       claim_open:         cm.filter(x => x.status !== 'completed').length,
+      last_activity:      computeLastActivity(m),
     };
   });
-  res.json({ models: summary, schedThisMonth, schedTotal });
+  // 전역 캘린더 최근 활동
+  let schedActivity = null;
+  (DB.schedules || []).forEach(s => {
+    const t = s.updated_at || s.created_at;
+    if (t && (!schedActivity || t > schedActivity)) schedActivity = t;
+  });
+  const summaryWithSched = summary.map(m =>
+    (m.category === 'schedule') ? { ...m, last_activity: m.last_activity || schedActivity } : m
+  );
+  res.json({ models: summaryWithSched, schedThisMonth, schedTotal });
 });
 
 // ── 주요 일정 점검 (Schedules) ───────────────────────────────
