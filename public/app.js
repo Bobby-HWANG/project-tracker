@@ -1150,43 +1150,36 @@ function makeDashCard(m) {
       ${m.milestone_delayed ? `<div class="dc-delayed">⚠ 지연 ${m.milestone_delayed}건</div>` : ''}
     `;
   } else {
-    // 모델: 일정 + 체크리스트 + 클레임 (3열)
-    const clPct = m.checklist_total ? Math.round(m.checklist_done / m.checklist_total * 100) : 0;
+    // 모델: 일정 + 클레임 (2열), 진행률은 전체 건수 대비 완료 건수 통합
     const clmTotal = m.claim_total || 0;
-    const clmOpen  = m.claim_open  || 0;
     const clmDone  = m.claim_done  || 0;
-    const clmDelay = m.claim_delayed || 0;
+
+    // 카드 전체 진행률: (일정+체크시트+클레임) 전체 건수 대비 완료 건수
+    const totalAll = (m.milestone_total || 0) + (m.checklist_total || 0) + clmTotal;
+    const doneAll  = (m.milestone_done  || 0) + (m.checklist_done  || 0) + clmDone;
+    const allPct   = totalAll ? Math.round(doneAll / totalAll * 100) : 0;
+
     card.innerHTML = `
       <div class="dc-header">
         <div class="dc-dot" style="background:${m.color}"></div>
         <div class="dc-name">${m.name}</div>
       </div>
-      <div class="dc-stats dc-stats-3">
+      <div class="dc-stats dc-stats-2">
         <div class="dc-stat">
           <div class="dc-stat-val">${m.milestone_done}<span class="dc-stat-denom">/${m.milestone_total}</span></div>
           <div class="dc-stat-label">일정</div>
         </div>
         <div class="dc-stat">
-          <div class="dc-stat-val">${m.checklist_done}<span class="dc-stat-denom">/${m.checklist_total}</span></div>
-          <div class="dc-stat-label">체크</div>
-        </div>
-        <div class="dc-stat ${clmOpen ? 'has-open' : ''}">
-          <div class="dc-stat-val" style="${clmOpen ? 'color:#ef4444' : ''}">${clmDone}<span class="dc-stat-denom">/${clmTotal}</span></div>
-          <div class="dc-stat-label">클레임${clmOpen ? `<span class="dc-open-badge">${clmOpen}</span>` : ''}</div>
+          <div class="dc-stat-val">${clmDone}<span class="dc-stat-denom">/${clmTotal}</span></div>
+          <div class="dc-stat-label">클레임</div>
         </div>
       </div>
       <div class="dc-prog-wrap">
-        <div class="dc-prog-label">진행률 ${clPct}%</div>
+        <div class="dc-prog-label">진행률 ${allPct}%</div>
         <div class="progress-bar">
-          <div class="progress-fill" style="width:${clPct}%;background:${m.color}"></div>
+          <div class="progress-fill" style="width:${allPct}%;background:${m.color}"></div>
         </div>
       </div>
-      ${(m.milestone_delayed || clmDelay) ? `
-        <div class="dc-delayed-row">
-          ${m.milestone_delayed ? `<span class="dc-delayed">⚠ ${m.milestone_delayed}</span>` : '<span></span>'}
-          ${clmDelay ? `<span class="dc-delayed dc-delayed--clm">🚨 ${clmDelay}</span>` : '<span></span>'}
-        </div>
-      ` : ''}
     `;
   }
 
