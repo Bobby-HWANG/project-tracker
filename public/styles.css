@@ -4020,3 +4020,78 @@ textarea.drag-over {
   align-items: center;
   width: fit-content;
 }
+
+/* ══════════════════════════════════════════════════════════
+   모바일 화면 깨짐 수정 (≤900px)
+   ══════════════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+
+  /* 1. 가로 오버플로우 완전 차단 */
+  body, .main, #view-model, .tab-body {
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
+  }
+
+  /* 2. 150% 너비 설정 모바일 초기화 */
+  #view-model #ms-list,
+  #view-model .milestone-toolbar,
+  #view-model .checklist-overall,
+  #view-model .memo-wrap,
+  #view-model .cl-table-wrap {
+    width: 100% !important;
+  }
+  #view-model .cl-table-wrap {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* 3. 테이블 고정 레이아웃 해제 → 모바일 자동 열 폭 조절 */
+  .cl-table {
+    table-layout: auto !important;
+  }
+
+  /* 4. milestone-item 모바일 레이아웃 */
+  .milestone-item {
+    flex-wrap: wrap;
+    padding: 10px 12px;
+    gap: 8px;
+  }
+  .milestone-item .ms-body {
+    flex: 1 1 180px;
+    min-width: 0;
+  }
+  .milestone-item .ms-actions {
+    flex-direction: row;
+    justify-content: flex-end;
+    width: 100%;
+  }
+
+  /* 5. 드래그 핸들 / 컬럼 리사이즈 핸들 숨김 */
+  .drag-handle,
+  .col-resize-handle { display: none !important; }
+
+  /* drag-handle 숨기면 cl-no flex 불필요 */
+  tr.cl-row td.cl-no {
+    display: table-cell !important;
+  }
+
+  /* 6. 탭 헤더 패딩 */
+  .page-header {
+    padding: 14px 12px 0 !important;
+    padding-right: 12px !important;
+  }
+  .tab-body { padding: 12px 10px !important; }
+
+  /* 7. 모달 전폭 */
+  .modal {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box;
+  }
+
+  /* 8. iOS 자동 줌인 방지 */
+  input, select, textarea { font-size: max(16px, 1em) !important; }
+
+  /* 9. 사이드바 버전 텍스트 숨김 */
+  .sb-version { display: none; }
+}
