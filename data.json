@@ -1,955 +1,6 @@
 {
-  "models": [
-    {
-      "id": 1,
-      "name": "현대차 X-BLE Shoulder",
-      "color": "#8B5CF6",
-      "order": 0,
-      "category": "model",
-      "updated_by": 0,
-      "updated_by_name": "관리자",
-      "updated_at": "2026-05-20T02:12:53.467Z"
-    },
-    {
-      "id": 2,
-      "name": "SEC(S26/R14) PC Slim case",
-      "color": "#A855F7",
-      "order": 1,
-      "category": "model",
-      "updated_by": 0,
-      "updated_by_name": "관리자",
-      "updated_at": "2026-05-20T01:20:38.124Z"
-    },
-    {
-      "id": 3,
-      "name": "BR",
-      "color": "#10B981",
-      "order": 2,
-      "category": "model"
-    },
-    {
-      "id": 4,
-      "name": "프리뉴",
-      "color": "#F59E0B",
-      "order": 3,
-      "category": "model"
-    },
-    {
-      "id": 5,
-      "name": "WI 로보틱스",
-      "color": "#EF4444",
-      "order": 4,
-      "category": "model",
-      "updated_by": 0,
-      "updated_by_name": "관리자",
-      "updated_at": "2026-05-20T01:23:10.676Z"
-    },
-    {
-      "id": 6,
-      "name": "모빌린트 NPU",
-      "color": "#EC4899",
-      "order": 5,
-      "category": "model"
-    },
-    {
-      "id": 10001,
-      "name": "치수 측정 의뢰 현황 및 진행사항",
-      "color": "#0EA5E9",
-      "order": 0,
-      "category": "monitoring"
-    },
-    {
-      "id": 10007,
-      "name": "신뢰성 시험 의뢰 및 진행 사항",
-      "color": "#06B6D4",
-      "order": 1,
-      "category": "monitoring",
-      "updated_by": 0,
-      "updated_by_name": "관리자",
-      "updated_at": "2026-05-20T02:10:14.703Z"
-    },
-    {
-      "id": 10013,
-      "name": "환경 유해물질 관련 진행사항",
-      "color": "#3B82F6",
-      "order": 2,
-      "category": "monitoring"
-    },
-    {
-      "id": 10032,
-      "name": "용산 미러커버",
-      "color": "#3B82F6",
-      "order": 6,
-      "category": "model",
-      "created_by": 0,
-      "created_by_name": "관리자",
-      "created_at": "2026-05-20T01:24:02.742Z",
-      "updated_by": 0,
-      "updated_by_name": "관리자",
-      "updated_at": "2026-05-20T01:24:02.742Z"
-    },
-    {
-      "id": 10040,
-      "name": "OBM A1c",
-      "color": "#3B82F6",
-      "order": 7,
-      "category": "model",
-      "created_by": 0,
-      "created_by_name": "관리자",
-      "created_at": "2026-05-20T01:26:14.885Z",
-      "updated_by": 0,
-      "updated_by_name": "관리자",
-      "updated_at": "2026-05-20T02:12:26.711Z"
-    },
-    {
-      "id": 10088,
-      "name": "OSSTEM",
-      "color": "#84CC16",
-      "order": 8,
-      "category": "model",
-      "created_by": 0,
-      "created_by_name": "관리자",
-      "created_at": "2026-05-22T08:05:58.620Z",
-      "updated_by": 0,
-      "updated_by_name": "관리자",
-      "updated_at": "2026-05-22T08:05:58.620Z"
-    },
-    {
-      "id": 10116,
-      "name": "ISO13485 (INTOPS : 6/15~19)",
-      "color": "#14B8A6",
-      "order": 0,
-      "category": "audit_cert"
-    },
-    {
-      "id": 10118,
-      "name": "ISO13485 (OBM : 7/24~7/27)",
-      "color": "#0EA5E9",
-      "order": 1,
-      "category": "audit_cert"
-    },
-    {
-      "id": 10120,
-      "name": "용산 JG1 공정감사 (6/2)",
-      "color": "#F59E0B",
-      "order": 0,
-      "category": "audit_process"
-    }
-  ],
-  "subItems": {
-    "1": [
-      {
-        "id": 101,
-        "modelId": 1,
-        "name": "기획",
-        "order": 0
-      },
-      {
-        "id": 102,
-        "modelId": 1,
-        "name": "설계/개발",
-        "order": 1
-      },
-      {
-        "id": 103,
-        "modelId": 1,
-        "name": "검증",
-        "order": 2
-      },
-      {
-        "id": 104,
-        "modelId": 1,
-        "name": "양산준비",
-        "order": 3
-      },
-      {
-        "id": 105,
-        "modelId": 1,
-        "name": "완료",
-        "order": 4
-      }
-    ],
-    "2": [
-      {
-        "id": 201,
-        "modelId": 2,
-        "name": "기획",
-        "order": 0
-      },
-      {
-        "id": 202,
-        "modelId": 2,
-        "name": "설계/개발",
-        "order": 1
-      },
-      {
-        "id": 203,
-        "modelId": 2,
-        "name": "검증",
-        "order": 2
-      },
-      {
-        "id": 204,
-        "modelId": 2,
-        "name": "양산준비",
-        "order": 3
-      },
-      {
-        "id": 205,
-        "modelId": 2,
-        "name": "완료",
-        "order": 4
-      }
-    ],
-    "3": [
-      {
-        "id": 301,
-        "modelId": 3,
-        "name": "기획",
-        "order": 0
-      },
-      {
-        "id": 302,
-        "modelId": 3,
-        "name": "설계/개발",
-        "order": 1
-      },
-      {
-        "id": 303,
-        "modelId": 3,
-        "name": "검증",
-        "order": 2
-      },
-      {
-        "id": 304,
-        "modelId": 3,
-        "name": "양산준비",
-        "order": 3
-      },
-      {
-        "id": 305,
-        "modelId": 3,
-        "name": "완료",
-        "order": 4
-      }
-    ],
-    "4": [
-      {
-        "id": 401,
-        "modelId": 4,
-        "name": "기획",
-        "order": 0
-      },
-      {
-        "id": 402,
-        "modelId": 4,
-        "name": "설계/개발",
-        "order": 1
-      },
-      {
-        "id": 403,
-        "modelId": 4,
-        "name": "검증",
-        "order": 2
-      },
-      {
-        "id": 404,
-        "modelId": 4,
-        "name": "양산준비",
-        "order": 3
-      },
-      {
-        "id": 405,
-        "modelId": 4,
-        "name": "완료",
-        "order": 4
-      }
-    ],
-    "5": [
-      {
-        "id": 501,
-        "modelId": 5,
-        "name": "기획",
-        "order": 0
-      },
-      {
-        "id": 502,
-        "modelId": 5,
-        "name": "설계/개발",
-        "order": 1
-      },
-      {
-        "id": 503,
-        "modelId": 5,
-        "name": "검증",
-        "order": 2
-      },
-      {
-        "id": 504,
-        "modelId": 5,
-        "name": "양산준비",
-        "order": 3
-      },
-      {
-        "id": 505,
-        "modelId": 5,
-        "name": "완료",
-        "order": 4
-      }
-    ],
-    "6": [
-      {
-        "id": 601,
-        "modelId": 6,
-        "name": "기획",
-        "order": 0
-      },
-      {
-        "id": 602,
-        "modelId": 6,
-        "name": "설계/개발",
-        "order": 1
-      },
-      {
-        "id": 603,
-        "modelId": 6,
-        "name": "검증",
-        "order": 2
-      },
-      {
-        "id": 604,
-        "modelId": 6,
-        "name": "양산준비",
-        "order": 3
-      },
-      {
-        "id": 605,
-        "modelId": 6,
-        "name": "완료",
-        "order": 4
-      }
-    ],
-    "10001": [
-      {
-        "id": 10002,
-        "modelId": 10001,
-        "name": "의뢰 접수",
-        "order": 0
-      },
-      {
-        "id": 10003,
-        "modelId": 10001,
-        "name": "진행 중",
-        "order": 1
-      },
-      {
-        "id": 10004,
-        "modelId": 10001,
-        "name": "결과 확인",
-        "order": 2
-      },
-      {
-        "id": 10005,
-        "modelId": 10001,
-        "name": "조치/회신",
-        "order": 3
-      },
-      {
-        "id": 10006,
-        "modelId": 10001,
-        "name": "완료",
-        "order": 4
-      }
-    ],
-    "10007": [
-      {
-        "id": 10008,
-        "modelId": 10007,
-        "name": "의뢰 접수",
-        "order": 0
-      },
-      {
-        "id": 10009,
-        "modelId": 10007,
-        "name": "진행 중",
-        "order": 1
-      },
-      {
-        "id": 10010,
-        "modelId": 10007,
-        "name": "결과 확인",
-        "order": 2
-      },
-      {
-        "id": 10011,
-        "modelId": 10007,
-        "name": "조치/회신",
-        "order": 3
-      },
-      {
-        "id": 10012,
-        "modelId": 10007,
-        "name": "완료",
-        "order": 4
-      }
-    ],
-    "10013": [
-      {
-        "id": 10014,
-        "modelId": 10013,
-        "name": "의뢰 접수",
-        "order": 0
-      },
-      {
-        "id": 10015,
-        "modelId": 10013,
-        "name": "진행 중",
-        "order": 1
-      },
-      {
-        "id": 10016,
-        "modelId": 10013,
-        "name": "결과 확인",
-        "order": 2
-      },
-      {
-        "id": 10017,
-        "modelId": 10013,
-        "name": "조치/회신",
-        "order": 3
-      },
-      {
-        "id": 10018,
-        "modelId": 10013,
-        "name": "완료",
-        "order": 4
-      }
-    ],
-    "10032": [
-      {
-        "id": 10033,
-        "modelId": 10032,
-        "name": "기획",
-        "order": 0
-      },
-      {
-        "id": 10034,
-        "modelId": 10032,
-        "name": "설계/개발",
-        "order": 1
-      },
-      {
-        "id": 10035,
-        "modelId": 10032,
-        "name": "검증",
-        "order": 2
-      },
-      {
-        "id": 10036,
-        "modelId": 10032,
-        "name": "양산준비",
-        "order": 3
-      },
-      {
-        "id": 10037,
-        "modelId": 10032,
-        "name": "완료",
-        "order": 4
-      }
-    ],
-    "10040": [
-      {
-        "id": 10041,
-        "modelId": 10040,
-        "name": "기획",
-        "order": 0
-      },
-      {
-        "id": 10042,
-        "modelId": 10040,
-        "name": "설계/개발",
-        "order": 1
-      },
-      {
-        "id": 10043,
-        "modelId": 10040,
-        "name": "검증",
-        "order": 2
-      },
-      {
-        "id": 10044,
-        "modelId": 10040,
-        "name": "양산준비",
-        "order": 3
-      },
-      {
-        "id": 10045,
-        "modelId": 10040,
-        "name": "완료",
-        "order": 4
-      }
-    ],
-    "10088": [
-      {
-        "id": 10089,
-        "modelId": 10088,
-        "name": "기획",
-        "order": 0
-      },
-      {
-        "id": 10090,
-        "modelId": 10088,
-        "name": "설계/개발",
-        "order": 1
-      },
-      {
-        "id": 10091,
-        "modelId": 10088,
-        "name": "검증",
-        "order": 2
-      },
-      {
-        "id": 10092,
-        "modelId": 10088,
-        "name": "양산준비",
-        "order": 3
-      },
-      {
-        "id": 10093,
-        "modelId": 10088,
-        "name": "완료",
-        "order": 4
-      }
-    ],
-    "10116": [],
-    "10118": [],
-    "10120": []
-  },
-  "milestones": {
-    "1": [
-      {
-        "id": 10020,
-        "title": "생산계획",
-        "description": "4월: 195대\n5월: 90대\n6월: 100대",
-        "note": "생산계획 참조",
-        "subItemId": null,
-        "dueDate": "2026-04-01",
-        "dueDateEnd": "2026-06-30",
-        "status": "in_progress"
-      },
-      {
-        "id": 10021,
-        "title": "멕시코 시장 크레임 분담율 협의",
-        "description": "고객사(현대차) 요청에 의한 분담율 협의\n(현대차:인탑스 = 65 : 35)",
-        "note": "고객사 내부 사정에 의한 협의 지연",
-        "subItemId": null,
-        "dueDate": "2026-05-06",
-        "dueDateEnd": "2026-06-30",
-        "status": "delayed"
-      },
-      {
-        "id": 10023,
-        "title": "커버  SET시 단차 관련 검증",
-        "description": "단품 사출치수간 편차에 따른 셋트시 단차\n- 욱일 사출 (250 톤) - 5/8 -> 검증결과 양호 (치수/단차 OK)\n- 사내사출 (350 톤) - 5/14 -> 검증결과 양호 (갭/단차 OK)",
-        "note": "",
-        "subItemId": null,
-        "dueDate": "2026-05-08",
-        "dueDateEnd": "2026-05-20",
-        "status": "completed"
-      },
-      {
-        "id": 10076,
-        "title": "X-ble COVER 류 금형 사내이관 4M 변경",
-        "description": "X-BLE SHOULDER COVER 금형 욱일전자 → 사내사출 이관\n사전 사출 및 NC 후 치수 및 조립검증 완료 (도장X)\n이관 관련 고객사 공유 (5/20),4M 신고서 제출 요청\n영업 박종민M 각 100EA 샘플 진행 일정 확인 4M 신고서 제출 예정\n100EA 샘플 도장까지 검증 후 고객사 컨펌 4M 완결 예정",
-        "note": "",
-        "subItemId": null,
-        "dueDate": "2026-05-20",
-        "dueDateEnd": "2026-06-12",
-        "status": "in_progress"
-      }
-    ],
-    "2": [
-      {
-        "id": 10026,
-        "title": "#PV1 검증과제 제출완료",
-        "description": "품질문제점 대책수립 완료",
-        "note": "(4/28 제출)",
-        "subItemId": null,
-        "dueDate": "2026-04-28",
-        "dueDateEnd": null,
-        "status": "completed"
-      },
-      {
-        "id": 10027,
-        "title": "#PV2 검증과제 진행",
-        "description": "1차 고객사 수율 검증 (모수 200EA이상\nPV2 블랙/블루 각 70EA, 민트 110EA 제출",
-        "note": "조립계획: ~5/26\n부품품질 수율검증: 5/27 (목표수율 RTY 70%)",
-        "subItemId": null,
-        "dueDate": "2026-05-19",
-        "dueDateEnd": "2026-05-28",
-        "status": "completed",
-        "author": "권창해"
-      },
-      {
-        "id": 10028,
-        "title": "사출개선 코어 입고",
-        "description": "개선 코어 입고 예정",
-        "note": "",
-        "subItemId": null,
-        "dueDate": "2026-06-01",
-        "dueDateEnd": null,
-        "status": "completed",
-        "author": "권창해"
-      },
-      {
-        "id": 10029,
-        "title": "SET 내화장품 Test 크랙 개선 SPL Test",
-        "description": ". Set 내화장품 도막두께 줄임 샘플에 대한 내화장품 Test시 얼룩 발생으로 도료 개선",
-        "note": "내화장품 및 Set 내화장품 Test : OK,\n  참고 : Set 내화장품 한계test시 17Hr 후 Crack 발생 ( 기준 4Hr)",
-        "subItemId": null,
-        "dueDate": "2026-05-21",
-        "dueDateEnd": null,
-        "status": "completed"
-      }
-    ],
-    "3": [
-      {
-        "id": 10048,
-        "title": "5/6 계획품 서비플러스 31대 출하완료",
-        "description": "31대 출하",
-        "note": "",
-        "subItemId": null,
-        "dueDate": "2026-05-06",
-        "dueDateEnd": null,
-        "status": "completed"
-      },
-      {
-        "id": 10049,
-        "title": "서비플러스 중 CKD 부품 출하 150 set",
-        "description": "150 set 출하 절차 진행중",
-        "note": "자재 입고 지연 관련 - 출하일정 재협의중",
-        "subItemId": null,
-        "dueDate": "2026-05-28",
-        "dueDateEnd": null,
-        "status": "completed",
-        "author": "권창해"
-      },
-      {
-        "id": 10109,
-        "author": "권창해",
-        "title": "5/29 계획품 CARTI100 10대 출하완료",
-        "description": "",
-        "note": "",
-        "subItemId": null,
-        "dueDate": "2026-05-29",
-        "dueDateEnd": null,
-        "status": "completed"
-      },
-      {
-        "id": 10123,
-        "author": "권창해",
-        "title": "5/27 계획품 CARTI100 3대 출하완료",
-        "description": "",
-        "note": "",
-        "subItemId": null,
-        "dueDate": "2026-05-27",
-        "dueDateEnd": null,
-        "status": "completed",
-        "requestCount": null,
-        "okCount": null,
-        "ngCount": null
-      }
-    ],
-    "4": [
-      {
-        "id": 10038,
-        "title": "생산 라인 및 검사 라인 SET UP",
-        "description": "고객사 담당 내방",
-        "note": "",
-        "subItemId": null,
-        "dueDate": "2026-05-18",
-        "dueDateEnd": "2026-05-22",
-        "status": "in_progress"
-      },
-      {
-        "id": 10039,
-        "title": "국방부 실사",
-        "description": "국방부 내방 현장 실사",
-        "note": "",
-        "subItemId": null,
-        "dueDate": "2026-05-29",
-        "dueDateEnd": null,
-        "status": "pending"
-      }
-    ],
-    "5": [
-      {
-        "id": 10030,
-        "title": "현장실사",
-        "description": "승인평가 실사 추가 진행 예정",
-        "note": "",
-        "subItemId": null,
-        "dueDate": "2026-05-15",
-        "dueDateEnd": null,
-        "status": "completed"
-      },
-      {
-        "id": 10031,
-        "title": "WIMS 이관 및 신규모델 EX 진행 검토중",
-        "description": "WIMS 이관 및 신규모델 EX 진행 검토중",
-        "note": "",
-        "subItemId": null,
-        "dueDate": "2026-05-19",
-        "dueDateEnd": null,
-        "status": "in_progress"
-      }
-    ],
-    "6": [
-      {
-        "id": 10047,
-        "title": "DV 일정",
-        "description": "금형 제작 후 DV 진행",
-        "note": "",
-        "subItemId": null,
-        "dueDate": "2026-06-30",
-        "dueDateEnd": null,
-        "status": "pending"
-      }
-    ],
-    "10001": [
-      {
-        "id": 10055,
-        "title": "R14 #PV1 전치수 측정",
-        "description": "측정 완료 - 16 point NG",
-        "note": "금형수리 및 전산화 검토중 → 코어 신작 결정",
-        "subItemId": null,
-        "dueDate": null,
-        "dueDateEnd": null,
-        "status": "completed",
-        "author": "권창해"
-      },
-      {
-        "id": 10056,
-        "title": "NM3·NM4 Cam BRK 변화량 / KMD 치수 측정",
-        "description": "Cam BRK 변화량 및 KMD 치수 측정",
-        "note": "NM4 측정 완료 / NM3 측정완료",
-        "subItemId": null,
-        "dueDate": "2026-05-22",
-        "dueDateEnd": null,
-        "status": "completed",
-        "author": "권창해"
-      },
-      {
-        "id": 10070,
-        "title": "일일/Q7 JELLY COVER 초중종물 치수측정",
-        "description": "Q7 JELLY COVER 초중종물 치수측정",
-        "note": "",
-        "subItemId": null,
-        "dueDate": "2026-05-01",
-        "dueDateEnd": "2026-05-31",
-        "status": "in_progress"
-      },
-      {
-        "id": 10073,
-        "title": "X-BLE SHOULDER DDDDD 측정",
-        "description": "ROQKFDYCJDD",
-        "note": "",
-        "subItemId": null,
-        "dueDate": "2026-05-21",
-        "dueDateEnd": "2026-05-25",
-        "status": "in_progress"
-      }
-    ],
-    "10007": [
-      {
-        "id": 10057,
-        "title": "R14 #PV1 신뢰성 TEST",
-        "description": "",
-        "note": "Mint 단말 내화장품 NG (1/5ea) → 도막 축소 개선 완료 (0/5ea)\nMint 내화장품 얼룩 NG (2/5ea) → 도료 실리콘 첨가제 축소 개선완료 (0/5ea)",
-        "subItemId": null,
-        "dueDate": "2026-05-19",
-        "dueDateEnd": null,
-        "status": "completed",
-        "author": "권창해"
-      },
-      {
-        "id": 10058,
-        "title": "RS4 Display 고온고습 168Hr",
-        "description": "고온고습 시험 168시간",
-        "note": "5/16 시험 완료",
-        "subItemId": null,
-        "dueDate": "2026-05-16",
-        "dueDateEnd": null,
-        "status": "completed"
-      },
-      {
-        "id": 10106,
-        "author": "권창해",
-        "title": "R14 #PV2 신뢰성 TEST",
-        "description": "",
-        "note": "단품 시험 ~5/29\n조립품 시험 ~6/1",
-        "subItemId": null,
-        "dueDate": "2026-06-01",
-        "dueDateEnd": null,
-        "status": "completed"
-      }
-    ],
-    "10013": [
-      {
-        "id": 10054,
-        "title": "R14 #PV1 측정 OK",
-        "description": "R14 #PV1 측정 OK",
-        "note": "",
-        "subItemId": null,
-        "dueDate": "2026-04-30",
-        "dueDateEnd": null,
-        "status": "completed"
-      },
-      {
-        "id": 10074,
-        "title": "[일일] XRF 측정현황",
-        "description": "[일일] XFR , 프탈레이트 측정현황",
-        "note": "",
-        "subItemId": null,
-        "dueDate": "2026-05-01",
-        "dueDateEnd": "2026-05-31",
-        "status": "in_progress"
-      }
-    ],
-    "10032": [
-      {
-        "id": 10050,
-        "title": "GN1 PE 협력 생산 및 INTOPS OQC",
-        "description": "트리코트 1종 / 스페이드 3종",
-        "note": "~5/12 협력생산분까지 용산으로 직납",
-        "subItemId": null,
-        "dueDate": "2026-05-12",
-        "dueDateEnd": null,
-        "status": "in_progress"
-      },
-      {
-        "id": 10051,
-        "title": "정상 납품 & 검사 의뢰",
-        "description": "5/13부터 정상 납품 시작",
-        "note": "",
-        "subItemId": null,
-        "dueDate": "2026-05-13",
-        "dueDateEnd": null,
-        "status": "pending"
-      },
-      {
-        "id": 10052,
-        "title": "미러커버 수정검사 입고 → NG",
-        "description": "5/12(월) 입고, NG 판정 → 재수리 폐기",
-        "note": "입고 및 검증: 5/14",
-        "subItemId": null,
-        "dueDate": "2026-05-12",
-        "dueDateEnd": "2026-05-14",
-        "status": "delayed"
-      },
-      {
-        "id": 10053,
-        "title": "공정 출고",
-        "description": "400 set/일 약 / 출고 ~5/28 계획",
-        "note": "N측 부 길이/폭 증가 & 깊이 깊음 → 신검 결과 대응 추후 수리예정",
-        "subItemId": null,
-        "dueDate": "2026-05-28",
-        "dueDateEnd": null,
-        "status": "in_progress"
-      },
-      {
-        "id": 10087,
-        "title": "JG1 ISIR 자료 준비 및 공정감사",
-        "description": "1.ISIR자료 (검사협정서,검사기준서,검사성적서,작업표준서,관리계획서)\n   한보 접수 검토 후 용산 제출 (~5/29)\n2.한보 공정감사 6/2 예정.출장 및 대응",
-        "note": "",
-        "subItemId": null,
-        "dueDate": "2026-05-25",
-        "dueDateEnd": "2026-06-02",
-        "status": "pending"
-      }
-    ],
-    "10040": [
-      {
-        "id": 10046,
-        "title": "ISO 13485 심사",
-        "description": "ISO 13485 신규심사예정\n(사내:분주 _ 태산:조립)",
-        "note": "",
-        "subItemId": null,
-        "dueDate": "2026-07-24",
-        "dueDateEnd": "2026-07-27",
-        "status": "pending"
-      }
-    ],
-    "10088": [],
-    "10116": [
-      {
-        "id": 10117,
-        "author": null,
-        "title": "ISO13485 인증심사",
-        "description": "INTOPS",
-        "note": "",
-        "subItemId": null,
-        "dueDate": "2026-06-15",
-        "dueDateEnd": "2026-06-19",
-        "status": "pending"
-      }
-    ],
-    "10118": [
-      {
-        "id": 10119,
-        "author": null,
-        "title": "ISO13485 인증심사",
-        "description": "OBM",
-        "note": "",
-        "subItemId": null,
-        "dueDate": "2026-07-24",
-        "dueDateEnd": "2026-07-27",
-        "status": "pending"
-      }
-    ],
-    "10120": [
-      {
-        "id": 10121,
-        "author": null,
-        "title": "용산 JG1 공정감사",
-        "description": "",
-        "note": "",
-        "subItemId": null,
-        "dueDate": "2026-06-02",
-        "dueDateEnd": null,
-        "status": "pending"
-      }
-    ]
-  },
-  "checklists": {
-    "1": [
-      {
-        "id": 10022,
-        "title": "공정/출하 검사 및 COA 작성",
-        "detail": "가동현황 모니터링 및 COA 누락 방지",
-        "dueDate": "2026-12-31",
-        "status": "in_progress",
-        "note": "",
-        "order": 0
-      }
-    ],
-    "2": [],
-    "3": [],
-    "4": [],
-    "5": [],
-    "6": [],
-    "10001": [],
-    "10007": [],
-    "10013": [],
-    "10032": [],
-    "10040": [],
-    "10088": [],
-    "10116": [],
-    "10118": [],
-    "10120": []
-  },
   "memos": {
-    "1": "",
+    "1": "어나더앤",
     "2": "",
     "3": "",
     "4": "",
@@ -960,61 +11,64 @@
     "10013": "",
     "10032": "",
     "10040": "",
-    "10088": "■  OSTEM N/BOTTLE 스크라치 관련 포장 개선 件\n\n- 스크라치 불량 세척공정 현 10K 발생\n- 출하용 트레이 사용 포장 검증 예정 300장 / 1장 =52EA\n  차후 생산분 진행.세척공정 우선지급 검증\n- 검증 시 취급성 및 포장방법 시간 등 추가검토\n- 검증결과 확인 후 양호 시 사출공정 적용. \n  공정용 트레이로 사용 (세척 공정 전달 후 사출 회수 방식)\n- 공정용 트레이 개발팀 지급 1,000 장\n  발주 후 최소 3주 소모. 차주 중 신청",
-    "10116": "",
-    "10118": "",
-    "10120": ""
+    "10087": "",
+    "10089": "",
+    "10091": "",
+    "10099": "",
+    "10111": "",
+    "10144": "",
+    "10161": "",
+    "10178": "",
+    "10253": ""
   },
-  "nextId": 10123,
   "users": [
     {
       "id": 10019,
-      "email": "admin@intops.com",
-      "name": "관리자",
       "dept": "INTOPS",
-      "phone": "",
-      "password_hash": "9c25413d30b17306fcbe7a1a8ba0c4e52e02b98b7a5d022ca721ae73a863235c3aaf9742047827d51992866270a93cfa9cb46e2052525e4327be15d5424943cc",
-      "salt": "057d8e3cdbf4b3282fecbed8ce158243",
+      "name": "관리자",
       "role": "admin",
+      "salt": "057d8e3cdbf4b3282fecbed8ce158243",
+      "email": "admin@intops.com",
+      "phone": "",
       "status": "approved",
       "created_at": "2026-05-20T01:00:52.348Z",
-      "last_login": null
+      "last_login": null,
+      "password_hash": "9c25413d30b17306fcbe7a1a8ba0c4e52e02b98b7a5d022ca721ae73a863235c3aaf9742047827d51992866270a93cfa9cb46e2052525e4327be15d5424943cc"
     }
   ],
-  "sessions": [],
   "claims": {
     "1": [
       {
         "id": 10024,
-        "customer": "현대차 전주공장",
-        "content": "마그넷 캐치 마그넷 이탈",
-        "occurredDate": "2026-05-13",
-        "action": "재고 선별완료 : 불량:11/73 (5/14 선별)\n개선안: 본딩 도포구간 확대 (대책)",
-        "status": "in_progress",
         "note": "",
         "order": 0,
-        "created_by": 0,
-        "created_by_name": "관리자",
+        "action": "재고 선별완료 : 불량:11/73 (5/14 선별)\n개선안: 본딩 도포구간 확대 (대책)",
+        "status": "in_progress",
+        "content": "마그넷 캐치 마그넷 이탈",
+        "customer": "현대차 전주공장",
         "created_at": "2026-05-20T01:14:54.986Z",
+        "created_by": 0,
+        "updated_at": "2026-05-20T01:14:54.986Z",
         "updated_by": 0,
-        "updated_by_name": "관리자",
-        "updated_at": "2026-05-20T01:14:54.986Z"
+        "occurredDate": "2026-05-13",
+        "created_by_name": "관리자",
+        "updated_by_name": "관리자"
       },
       {
         "id": 10025,
-        "customer": "현대차 로보틱스랩\" (출항지 확인중)",
-        "content": "조끼 허리밸트 재봉선 터짐",
-        "occurredDate": "2026-05-19",
-        "action": "조끼 국내 생산분 (L , XL , 2XL)\n재고 선별결과 동일불량 없음 (50EA)\n- 근본: 구조개선필요 (박음질 개선)",
-        "status": "in_progress",
         "note": "",
         "order": 1,
-        "created_by": 0,
-        "created_by_name": "관리자",
+        "action": "조끼 국내 생산분 (L , XL , 2XL)\n재고 선별결과 동일불량 없음 (50EA)\n- 근본: 구조개선필요 (박음질 개선)",
+        "status": "in_progress",
+        "content": "조끼 허리밸트 재봉선 터짐",
+        "customer": "현대차 로보틱스랩\" (출항지 확인중)",
         "created_at": "2026-05-20T01:18:32.500Z",
+        "created_by": 0,
+        "updated_at": "2026-05-20T01:18:32.500Z",
         "updated_by": 0,
-        "updated_by_name": "관리자",
-        "updated_at": "2026-05-20T01:18:32.500Z"
+        "occurredDate": "2026-05-19",
+        "created_by_name": "관리자",
+        "updated_by_name": "관리자"
       }
     ],
     "2": [],
@@ -1027,196 +81,4190 @@
     "10013": [],
     "10032": [],
     "10040": [],
-    "10088": [],
-    "10116": [],
-    "10118": [],
-    "10120": []
+    "10087": [],
+    "10089": [],
+    "10091": [],
+    "10099": [],
+    "10111": [],
+    "10144": [],
+    "10161": [
+      {
+        "id": 10167,
+        "note": "개선대책 회신완료 (허준우M)",
+        "order": 0,
+        "action": "ㅁ전혈100 디바이스 상판 (Multi, 투명)\n20260512-00001\n260,000\nㅁ전혈100 디바이스 상판 (Multi, 투명)\n20260515-00001\n210,750\n\n재고 사내 반출 및 선별 리웍 요청\n(바이오노트 QC 허정선M)",
+        "author": "황인학M",
+        "status": "completed",
+        "content": "전혈100 하판 미핀 오염 / 세트시 외관 드러남\n\n완제생산팀 보관 중인 \n전혈100 디바이스 상판(Lot. 20260429-00001)1 Box \n(4,000EA) 육안 검수 결과, 이물 불량률 90% 발견됨",
+        "customer": "바이오노트",
+        "created_at": "2026-06-09T04:40:55.612Z",
+        "created_by": 0,
+        "updated_at": "2026-06-09T04:41:37.003Z",
+        "updated_by": 0,
+        "occurredDate": "2026-06-08",
+        "improvementEnd": null,
+        "created_by_name": "관리자",
+        "occurredDateEnd": null,
+        "updated_by_name": "관리자",
+        "improvementStart": "2026-06-09"
+      }
+    ],
+    "10178": [],
+    "10253": []
+  },
+  "models": [
+    {
+      "id": 1,
+      "name": "현대차 X-BLE Shoulder",
+      "color": "#8B5CF6",
+      "order": 0,
+      "category": "model",
+      "updated_at": "2026-06-12T04:02:34.969Z",
+      "updated_by": 0,
+      "updated_by_name": "관리자"
+    },
+    {
+      "id": 2,
+      "name": "SEC(S26/R14) PC Slim case",
+      "color": "#8B5CF6",
+      "order": 1,
+      "category": "model",
+      "updated_at": "2026-06-12T04:02:40.628Z",
+      "updated_by": 0,
+      "updated_by_name": "관리자"
+    },
+    {
+      "id": 3,
+      "name": "BR",
+      "color": "#8B5CF6",
+      "order": 2,
+      "category": "model",
+      "updated_at": "2026-06-12T04:02:45.441Z",
+      "updated_by": 0,
+      "updated_by_name": "관리자"
+    },
+    {
+      "id": 4,
+      "name": "프리뉴",
+      "color": "#8B5CF6",
+      "order": 3,
+      "category": "model",
+      "updated_at": "2026-06-12T04:02:49.136Z",
+      "updated_by": 0,
+      "updated_by_name": "관리자"
+    },
+    {
+      "id": 5,
+      "name": "WI 로보틱스",
+      "color": "#8B5CF6",
+      "order": 4,
+      "category": "model",
+      "updated_at": "2026-06-12T04:02:53.038Z",
+      "updated_by": 0,
+      "updated_by_name": "관리자"
+    },
+    {
+      "id": 6,
+      "name": "모빌린트 NPU",
+      "color": "#8B5CF6",
+      "order": 5,
+      "category": "model",
+      "updated_at": "2026-06-12T04:02:57.017Z",
+      "updated_by": 0,
+      "updated_by_name": "관리자"
+    },
+    {
+      "id": 10001,
+      "name": "치수 측정 의뢰 현황 및 진행사항",
+      "color": "#3B82F6",
+      "order": 0,
+      "category": "monitoring",
+      "updated_at": "2026-06-12T04:03:46.105Z",
+      "updated_by": 0,
+      "updated_by_name": "관리자"
+    },
+    {
+      "id": 10007,
+      "name": "신뢰성 시험 의뢰 및 진행 사항",
+      "color": "#3B82F6",
+      "order": 1,
+      "category": "monitoring",
+      "updated_at": "2026-06-12T04:03:50.050Z",
+      "updated_by": 0,
+      "updated_by_name": "관리자"
+    },
+    {
+      "id": 10013,
+      "name": "환경 유해물질 관련 진행사항",
+      "color": "#3B82F6",
+      "order": 2,
+      "category": "monitoring",
+      "updated_at": "2026-06-12T04:03:53.894Z",
+      "updated_by": 0,
+      "updated_by_name": "관리자"
+    },
+    {
+      "id": 10032,
+      "name": "용산 미러커버",
+      "color": "#8B5CF6",
+      "order": 6,
+      "category": "model",
+      "created_at": "2026-05-20T01:24:02.742Z",
+      "created_by": 0,
+      "updated_at": "2026-06-12T04:03:02.812Z",
+      "updated_by": 0,
+      "created_by_name": "관리자",
+      "updated_by_name": "관리자"
+    },
+    {
+      "id": 10040,
+      "name": "OBM A1c",
+      "color": "#8B5CF6",
+      "order": 7,
+      "category": "model",
+      "created_at": "2026-05-20T01:26:14.885Z",
+      "created_by": 0,
+      "updated_at": "2026-06-12T04:03:06.565Z",
+      "updated_by": 0,
+      "created_by_name": "관리자",
+      "updated_by_name": "관리자"
+    },
+    {
+      "id": 10087,
+      "name": "ISO13485 (INTOPS : 6/15~6/19)",
+      "color": "#14B8A6",
+      "order": 0,
+      "category": "audit_cert",
+      "updated_at": "2026-06-02T05:27:42.102Z",
+      "updated_by": 0,
+      "updated_by_name": "관리자"
+    },
+    {
+      "id": 10089,
+      "name": "ISO13485 (OBM : 7/24~7/27)",
+      "color": "#0EA5E9",
+      "order": 1,
+      "category": "audit_cert",
+      "updated_at": "2026-06-02T06:27:22.310Z",
+      "updated_by": 0,
+      "updated_by_name": "관리자"
+    },
+    {
+      "id": 10091,
+      "name": "용산 JG1 공정감사 (6/2)",
+      "color": "#F59E0B",
+      "order": 0,
+      "category": "audit_process"
+    },
+    {
+      "id": 10099,
+      "name": "Q8 FRONT DECO",
+      "color": "#3B82F6",
+      "order": 0,
+      "category": "sec_confirm",
+      "created_at": "2026-06-02T05:23:44.766Z",
+      "created_by": 0,
+      "updated_at": "2026-06-02T05:23:44.766Z",
+      "updated_by": 0,
+      "created_by_name": "관리자",
+      "updated_by_name": "관리자"
+    },
+    {
+      "id": 10111,
+      "name": "Q8 CAM DECO",
+      "color": "#3B82F6",
+      "order": 1,
+      "category": "sec_confirm",
+      "created_at": "2026-06-02T05:24:39.838Z",
+      "created_by": 0,
+      "updated_at": "2026-06-02T05:24:39.838Z",
+      "updated_by": 0,
+      "created_by_name": "관리자",
+      "updated_by_name": "관리자"
+    },
+    {
+      "id": 10144,
+      "name": "Osstem 임플란트",
+      "color": "#8B5CF6",
+      "order": 8,
+      "category": "model",
+      "created_at": "2026-06-05T00:57:36.657Z",
+      "created_by": 0,
+      "updated_at": "2026-06-12T04:03:10.676Z",
+      "updated_by": 0,
+      "created_by_name": "관리자",
+      "updated_by_name": "관리자"
+    },
+    {
+      "id": 10161,
+      "name": "의료기기 (SDB , BIO NOTE 外)",
+      "color": "#8B5CF6",
+      "order": 9,
+      "category": "model",
+      "created_at": "2026-06-09T04:37:41.753Z",
+      "created_by": 0,
+      "updated_at": "2026-06-12T04:03:15.813Z",
+      "updated_by": 0,
+      "created_by_name": "관리자",
+      "updated_by_name": "관리자"
+    },
+    {
+      "id": 10178,
+      "name": "BAT",
+      "color": "#8B5CF6",
+      "order": 10,
+      "category": "model",
+      "created_at": "2026-06-11T07:12:50.893Z",
+      "created_by": 0,
+      "updated_at": "2026-06-12T04:03:19.415Z",
+      "updated_by": 0,
+      "created_by_name": "관리자",
+      "updated_by_name": "관리자"
+    },
+    {
+      "id": 10253,
+      "name": "기타",
+      "color": "#8B5CF6",
+      "order": 11,
+      "category": "model",
+      "created_at": "2026-06-23T00:33:58.518Z",
+      "created_by": 0,
+      "updated_at": "2026-06-23T00:33:58.518Z",
+      "updated_by": 0,
+      "created_by_name": "관리자",
+      "updated_by_name": "관리자"
+    }
+  ],
+  "nextId": 10434,
+  "minutes": {
+    "1": [
+      {
+        "id": 10327,
+        "title": "[회의록] 현대차 의왕연구소 방문 회의 (시장불량 _ LINK A PIN 빠짐)",
+        "author": "황인학M",
+        "content": "1. 개요\nSolirex 제품 Pin 빠짐 불량 관련, 현대차와 원인 분석 회의 진행함\n현재까지 확보된 고품 3대 분석만으로는 귀책 공정 특정 불가로 판단됨\n당사 분석상 치수는 양품 수준이나 설계상 압입(오버랩)량 부족 가능성 제기 → 클레임 형태 시 당사 인정 불가, 단 AS 수리 지원은 협조 예정\n향후 Lot 추적을 통한 의심 생산 기간 특정 및 현대측 모니터링 합의함\n\n2. 불량 현상\n당사 생산일 기준 '25.12.17 / '25.12.22 Solirex 2대분에서 추가 동일 불량 발생함\n'25.12.02 멕시코 FB 최초 발생 건과 동일 현상 → Pin이 inner 방향으로 이탈\n\n3. 회의 내용\n가. 현대차 의견\n치수 문제 / 공정 문제 여부 불분명\n접시볼트 풀림에 의한 Pin 빠짐으로 추정 (단, 고품 해체 시 재현 안 됨)\nPin 정렬 양호 시 빠지지 않음 / 비틀어져 터진 것으로 판단 / 직각도 미준수\n나. 당사(인탑스) 입장\n아이볼트 마킹 상태 확인 결과 베이스플레이트 screw 풀림 없음 → screw 풀림은 원인 아님\n압입 관련 정량화된 판정 가이드 부재로 수준별 양/불 판정 불가\n→ Pin·샤프트 홀 치수는 양품이나 빠짐이 발생할 정도로 오버랩량 부족 (설계상 오류 가능성)\n본 건이 클레임 형태일 경우 당사 인정 불가, 단 AS 수리 지원 수준은 협업 예정\n\n4. 결론 및 향후 계획\n구분                                               내용\n원인                       특정고품 3대 분석으로는 귀책 공정 특정 불가 (data 부족)\n추가 대응               불량 추가 발생 시 지속 분석하여 data 집계 (26년 6월 ~ 27년 5월)\nLot 추적                 '25.12월분 함축 → 당시 사용 Pin·샤프트 Lot 추적, 의심 생산 기간 특정\n모니터링                 특정 기간 생산품 위주로 현대측 모니터링 진행\n추정 기간                '25.12월 ~ '26.3월 수준 예상, 정확한 범위 파악 후 회신 예정",
+        "attendees": "김규정,이홍렬,김민성,황성택,장우진,황인학",
+        "created_at": "2026-06-29T08:15:06.892Z",
+        "updated_at": "2026-06-29T08:15:06.892Z",
+        "meeting_date": "2026-06-26"
+      }
+    ],
+    "2": [],
+    "3": [],
+    "4": [],
+    "5": [],
+    "6": [],
+    "10001": [],
+    "10007": [],
+    "10013": [],
+    "10032": [],
+    "10040": [],
+    "10087": [],
+    "10089": [],
+    "10091": [],
+    "10099": [],
+    "10111": [],
+    "10144": [],
+    "10161": [],
+    "10178": [
+      {
+        "id": 10185,
+        "title": "BAT 전자담배 입찰 관련 자료 준비 회의",
+        "author": "허준우M",
+        "content": "1. 일정\n-최종 데드라인: 6월 29일\n1차 자료 제출 기한: 6월 17일까지 완료 필요\n2. 물량 기준\n-베이스 물량: 1,900만 대/ 포텐셜 물량: 4,000만 대\n-베이스 물량 1,900만 대는 확정 물량\n-캐파 자료는 1,900만 대 기준 / 4,000만 대 기준으로 \n  별도 작성 필요\n3. 설비 및 금형 조건\n-금형 조건: 300톤 형체 기준\n-사출기 조건:\n 타이바 간 거리 및 사출기 관련 간섭 확인 필요\n 최소 700mm 이상 확보 필요\n- 금형 사고 발생 시 캐파 부족 가능성이 있으므로 스페어 금형  \n  보유  및 제작 여부 확인 필요\n4. 생산 조건\n-생산 라인: 1개 라인 기준\n-생산 방식상 1개 라인 Full CAPA 기준으로만 대응 가능\n-공정 흐름:\n사출 → 비전 검사 장비 → 포장까지 One-way 공정으로 진행\n5. 사이클 타임 기준\nBase: 16~18초 / LiD: 13~15초\n6. 제출 및 원가 관련 사항\n제출 기준:\n투명 CAN: 98% / White LID: 98%\n포장재 사양 및 원가 조건은 확정됨, 제안 필요\n7. 주요 확인 필요 사항\n-1,900만 대 / 4,000만 대 기준 캐파 산출 자료 별도 작성\n-1개 라인 Full CAPA 기준 생산 가능 여부 검토\n-금형 사고 대비 스페어 금형 필요 여부 및 보유 가능 여부 확인\n-300톤 사출기 기준 타이바 거리 700mm 이상 충족 여부 확인\n-사출부터 비전 검사, 포장까지 연속 공정 구성 가능 여부 검토\n-공정설문지 준비여부 확인, 품질 완료",
+        "attendees": "본사 영업팀 윤철민 팀장 , 구미 장우진 팀장 外",
+        "created_at": "2026-06-12T01:00:17.275Z",
+        "updated_at": "2026-06-12T01:00:17.275Z",
+        "meeting_date": "2026-06-12"
+      }
+    ],
+    "10253": []
   },
   "comments": {
-    "milestone_12345": [],
+    "claim_10024": [
+      {
+        "id": 10125,
+        "type": "claim",
+        "author": "황인학M",
+        "content": "본딩 도포구간 확대 검증 진행사항 메일 송부 (05/22 권석령책임) _ 메일 회신대기중",
+        "item_id": 10024,
+        "created_at": "2026-06-02T05:36:21.353Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10187,
+        "type": "claim",
+        "author": "황인학M",
+        "content": "6월 양산분 선적용 완료",
+        "item_id": 10024,
+        "created_at": "2026-06-14T22:48:45.344Z",
+        "parent_comment_id": null
+      }
+    ],
+    "claim_10025": [
+      {
+        "id": 10085,
+        "type": "claim",
+        "author": "허준우",
+        "content": "조끼단품 버클 쪽 터짐 이슈로 제조 쪽 가지고 있는 베트남 생산물량 재검 중 불량이 발생(강한힘으로 당길시 두둑소리와함께 터짐발생)  현재 xs사이즈 25개 재고 중 1개 발생  보유중인 조끼 전체 물량 재검",
+        "item_id": 10025,
+        "created_at": "2026-05-21T22:55:37.280Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10086,
+        "type": "claim",
+        "author": "허준우",
+        "content": "고객사 공유 완료.  강도 보강 및 리웍관련 협력사(어나더앤) 회의 2026.05.22 10시",
+        "item_id": 10025,
+        "created_at": "2026-05-21T22:55:53.972Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10126,
+        "type": "claim",
+        "author": "황인학M",
+        "content": "회의결과 강도보강 개선안 없음 & 인탑스 재고분 300여벌 전수 반품/선별/재입고 예정 (어나더앤) _ 강희남매니저확인 필요",
+        "item_id": 10025,
+        "created_at": "2026-06-02T05:37:24.842Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10189,
+        "type": "claim",
+        "author": "황인학M",
+        "content": "어나더앤 선별 및 자재 입고 완료 / 6월 2째주 _ 불량 3ea (재박음질 완료)",
+        "item_id": 10025,
+        "created_at": "2026-06-14T22:51:15.421Z",
+        "parent_comment_id": null
+      }
+    ],
+    "milestone_10020": [
+      {
+        "id": 10124,
+        "type": "milestone",
+        "author": "황인학M",
+        "content": "6월 양산분 / 6/8~12 (5일간) _ 10대/日 생산계획 확정",
+        "item_id": 10020,
+        "created_at": "2026-06-02T05:35:09.417Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10168,
+        "type": "milestone",
+        "author": "황인학M",
+        "content": "6/8~9일 (2일간) _ 22대 생산 진행",
+        "item_id": 10020,
+        "created_at": "2026-06-10T04:34:31.323Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10211,
+        "type": "milestone",
+        "author": "황인학M",
+        "content": "6/18~19일 (2일간) _ 20대 생산 계획",
+        "item_id": 10020,
+        "created_at": "2026-06-17T03:57:20.216Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10342,
+        "type": "milestone",
+        "author": "황인학M",
+        "content": "7/2일 (목)_ 11대 생산\n7/3일 (금)_10대 생산 / 4대 교체",
+        "item_id": 10020,
+        "created_at": "2026-07-01T23:24:38.167Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10396,
+        "type": "milestone",
+        "author": "황인학M",
+        "content": "7/8일 (수) _ 7대 생산 계획",
+        "item_id": 10020,
+        "created_at": "2026-07-07T06:40:54.847Z",
+        "parent_comment_id": null
+      }
+    ],
+    "milestone_10021": [
+      {
+        "id": 10122,
+        "type": "milestone",
+        "author": "황인학M",
+        "content": "5/28 비용분담 협의 (이홍렬책임 / 김현석팀장) _ 부대비: 현대차 , 수리비: 인탑스",
+        "item_id": 10021,
+        "created_at": "2026-06-02T05:32:58.276Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10123,
+        "type": "milestone",
+        "author": "황인학M",
+        "content": "6/1 원문메일 참조 : KMX 필드클레임 관련 고품분석 결과 및 비용산정 분담안",
+        "item_id": 10021,
+        "created_at": "2026-06-02T05:33:37.367Z",
+        "parent_comment_id": null
+      }
+    ],
     "milestone_10023": [
       {
         "id": 10061,
         "type": "milestone",
-        "item_id": 10023,
         "author": "김현석팀장",
         "content": "생산이관에 대해 고민해 보고 이관이 맞다고 생각되면 변경점을 진행하는 것일 어떨까요?",
+        "item_id": 10023,
         "created_at": "2026-05-20T01:55:45.500Z"
       },
       {
         "id": 10063,
         "type": "milestone",
-        "item_id": 10023,
         "author": "황인학매니저",
         "content": "고객사 담당 (이홍렬 책임) 4M변경 관련 내용공유 완료\n200대분 정상가동 (사출-NC-도장-조립) 검증 진행",
+        "item_id": 10023,
         "created_at": "2026-05-20T02:02:52.204Z"
-      }
-    ],
-    "milestone_10070": [
-      {
-        "id": 10071,
-        "type": "milestone",
-        "item_id": 10070,
-        "author": "김민호M",
-        "content": "26/5/21 측정완료 (양호)",
-        "created_at": "2026-05-21T00:55:55.917Z"
-      },
-      {
-        "id": 10072,
-        "type": "milestone",
-        "item_id": 10070,
-        "author": "김민호M",
-        "content": "26/5/22 측정완료 (양호)",
-        "created_at": "2026-05-21T00:56:07.225Z"
-      }
-    ],
-    "milestone_10074": [
-      {
-        "id": 10075,
-        "type": "milestone",
-        "item_id": 10074,
-        "author": "강도희M",
-        "content": "XRF,프탈레이트(가라 DATA) 총 18건  23~24일",
-        "created_at": "2026-05-21T00:59:11.156Z"
       }
     ],
     "milestone_10029": [
       {
         "id": 10080,
         "type": "milestone",
-        "item_id": 10029,
-        "parent_comment_id": null,
         "author": "김현석",
         "content": "PV#2 자재 진행시 상기 도료 및 도막 두께 개선에 대한 유효성 검증 진행 해 봅시다",
-        "created_at": "2026-05-21T01:16:15.027Z"
-      },
-      {
-        "id": 10112,
-        "type": "milestone",
         "item_id": 10029,
-        "parent_comment_id": null,
-        "author": "권창해",
-        "content": "PV2 자재 신뢰성 유효성 TEST 시, 신뢰성 양호 합니다.",
-        "created_at": "2026-05-29T07:18:10.600Z"
+        "created_at": "2026-05-21T01:16:15.027Z",
+        "parent_comment_id": null
       }
     ],
-    "dpost_10081": [
+    "milestone_10039": [
       {
-        "id": 10082,
-        "type": "dpost",
-        "item_id": 10081,
+        "id": 10141,
+        "type": "milestone",
+        "author": "황인학M",
+        "content": "국방부 실사결과 발표 : 6/22",
+        "item_id": 10039,
+        "created_at": "2026-06-04T04:23:33.254Z",
+        "parent_comment_id": null
+      }
+    ],
+    "milestone_10070": [
+      {
+        "id": 10071,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "26/5/21 측정완료 (양호)",
+        "item_id": 10070,
+        "created_at": "2026-05-21T00:55:55.917Z"
+      },
+      {
+        "id": 10072,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "26/5/22 측정완료 (양호)",
+        "item_id": 10070,
+        "created_at": "2026-05-21T00:56:07.225Z"
+      },
+      {
+        "id": 10217,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "5.23 ~ 5.31 측정완료 OK",
+        "item_id": 10070,
+        "created_at": "2026-06-18T06:49:50.219Z",
+        "parent_comment_id": null
+      }
+    ],
+    "milestone_10074": [
+      {
+        "id": 10075,
+        "type": "milestone",
+        "author": "강도희M",
+        "content": "XRF,프탈레이트(가라 DATA) 총 18건  23~24일",
+        "item_id": 10074,
+        "created_at": "2026-05-21T00:59:11.156Z"
+      }
+    ],
+    "milestone_10076": [
+      {
+        "id": 10119,
+        "type": "milestone",
+        "author": "황인학M",
+        "content": "4M변경 없이 기존양산처 유지 (COVER류 사출처 : 욱일)",
+        "item_id": 10076,
+        "created_at": "2026-06-02T05:31:33.692Z",
+        "parent_comment_id": null
+      }
+    ],
+    "milestone_10117": [
+      {
+        "id": 10152,
+        "type": "milestone",
+        "author": "배홍연",
+        "content": "낙추NG",
+        "item_id": 10117,
+        "created_at": "2026-06-08T00:50:42.980Z",
+        "parent_comment_id": null
+      }
+    ],
+    "milestone_10154": [
+      {
+        "id": 10155,
+        "type": "milestone",
+        "author": "배홍연",
+        "content": "내열탕 NG (제품변형)",
+        "item_id": 10154,
+        "created_at": "2026-06-08T00:53:07.230Z",
+        "parent_comment_id": null
+      }
+    ],
+    "milestone_10158": [
+      {
+        "id": 10159,
+        "type": "milestone",
+        "author": "배홍연",
+        "content": "X/C NG",
+        "item_id": 10158,
+        "created_at": "2026-06-08T07:58:17.316Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10174,
+        "type": "milestone",
+        "author": "배홍연",
+        "content": "내화장 NG (후기X/C NG)",
+        "item_id": 10158,
+        "created_at": "2026-06-10T23:45:17.921Z",
+        "parent_comment_id": null
+      }
+    ],
+    "milestone_10171": [
+      {
+        "id": 10186,
+        "type": "milestone",
+        "author": "김현석",
+        "content": "부품별 일정 수립해서 진행하고 진행사항 여기에 공유",
+        "item_id": 10171,
+        "created_at": "2026-06-12T07:34:09.522Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10210,
+        "type": "milestone",
+        "author": "황인학M",
+        "content": "제품 입수 ~6/22(월) , 시험계획/일정수립 6/22(월)~ , 시편 입수일정 확인필요 / 외부시험기관 시험가능일정 확인필요 / 항온항습기 가용capa 확인필요",
+        "item_id": 10171,
+        "created_at": "2026-06-17T03:54:57.460Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10406,
+        "type": "milestone",
+        "item_id": 10171,
+        "parent_comment_id": null,
+        "author": "배홍연",
+        "content": "MS 655-15 X/C, 연필경도, 내약품, 내마모 OK",
+        "created_at": "2026-07-07T23:21:29.986Z"
+      },
+      {
+        "id": 10407,
+        "type": "milestone",
+        "item_id": 10171,
+        "parent_comment_id": null,
+        "author": "배홍연",
+        "content": "인쇄 내약품 OK",
+        "created_at": "2026-07-07T23:21:38.471Z"
+      },
+      {
+        "id": 10408,
+        "type": "milestone",
+        "item_id": 10171,
+        "parent_comment_id": null,
+        "author": "배홍연",
+        "content": "WAIST CLIP, BODY 임펙트TEST OK",
+        "created_at": "2026-07-07T23:21:56.680Z"
+      },
+      {
+        "id": 10409,
+        "type": "milestone",
+        "item_id": 10171,
+        "parent_comment_id": null,
+        "author": "배홍연",
+        "content": "MS632-03 옥살산TEST OK",
+        "created_at": "2026-07-07T23:22:06.324Z"
+      },
+      {
+        "id": 10431,
+        "type": "milestone",
+        "item_id": 10171,
+        "parent_comment_id": null,
+        "author": "배홍연",
+        "content": "MS655-15 내열성 OK",
+        "created_at": "2026-07-09T07:55:32.025Z"
+      }
+    ],
+    "milestone_10176": [
+      {
+        "id": 10177,
+        "type": "milestone",
+        "author": "배홍연",
+        "content": "X.C 1/4 NG",
+        "item_id": 10176,
+        "created_at": "2026-06-11T05:48:15.912Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10200,
+        "type": "milestone",
+        "author": "배홍연",
+        "content": "내화장 2/5 NG",
+        "item_id": 10176,
+        "created_at": "2026-06-16T01:18:34.167Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10236,
+        "type": "milestone",
+        "author": "배홍연",
+        "content": "낙추 1/5 NG",
+        "item_id": 10176,
+        "created_at": "2026-06-19T05:16:40.999Z",
+        "parent_comment_id": null
+      }
+    ],
+    "milestone_10190": [
+      {
+        "id": 10195,
+        "type": "milestone",
+        "author": "황인학M",
+        "content": "6/1   입고불량: 0.92% (179/19,396)  한보작불: 2.17% (412/18,984)\n6/8   입고불량: 0.87% (265/30,470)  한보작불: 2.05% (613/29,857)\n6/12 입고불량: 0.78% (304/38,892)  한보작불: 1.97% (751/38,141)",
+        "item_id": 10190,
+        "created_at": "2026-06-15T02:18:19.001Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10326,
+        "type": "milestone",
+        "author": "황인학M",
+        "content": "6/25 입고불량: 0.68% (351/51,276)  한보작불: 2.45% (1,224/50,052)",
+        "item_id": 10190,
+        "created_at": "2026-06-29T08:11:34.869Z",
+        "parent_comment_id": null
+      }
+    ],
+    "milestone_10196": [
+      {
+        "id": 10197,
+        "type": "milestone",
+        "author": "황인학M",
+        "content": "\\\\192.168.10.3\\개발팀\\구미\\모빌린트",
+        "item_id": 10196,
+        "created_at": "2026-06-15T05:16:32.421Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10198,
+        "type": "milestone",
+        "author": "황인학M",
+        "content": "\\\\192.168.10.3\\품질팀\\▣ 모빌린트 MLX-A1(Edge AI Device)",
+        "item_id": 10196,
+        "created_at": "2026-06-15T05:17:06.298Z",
+        "parent_comment_id": null
+      }
+    ],
+    "milestone_10203": [
+      {
+        "id": 10204,
+        "type": "milestone",
+        "author": "배홍연",
+        "content": "낙추 1/4 NG",
+        "item_id": 10203,
+        "created_at": "2026-06-16T01:22:21.381Z",
+        "parent_comment_id": null
+      }
+    ],
+    "milestone_10205": [
+      {
+        "id": 10206,
+        "type": "milestone",
+        "author": "배홍연",
+        "content": "낙추 3/5 NG",
+        "item_id": 10205,
+        "created_at": "2026-06-16T01:22:48.979Z",
+        "parent_comment_id": null
+      }
+    ],
+    "milestone_10213": [],
+    "milestone_10214": [
+      {
+        "id": 10316,
+        "type": "milestone",
+        "author": "황인학M",
+        "content": "카트리지 제작 _  7/14 ~ 7/15",
+        "item_id": 10214,
+        "created_at": "2026-06-29T05:14:54.062Z",
+        "parent_comment_id": null
+      }
+    ],
+    "milestone_10218": [
+      {
+        "id": 10231,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "6.1 ~ 6.18 측정완료 OK 6.18주중 생산중지 (레진부족)",
+        "item_id": 10218,
+        "created_at": "2026-06-18T07:42:32.931Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10294,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "6.25 야초 가동 측정완료 OK",
+        "item_id": 10218,
+        "created_at": "2026-06-25T23:28:37.476Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10313,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "6.26 측정완료 OK",
+        "item_id": 10218,
+        "created_at": "2026-06-29T01:24:56.501Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10360,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "6.27~6.30 측정완료 OK",
+        "item_id": 10218,
+        "created_at": "2026-07-06T00:52:08.714Z",
+        "parent_comment_id": null
+      }
+    ],
+    "milestone_10220": [
+      {
+        "id": 10221,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "오스템 임플란트 측정완료 OK",
+        "item_id": 10220,
+        "created_at": "2026-06-18T06:52:18.765Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10222,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "전혈100 UPERR 측정완료 OK",
+        "item_id": 10220,
+        "created_at": "2026-06-18T06:53:25.912Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10227,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "미러커버 PLATE (L1, R1, L2, R2) 측정완료 OK",
+        "item_id": 10220,
+        "created_at": "2026-06-18T07:04:15.585Z",
+        "parent_comment_id": null
+      }
+    ],
+    "milestone_10223": [
+      {
+        "id": 10229,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "측정완료 7point NG 이성근책임 공유완료",
+        "item_id": 10223,
+        "created_at": "2026-06-18T07:05:47.001Z",
+        "parent_comment_id": null
+      }
+    ],
+    "milestone_10232": [
+      {
+        "id": 10233,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "전혈100 UPERR,LOWER 측정완료 OK",
+        "item_id": 10232,
+        "created_at": "2026-06-19T00:43:50.454Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10234,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "미러커버 PLATE (L1, R1, L2, R2) 측정완료 OK",
+        "item_id": 10232,
+        "created_at": "2026-06-19T00:44:00.994Z",
+        "parent_comment_id": null
+      }
+    ],
+    "milestone_10238": [
+      {
+        "id": 10239,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "전혈100 UPERR,LOWER 측정완료 OK",
+        "item_id": 10238,
+        "created_at": "2026-06-22T02:18:34.982Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10240,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "미러커버 PLATE (L1, R1, L2, R2) 측정완료 OK",
+        "item_id": 10238,
+        "created_at": "2026-06-22T02:18:38.770Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10241,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "오스템 임플란트 측정완료 OK",
+        "item_id": 10238,
+        "created_at": "2026-06-22T02:18:49.075Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10246,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "X-BLE Shoulder SY테크 4종 측정완료 OK (BRACKET-SLIDE,SLIDE PIN, LINK B, LINK C)",
+        "item_id": 10238,
+        "created_at": "2026-06-22T02:38:54.899Z",
+        "parent_comment_id": null
+      }
+    ],
+    "milestone_10247": [
+      {
+        "id": 10248,
+        "type": "milestone",
+        "author": "배홍연",
+        "content": "X.C OK",
+        "item_id": 10247,
+        "created_at": "2026-06-22T06:37:25.157Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10249,
+        "type": "milestone",
+        "author": "배홍연",
+        "content": "연필경도 OK",
+        "item_id": 10247,
+        "created_at": "2026-06-22T06:37:31.012Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10267,
+        "type": "milestone",
+        "author": "배홍연",
+        "content": "내약품 OK",
+        "item_id": 10247,
+        "created_at": "2026-06-23T06:50:55.002Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10279,
+        "type": "milestone",
+        "author": "배홍연",
+        "content": "옥살산 SPOT TEST OK",
+        "item_id": 10247,
+        "created_at": "2026-06-24T05:44:23.656Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10319,
+        "type": "milestone",
+        "author": "배홍연",
+        "content": "인쇄 내약품 OK",
+        "item_id": 10247,
+        "created_at": "2026-06-29T05:19:09.868Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10404,
+        "type": "milestone",
+        "item_id": 10247,
+        "parent_comment_id": null,
+        "author": "배홍연",
+        "content": "임펙트TEST OK",
+        "created_at": "2026-07-07T23:20:51.640Z"
+      },
+      {
+        "id": 10405,
+        "type": "milestone",
+        "item_id": 10247,
+        "parent_comment_id": null,
+        "author": "배홍연",
+        "content": "내마모 OK",
+        "created_at": "2026-07-07T23:20:59.506Z"
+      },
+      {
+        "id": 10430,
+        "type": "milestone",
+        "item_id": 10247,
+        "parent_comment_id": null,
+        "author": "배홍연",
+        "content": "내열성 OK",
+        "created_at": "2026-07-09T07:55:13.219Z"
+      }
+    ],
+    "milestone_10250": [
+      {
+        "id": 10262,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "전혈100 LOWER 측정완료 OK",
+        "item_id": 10250,
+        "created_at": "2026-06-23T02:33:00.895Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10263,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "미러커버 PLATE (L1, R1, L2, R2) 측정완료 OK",
+        "item_id": 10250,
+        "created_at": "2026-06-23T02:33:04.173Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10264,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "오스템 임플란트 측정완료 OK",
+        "item_id": 10250,
+        "created_at": "2026-06-23T02:33:08.041Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10265,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "X-BLE Shoulder SY테크 1종 측정완료 OK (WAIST CLIP SOCKET)",
+        "item_id": 10250,
+        "created_at": "2026-06-23T02:33:34.405Z",
+        "parent_comment_id": null
+      }
+    ],
+    "milestone_10252": [
+      {
+        "id": 10312,
+        "type": "milestone",
+        "author": "황인학M",
+        "content": "보드 7대 핸드캐리 (6/27일) _ 검토필요",
+        "item_id": 10252,
+        "created_at": "2026-06-28T23:30:09.249Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10351,
+        "type": "milestone",
+        "author": "황인학M",
+        "content": "샘플 검토결과 특이사항 없음 / 검사기준서 매칭 확인 _ 1000대분 입고시 고객사 참관 검사 예정",
+        "item_id": 10252,
+        "created_at": "2026-07-02T22:48:28.648Z",
+        "parent_comment_id": null
+      }
+    ],
+    "milestone_10259": [
+      {
+        "id": 10287,
+        "type": "milestone",
+        "author": "황인학M",
+        "content": "26년 12월 생산예상 (동남아 국가 대상 판매 / 20만대 예상)",
+        "item_id": 10259,
+        "created_at": "2026-06-24T23:55:06.947Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10353,
+        "type": "milestone",
+        "author": "황인학M",
+        "content": ". 제조 ST 산출 완료 / 원가 약 1만원 / 제품원가 13만원 / 이윤포함 15만원\n    연간 20만개 / 200억대 매출",
+        "item_id": 10259,
+        "created_at": "2026-07-02T22:50:41.603Z",
+        "parent_comment_id": null
+      }
+    ],
+    "milestone_10268": [
+      {
+        "id": 10276,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "미러커버 PLATE (L1, R1, L2, R2) 측정완료 OK",
+        "item_id": 10268,
+        "created_at": "2026-06-24T04:29:14.283Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10277,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "오스템 임플란트 측정완료 OK",
+        "item_id": 10268,
+        "created_at": "2026-06-24T04:29:17.448Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10278,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "전혈100 LOWER 측정완료 OK",
+        "item_id": 10268,
+        "created_at": "2026-06-24T04:51:35.288Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10282,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "X-BLE Shoulder 태광산업 1종 측정완료 OK (POLE-ADJUST)",
+        "item_id": 10268,
+        "created_at": "2026-06-24T06:28:43.203Z",
+        "parent_comment_id": null
+      }
+    ],
+    "milestone_10271": [
+      {
+        "id": 10272,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "측정완료 OK",
+        "item_id": 10271,
+        "created_at": "2026-06-24T03:52:14.907Z",
+        "parent_comment_id": null
+      }
+    ],
+    "milestone_10274": [
+      {
+        "id": 10275,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "측정완료 OK",
+        "item_id": 10274,
+        "created_at": "2026-06-24T04:27:43.591Z",
+        "parent_comment_id": null
+      }
+    ],
+    "milestone_10283": [
+      {
+        "id": 10355,
+        "type": "milestone",
+        "author": "황인학M",
+        "content": "1) 단사출 1종 TO 완료 / 이상없음 (범상)\n2) 이중사출 1종 7/2 TO 예정",
+        "item_id": 10283,
+        "created_at": "2026-07-02T22:51:44.316Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10356,
+        "type": "milestone",
+        "author": "황인학M",
+        "content": "정규인력 아닌 3층 BR라인 작업인력 배치\n추후 양산시 정규라인 및 정규인력 투입",
+        "item_id": 10283,
+        "created_at": "2026-07-02T22:52:16.720Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10403,
+        "type": "milestone",
+        "item_id": 10283,
         "parent_comment_id": null,
         "author": "황인학M",
-        "content": "TEST2",
-        "created_at": "2026-05-21T01:30:47.710Z"
+        "content": "- 메인보드, 메모리, SSD 각 1천대분 입고 /  모빌린트 SCM담당 내방 확인\n - 커버, 팬 8월 중순경 입고예정\n  - 7월 14일 1대분 조립검증 (BR_3층) _ 조립 및 필요 지그류 등 점검예정",
+        "created_at": "2026-07-07T23:07:42.440Z"
       }
     ],
-    "claim_10024": [],
-    "claim_10025": [
+    "milestone_10285": [
       {
-        "id": 10085,
-        "type": "claim",
-        "item_id": 10025,
-        "parent_comment_id": null,
-        "author": "허준우",
-        "content": "조끼단품 버클 쪽 터짐 이슈로 제조 쪽 가지고 있는 베트남 생산물량 재검 중 불량이 발생(강한힘으로 당길시 두둑소리와함께 터짐발생)  현재 xs사이즈 25개 재고 중 1개 발생  보유중인 조끼 전체 물량 재검",
-        "created_at": "2026-05-21T22:55:37.280Z"
+        "id": 10288,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "미러커버 PLATE (L1, R1, L2, R2) 측정완료 OK",
+        "item_id": 10285,
+        "created_at": "2026-06-25T03:55:51.032Z",
+        "parent_comment_id": null
       },
       {
-        "id": 10086,
-        "type": "claim",
-        "item_id": 10025,
-        "parent_comment_id": null,
-        "author": "허준우",
-        "content": "고객사 공유 완료.  강도 보강 및 리웍관련 협력사(어나더앤) 회의 2026.05.22 10시",
-        "created_at": "2026-05-21T22:55:53.972Z"
-      }
-    ],
-    "milestone_10049": [
-      {
-        "id": 10107,
+        "id": 10289,
         "type": "milestone",
-        "item_id": 10049,
-        "parent_comment_id": null,
-        "author": "권창해",
-        "content": "출하자재 준비완료. 5/28 출하예정",
-        "created_at": "2026-05-26T23:34:26.732Z"
+        "author": "김민호M",
+        "content": "전혈100 UPERR,LOWER 측정완료 OK",
+        "item_id": 10285,
+        "created_at": "2026-06-25T03:56:02.227Z",
+        "parent_comment_id": null
       },
       {
-        "id": 10108,
+        "id": 10290,
         "type": "milestone",
-        "item_id": 10049,
-        "parent_comment_id": null,
-        "author": "권창해",
-        "content": "5/28 출하완료",
-        "created_at": "2026-05-29T07:09:45.488Z"
+        "author": "김민호M",
+        "content": "S26 M3 태산코팅 측정완료 OK",
+        "item_id": 10285,
+        "created_at": "2026-06-25T03:56:48.569Z",
+        "parent_comment_id": null
       }
     ],
-    "milestone_10027": [
+    "milestone_10286": [
       {
-        "id": 10110,
+        "id": 10349,
         "type": "milestone",
-        "item_id": 10027,
-        "parent_comment_id": null,
-        "author": "권창해",
-        "content": "블랙: 56.7% / 블루: 34.1% / 민트: 54.8%",
-        "created_at": "2026-05-29T07:11:35.725Z"
+        "author": "황인학M",
+        "content": "폐기금형 87벌 / 노즐 44벌 (131벌)\n7/10~11 폐기예정\nSDB 담당 내방",
+        "item_id": 10286,
+        "created_at": "2026-07-02T22:44:14.829Z",
+        "parent_comment_id": null
       }
     ],
-    "milestone_10028": [
+    "milestone_10291": [
       {
-        "id": 10111,
+        "id": 10292,
         "type": "milestone",
-        "item_id": 10028,
-        "parent_comment_id": null,
-        "author": "권창해",
-        "content": "6/1 금형 사내 이동 예정",
-        "created_at": "2026-05-29T07:17:51.663Z"
+        "author": "김민호M",
+        "content": "이동광책임 파일 전달 완료",
+        "item_id": 10291,
+        "created_at": "2026-06-25T06:58:51.863Z",
+        "parent_comment_id": null
+      }
+    ],
+    "milestone_10293": [
+      {
+        "id": 10297,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "S26 M3 태산코팅 측정완료 OK",
+        "item_id": 10293,
+        "created_at": "2026-06-26T02:32:56.524Z",
+        "parent_comment_id": null
       },
       {
-        "id": 10114,
+        "id": 10304,
         "type": "milestone",
-        "item_id": 10028,
-        "parent_comment_id": null,
-        "author": "권창해",
-        "content": "6/1 시사출 완료 : 살두께 축소로 인한 성형성 저하 (전폭 하단 치수 미달 및 상하 편차 0.15수준 심함)",
-        "created_at": "2026-06-01T06:55:38.605Z"
+        "author": "김민호M",
+        "content": "전혈100 UPERR 측정완료 OK",
+        "item_id": 10293,
+        "created_at": "2026-06-26T06:14:25.051Z",
+        "parent_comment_id": null
       },
       {
-        "id": 10122,
+        "id": 10305,
         "type": "milestone",
-        "item_id": 10028,
-        "parent_comment_id": null,
-        "author": "권창해",
-        "content": "해당 코어 미사용 결정",
-        "created_at": "2026-06-04T02:12:56.108Z"
+        "author": "김민호M",
+        "content": "R14 사츨 장,폭 측정완료 OK",
+        "item_id": 10293,
+        "created_at": "2026-06-26T06:14:28.797Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10306,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "X-BLE Shoulder SY테크 7종 측정완료 OK\nHOUSING-TORQUE GEN , BASIC, HOUSING-BODY , ADJSTER-NUT\nBASE-PLATE-BASIC, LH , BASE-PLATE-BASIC, RH , BASE-PLATE, LH , BASE-PLATE, RH",
+        "item_id": 10293,
+        "created_at": "2026-06-26T06:14:32.811Z",
+        "parent_comment_id": null
       }
     ],
-    "milestone_10106": [
+    "milestone_10295": [
       {
-        "id": 10115,
+        "id": 10296,
         "type": "milestone",
-        "item_id": 10106,
+        "author": "김민호M",
+        "content": "치수측정완료 OK",
+        "item_id": 10295,
+        "created_at": "2026-06-26T02:32:40.456Z",
+        "parent_comment_id": null
+      }
+    ],
+    "milestone_10308": [
+      {
+        "id": 10309,
+        "type": "milestone",
+        "author": "배홍연",
+        "content": "1 NG (2/2)",
+        "item_id": 10308,
+        "created_at": "2026-06-26T08:00:13.921Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10310,
+        "type": "milestone",
+        "author": "배홍연",
+        "content": "2 NG (2/2)",
+        "item_id": 10308,
+        "created_at": "2026-06-26T08:00:20.379Z",
+        "parent_comment_id": null
+      }
+    ],
+    "milestone_10314": [
+      {
+        "id": 10315,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "전혈100 UPERR 측정완료 OK",
+        "item_id": 10314,
+        "created_at": "2026-06-29T01:25:43.817Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10323,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "X-BLE Shoulder SY테크 1종 측정완료 OK (INSERT PIN-SLIDE)",
+        "item_id": 10314,
+        "created_at": "2026-06-29T06:28:28.365Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10324,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "R14 사츨 측정완료 OK",
+        "item_id": 10314,
+        "created_at": "2026-06-29T06:28:31.344Z",
+        "parent_comment_id": null
+      }
+    ],
+    "milestone_10317": [
+      {
+        "id": 10318,
+        "type": "milestone",
+        "author": "배홍연",
+        "content": "3 NG (2/2)",
+        "item_id": 10317,
+        "created_at": "2026-06-29T05:18:44.653Z",
+        "parent_comment_id": null
+      }
+    ],
+    "milestone_10320": [
+      {
+        "id": 10328,
+        "type": "milestone",
+        "author": "배홍연",
+        "content": "낙추 NG (5/5) 500/50 (1/1), 300/30 (2/2), 300/20 (2/2)",
+        "item_id": 10320,
+        "created_at": "2026-06-30T00:24:38.526Z",
+        "parent_comment_id": null
+      }
+    ],
+    "milestone_10331": [
+      {
+        "id": 10332,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "전혈100 UPERR 측정완료 OK",
+        "item_id": 10331,
+        "created_at": "2026-06-30T07:53:19.256Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10333,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "R14 사츨 측정완료 OK",
+        "item_id": 10331,
+        "created_at": "2026-06-30T07:53:22.191Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10334,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "R14 NC 측정완료 OK",
+        "item_id": 10331,
+        "created_at": "2026-06-30T07:53:42.765Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10335,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "R14 NC 측정완료 NG (마그넷 위치 세로 0.02 미달 권창해M 진행)",
+        "item_id": 10331,
+        "created_at": "2026-06-30T07:55:01.825Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10336,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "X-BLE Shoulder 태산테크 8종 측정완료 OK (COVER 기본형4종, 조절형4종)",
+        "item_id": 10331,
+        "created_at": "2026-06-30T07:55:52.246Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10338,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "오스템 임플란트 측정완료 OK",
+        "item_id": 10331,
+        "created_at": "2026-06-30T07:56:15.501Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10339,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "미러커버 PLATE (L1, R1, L2, R2) 측정완료 OK",
+        "item_id": 10331,
+        "created_at": "2026-06-30T07:56:47.643Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10340,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "R14 PC SHEET 측정완료 NG (형합시 이상없어 권창해M 진행)",
+        "item_id": 10331,
+        "created_at": "2026-06-30T07:57:43.388Z",
+        "parent_comment_id": null
+      }
+    ],
+    "milestone_10344": [
+      {
+        "id": 10346,
+        "type": "milestone",
+        "author": "배홍연",
+        "content": "구상 NG (2/2)",
+        "item_id": 10344,
+        "created_at": "2026-07-02T02:31:33.758Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10347,
+        "type": "milestone",
+        "author": "배홍연",
+        "content": "코팅 NG (2/2)",
+        "item_id": 10344,
+        "created_at": "2026-07-02T02:31:42.627Z",
+        "parent_comment_id": null
+      }
+    ],
+    "milestone_10348": [
+      {
+        "id": 10358,
+        "type": "milestone",
+        "author": "배홍연",
+        "content": "내습성 (~7/16)",
+        "item_id": 10348,
+        "created_at": "2026-07-06T00:38:33.413Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10428,
+        "type": "milestone",
+        "item_id": 10348,
         "parent_comment_id": null,
-        "author": "권창해",
-        "content": "PV2 TEST 합격",
-        "created_at": "2026-06-01T07:41:30.198Z"
+        "author": "배홍연",
+        "content": "내열성(~7/21)",
+        "created_at": "2026-07-09T04:36:06.043Z"
+      }
+    ],
+    "milestone_10361": [
+      {
+        "id": 10362,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "7.1~7.3 측정완료 OK",
+        "item_id": 10361,
+        "created_at": "2026-07-06T00:53:04.051Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10386,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "7.6 측정완료 OK",
+        "item_id": 10361,
+        "created_at": "2026-07-07T03:49:28.163Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10411,
+        "type": "milestone",
+        "item_id": 10361,
+        "parent_comment_id": null,
+        "author": "김민호M",
+        "content": "7.7 측정완료 OK",
+        "created_at": "2026-07-07T23:40:42.543Z"
+      }
+    ],
+    "milestone_10363": [
+      {
+        "id": 10364,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "미러커버 PLATE (L1, R1, L2, R2) 측정완료 OK",
+        "item_id": 10363,
+        "created_at": "2026-07-06T00:54:08.547Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10366,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "R14 코팅 측정완료 OK",
+        "item_id": 10363,
+        "created_at": "2026-07-06T00:54:56.048Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10371,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "X-BLE Shoulder 밥스 3종 측정완료 OK(ADJ. LINK A, LINK-SPRING END, BASIC LINK A)",
+        "item_id": 10363,
+        "created_at": "2026-07-06T00:57:59.505Z",
+        "parent_comment_id": null
+      }
+    ],
+    "milestone_10367": [
+      {
+        "id": 10368,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "미러커버 PLATE (L1, R1, L2, R2) 측정완료 OK",
+        "item_id": 10367,
+        "created_at": "2026-07-06T00:55:45.608Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10369,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "R14 NC 측정완료 OK",
+        "item_id": 10367,
+        "created_at": "2026-07-06T00:56:06.069Z",
+        "parent_comment_id": null
+      }
+    ],
+    "milestone_10372": [
+      {
+        "id": 10373,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "미러커버 PLATE (L1, R1, L2, R2) 측정완료 OK",
+        "item_id": 10372,
+        "created_at": "2026-07-06T00:58:34.182Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10374,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "R14 NC 측정완료 OK",
+        "item_id": 10372,
+        "created_at": "2026-07-06T00:58:49.705Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10375,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "R14 사출 측정완료 OK",
+        "item_id": 10372,
+        "created_at": "2026-07-06T00:58:59.657Z",
+        "parent_comment_id": null
+      }
+    ],
+    "milestone_10376": [
+      {
+        "id": 10377,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "R14 사출 측정완료 OK",
+        "item_id": 10376,
+        "created_at": "2026-07-06T00:59:24.835Z",
+        "parent_comment_id": null
+      }
+    ],
+    "milestone_10382": [
+      {
+        "id": 10413,
+        "type": "milestone",
+        "item_id": 10382,
+        "parent_comment_id": null,
+        "author": "배홍연",
+        "content": "롯데 PA-BK 내약품NG",
+        "created_at": "2026-07-07T23:59:59.088Z"
+      },
+      {
+        "id": 10414,
+        "type": "milestone",
+        "item_id": 10382,
+        "parent_comment_id": null,
+        "author": "배홍연",
+        "content": "롯데 PA-B 내약품 NG",
+        "created_at": "2026-07-08T00:00:11.557Z"
+      },
+      {
+        "id": 10415,
+        "type": "milestone",
+        "item_id": 10382,
+        "parent_comment_id": null,
+        "author": "배홍연",
+        "content": "사빅 PBT 내약품 NG",
+        "created_at": "2026-07-08T00:00:25.889Z"
+      },
+      {
+        "id": 10416,
+        "type": "milestone",
+        "item_id": 10382,
+        "parent_comment_id": null,
+        "author": "배홍연",
+        "content": "바스프 PA 내약품, 내화장품 NG",
+        "created_at": "2026-07-08T00:00:43.023Z"
+      },
+      {
+        "id": 10417,
+        "type": "milestone",
+        "item_id": 10382,
+        "parent_comment_id": null,
+        "author": "배홍연",
+        "content": "바스프 PBT 내약품 NG",
+        "created_at": "2026-07-08T00:00:53.690Z"
+      },
+      {
+        "id": 10418,
+        "type": "milestone",
+        "item_id": 10382,
+        "parent_comment_id": null,
+        "author": "배홍연",
+        "content": "시앤스코 GF50% 내약품 NG",
+        "created_at": "2026-07-08T00:01:14.092Z"
+      }
+    ],
+    "milestone_10385": [
+      {
+        "id": 10387,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "M3 사출 측정완료 OK",
+        "item_id": 10385,
+        "created_at": "2026-07-07T05:02:39.697Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10388,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "미러커버 PLATE (L1, R1, L2, R2) 측정완료 OK",
+        "item_id": 10385,
+        "created_at": "2026-07-07T05:02:46.411Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10389,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "진단키트 Q8 LOWER 측정완료 OK",
+        "item_id": 10385,
+        "created_at": "2026-07-07T05:03:10.551Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10394,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "M3 코팅 측정완료 OK",
+        "item_id": 10385,
+        "created_at": "2026-07-07T05:33:23.457Z",
+        "parent_comment_id": null
+      },
+      {
+        "id": 10397,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "S26 SIDE KEY 측정완료 OK",
+        "item_id": 10385,
+        "created_at": "2026-07-07T07:29:08.812Z",
+        "parent_comment_id": null
+      }
+    ],
+    "milestone_10392": [
+      {
+        "id": 10393,
+        "type": "milestone",
+        "author": "김민호M",
+        "content": "측정완료 OK",
+        "item_id": 10392,
+        "created_at": "2026-07-07T05:05:30.140Z",
+        "parent_comment_id": null
+      }
+    ],
+    "milestone_12345": [],
+    "milestone_10350": [
+      {
+        "id": 10398,
+        "type": "milestone",
+        "item_id": 10350,
+        "parent_comment_id": null,
+        "author": "황인학M",
+        "content": "PIN 4.03±0.02 / HOLE 3.90±0.03로 재설정 시 최소 간섭 −0.08(틈새 0)이 보증되어 이탈이 원천 차단되며, 구리스·진원도 산포까지 흡수된다.\n잔여 확인 : 최대 간섭 −0.18 조건의 압입력·응력(크랙) 검증 후 스펙 최종 확정",
+        "created_at": "2026-07-07T23:00:20.813Z"
+      }
+    ],
+    "milestone_10046": [
+      {
+        "id": 10402,
+        "type": "milestone",
+        "item_id": 10046,
+        "parent_comment_id": null,
+        "author": "황인학M",
+        "content": "- 심사 진행을 위한 제조 진행 분주완료, 7/14~15 테스터킷 제조\n- 심사 진행을 위한 필요사항 체크리스트 점검중\n   금일 필요업무 배분 및 확인 (태산,분주,품질)\n   필요자료 작성 진행중 (밸리데이션 완료)\n-심사일정 : 7/23 인탑스 심사",
+        "created_at": "2026-07-07T23:03:07.232Z"
+      }
+    ],
+    "milestone_10379": [
+      {
+        "id": 10410,
+        "type": "milestone",
+        "item_id": 10379,
+        "parent_comment_id": null,
+        "author": "김민호M",
+        "content": "측정완료 이동광책임 전달",
+        "created_at": "2026-07-07T23:40:10.227Z"
+      }
+    ],
+    "milestone_10412": [
+      {
+        "id": 10421,
+        "type": "milestone",
+        "item_id": 10412,
+        "parent_comment_id": null,
+        "author": "김민호M",
+        "content": "미러커버 PLATE (L1, R1, L2, R2) 측정완료 OK",
+        "created_at": "2026-07-08T06:38:07.254Z"
+      },
+      {
+        "id": 10422,
+        "type": "milestone",
+        "item_id": 10412,
+        "parent_comment_id": null,
+        "author": "김민호M",
+        "content": "R14 NC 측정완료 OK",
+        "created_at": "2026-07-08T06:38:19.256Z"
+      },
+      {
+        "id": 10423,
+        "type": "milestone",
+        "item_id": 10412,
+        "parent_comment_id": null,
+        "author": "김민호M",
+        "content": "R14 사출 측정완료 OK (M/T , V/L)",
+        "created_at": "2026-07-08T06:38:31.863Z"
+      }
+    ],
+    "milestone_10424": [
+      {
+        "id": 10425,
+        "type": "milestone",
+        "item_id": 10424,
+        "parent_comment_id": null,
+        "author": "김민호M",
+        "content": "미러커버 PLATE (L1, R1, L2, R2) 측정완료 OK",
+        "created_at": "2026-07-09T03:51:10.080Z"
+      },
+      {
+        "id": 10426,
+        "type": "milestone",
+        "item_id": 10424,
+        "parent_comment_id": null,
+        "author": "김민호M",
+        "content": "R14 사출 측정완료 OK (M/T)",
+        "created_at": "2026-07-09T03:51:21.248Z"
+      }
+    ],
+    "milestone_10433": [
+      {
+        "id": 10434,
+        "type": "milestone",
+        "item_id": 10433,
+        "parent_comment_id": null,
+        "author": "김민호M",
+        "content": "R14 코팅 측정완료 OK (B/K)",
+        "created_at": "2026-07-10T06:23:13.572Z"
       }
     ]
   },
-  "dashboardMemo": "",
-  "dashboardMemoUpdatedAt": "2026-05-21T01:12:16.397Z",
-  "dashboardMemoUpdatedBy": "관리자",
-  "dashboardPosts": [
+  "sessions": [],
+  "subItems": {
+    "1": [
+      {
+        "id": 101,
+        "name": "기획",
+        "order": 0,
+        "modelId": 1
+      },
+      {
+        "id": 102,
+        "name": "설계/개발",
+        "order": 1,
+        "modelId": 1
+      },
+      {
+        "id": 103,
+        "name": "검증",
+        "order": 2,
+        "modelId": 1
+      },
+      {
+        "id": 104,
+        "name": "양산준비",
+        "order": 3,
+        "modelId": 1
+      },
+      {
+        "id": 105,
+        "name": "완료",
+        "order": 4,
+        "modelId": 1
+      }
+    ],
+    "2": [
+      {
+        "id": 201,
+        "name": "기획",
+        "order": 0,
+        "modelId": 2
+      },
+      {
+        "id": 202,
+        "name": "설계/개발",
+        "order": 1,
+        "modelId": 2
+      },
+      {
+        "id": 203,
+        "name": "검증",
+        "order": 2,
+        "modelId": 2
+      },
+      {
+        "id": 204,
+        "name": "양산준비",
+        "order": 3,
+        "modelId": 2
+      },
+      {
+        "id": 205,
+        "name": "완료",
+        "order": 4,
+        "modelId": 2
+      }
+    ],
+    "3": [
+      {
+        "id": 301,
+        "name": "기획",
+        "order": 0,
+        "modelId": 3
+      },
+      {
+        "id": 302,
+        "name": "설계/개발",
+        "order": 1,
+        "modelId": 3
+      },
+      {
+        "id": 303,
+        "name": "검증",
+        "order": 2,
+        "modelId": 3
+      },
+      {
+        "id": 304,
+        "name": "양산준비",
+        "order": 3,
+        "modelId": 3
+      },
+      {
+        "id": 305,
+        "name": "완료",
+        "order": 4,
+        "modelId": 3
+      }
+    ],
+    "4": [
+      {
+        "id": 401,
+        "name": "기획",
+        "order": 0,
+        "modelId": 4
+      },
+      {
+        "id": 402,
+        "name": "설계/개발",
+        "order": 1,
+        "modelId": 4
+      },
+      {
+        "id": 403,
+        "name": "검증",
+        "order": 2,
+        "modelId": 4
+      },
+      {
+        "id": 404,
+        "name": "양산준비",
+        "order": 3,
+        "modelId": 4
+      },
+      {
+        "id": 405,
+        "name": "완료",
+        "order": 4,
+        "modelId": 4
+      }
+    ],
+    "5": [
+      {
+        "id": 501,
+        "name": "기획",
+        "order": 0,
+        "modelId": 5
+      },
+      {
+        "id": 502,
+        "name": "설계/개발",
+        "order": 1,
+        "modelId": 5
+      },
+      {
+        "id": 503,
+        "name": "검증",
+        "order": 2,
+        "modelId": 5
+      },
+      {
+        "id": 504,
+        "name": "양산준비",
+        "order": 3,
+        "modelId": 5
+      },
+      {
+        "id": 505,
+        "name": "완료",
+        "order": 4,
+        "modelId": 5
+      }
+    ],
+    "6": [
+      {
+        "id": 601,
+        "name": "기획",
+        "order": 0,
+        "modelId": 6
+      },
+      {
+        "id": 602,
+        "name": "설계/개발",
+        "order": 1,
+        "modelId": 6
+      },
+      {
+        "id": 603,
+        "name": "검증",
+        "order": 2,
+        "modelId": 6
+      },
+      {
+        "id": 604,
+        "name": "양산준비",
+        "order": 3,
+        "modelId": 6
+      },
+      {
+        "id": 605,
+        "name": "완료",
+        "order": 4,
+        "modelId": 6
+      }
+    ],
+    "10001": [
+      {
+        "id": 10002,
+        "name": "의뢰 접수",
+        "order": 0,
+        "modelId": 10001
+      },
+      {
+        "id": 10003,
+        "name": "진행 중",
+        "order": 1,
+        "modelId": 10001
+      },
+      {
+        "id": 10004,
+        "name": "결과 확인",
+        "order": 2,
+        "modelId": 10001
+      },
+      {
+        "id": 10005,
+        "name": "조치/회신",
+        "order": 3,
+        "modelId": 10001
+      },
+      {
+        "id": 10006,
+        "name": "완료",
+        "order": 4,
+        "modelId": 10001
+      }
+    ],
+    "10007": [
+      {
+        "id": 10008,
+        "name": "의뢰 접수",
+        "order": 0,
+        "modelId": 10007
+      },
+      {
+        "id": 10009,
+        "name": "진행 중",
+        "order": 1,
+        "modelId": 10007
+      },
+      {
+        "id": 10010,
+        "name": "결과 확인",
+        "order": 2,
+        "modelId": 10007
+      },
+      {
+        "id": 10011,
+        "name": "조치/회신",
+        "order": 3,
+        "modelId": 10007
+      },
+      {
+        "id": 10012,
+        "name": "완료",
+        "order": 4,
+        "modelId": 10007
+      }
+    ],
+    "10013": [
+      {
+        "id": 10014,
+        "name": "의뢰 접수",
+        "order": 0,
+        "modelId": 10013
+      },
+      {
+        "id": 10015,
+        "name": "진행 중",
+        "order": 1,
+        "modelId": 10013
+      },
+      {
+        "id": 10016,
+        "name": "결과 확인",
+        "order": 2,
+        "modelId": 10013
+      },
+      {
+        "id": 10017,
+        "name": "조치/회신",
+        "order": 3,
+        "modelId": 10013
+      },
+      {
+        "id": 10018,
+        "name": "완료",
+        "order": 4,
+        "modelId": 10013
+      }
+    ],
+    "10032": [
+      {
+        "id": 10033,
+        "name": "기획",
+        "order": 0,
+        "modelId": 10032
+      },
+      {
+        "id": 10034,
+        "name": "설계/개발",
+        "order": 1,
+        "modelId": 10032
+      },
+      {
+        "id": 10035,
+        "name": "검증",
+        "order": 2,
+        "modelId": 10032
+      },
+      {
+        "id": 10036,
+        "name": "양산준비",
+        "order": 3,
+        "modelId": 10032
+      },
+      {
+        "id": 10037,
+        "name": "완료",
+        "order": 4,
+        "modelId": 10032
+      }
+    ],
+    "10040": [
+      {
+        "id": 10041,
+        "name": "기획",
+        "order": 0,
+        "modelId": 10040
+      },
+      {
+        "id": 10042,
+        "name": "설계/개발",
+        "order": 1,
+        "modelId": 10040
+      },
+      {
+        "id": 10043,
+        "name": "검증",
+        "order": 2,
+        "modelId": 10040
+      },
+      {
+        "id": 10044,
+        "name": "양산준비",
+        "order": 3,
+        "modelId": 10040
+      },
+      {
+        "id": 10045,
+        "name": "완료",
+        "order": 4,
+        "modelId": 10040
+      }
+    ],
+    "10087": [],
+    "10089": [],
+    "10091": [],
+    "10099": [
+      {
+        "id": 10100,
+        "name": "기획",
+        "order": 0,
+        "modelId": 10099
+      },
+      {
+        "id": 10101,
+        "name": "설계/개발",
+        "order": 1,
+        "modelId": 10099
+      },
+      {
+        "id": 10102,
+        "name": "검증",
+        "order": 2,
+        "modelId": 10099
+      },
+      {
+        "id": 10103,
+        "name": "양산준비",
+        "order": 3,
+        "modelId": 10099
+      },
+      {
+        "id": 10104,
+        "name": "완료",
+        "order": 4,
+        "modelId": 10099
+      }
+    ],
+    "10111": [
+      {
+        "id": 10112,
+        "name": "기획",
+        "order": 0,
+        "modelId": 10111
+      },
+      {
+        "id": 10113,
+        "name": "설계/개발",
+        "order": 1,
+        "modelId": 10111
+      },
+      {
+        "id": 10114,
+        "name": "검증",
+        "order": 2,
+        "modelId": 10111
+      },
+      {
+        "id": 10115,
+        "name": "양산준비",
+        "order": 3,
+        "modelId": 10111
+      },
+      {
+        "id": 10116,
+        "name": "완료",
+        "order": 4,
+        "modelId": 10111
+      }
+    ],
+    "10144": [
+      {
+        "id": 10145,
+        "name": "기획",
+        "order": 0,
+        "modelId": 10144
+      },
+      {
+        "id": 10146,
+        "name": "설계/개발",
+        "order": 1,
+        "modelId": 10144
+      },
+      {
+        "id": 10147,
+        "name": "검증",
+        "order": 2,
+        "modelId": 10144
+      },
+      {
+        "id": 10148,
+        "name": "양산준비",
+        "order": 3,
+        "modelId": 10144
+      },
+      {
+        "id": 10149,
+        "name": "완료",
+        "order": 4,
+        "modelId": 10144
+      }
+    ],
+    "10161": [
+      {
+        "id": 10162,
+        "name": "기획",
+        "order": 0,
+        "modelId": 10161
+      },
+      {
+        "id": 10163,
+        "name": "설계/개발",
+        "order": 1,
+        "modelId": 10161
+      },
+      {
+        "id": 10164,
+        "name": "검증",
+        "order": 2,
+        "modelId": 10161
+      },
+      {
+        "id": 10165,
+        "name": "양산준비",
+        "order": 3,
+        "modelId": 10161
+      },
+      {
+        "id": 10166,
+        "name": "완료",
+        "order": 4,
+        "modelId": 10161
+      }
+    ],
+    "10178": [
+      {
+        "id": 10179,
+        "name": "기획",
+        "order": 0,
+        "modelId": 10178
+      },
+      {
+        "id": 10180,
+        "name": "설계/개발",
+        "order": 1,
+        "modelId": 10178
+      },
+      {
+        "id": 10181,
+        "name": "검증",
+        "order": 2,
+        "modelId": 10178
+      },
+      {
+        "id": 10182,
+        "name": "양산준비",
+        "order": 3,
+        "modelId": 10178
+      },
+      {
+        "id": 10183,
+        "name": "완료",
+        "order": 4,
+        "modelId": 10178
+      }
+    ],
+    "10253": [
+      {
+        "id": 10254,
+        "name": "기획",
+        "order": 0,
+        "modelId": 10253
+      },
+      {
+        "id": 10255,
+        "name": "설계/개발",
+        "order": 1,
+        "modelId": 10253
+      },
+      {
+        "id": 10256,
+        "name": "검증",
+        "order": 2,
+        "modelId": 10253
+      },
+      {
+        "id": 10257,
+        "name": "양산준비",
+        "order": 3,
+        "modelId": 10253
+      },
+      {
+        "id": 10258,
+        "name": "완료",
+        "order": 4,
+        "modelId": 10253
+      }
+    ]
+  },
+  "schedules": [
     {
-      "id": 10081,
+      "id": 10127,
+      "color": "#3B82F6",
+      "endAt": "2026-06-02T14:00",
+      "title": "프리뉴 내방 공정 및 시연 영상제작 (국방부 제출용)",
       "author": "황인학M",
-      "content": "TEST",
-      "created_at": "2026-05-21T01:30:28.849Z"
+      "startAt": "2026-06-02T09:00",
+      "created_at": "2026-06-02T05:41:50.756Z",
+      "description": "입고검사 ~ 최종검사 및 운행시험 포함\n제조공정 전반에 대한 영상물 촬영/제작"
+    },
+    {
+      "id": 10130,
+      "color": "#3B82F6",
+      "endAt": "2026-06-02T15:00",
+      "title": "용산 / JG1 공정감사 대응 (한보)",
+      "author": "허준우M",
+      "startAt": "2026-06-02T09:00",
+      "created_at": "2026-06-02T05:48:31.034Z",
+      "description": ""
+    },
+    {
+      "id": 10136,
+      "color": "#3B82F6",
+      "endAt": "2026-06-22T10:00",
+      "title": "프리뉴 입찰결과 발표 (13개업체중 택1)",
+      "author": "황인학M",
+      "startAt": "2026-06-22T09:00",
+      "created_at": "2026-06-02T06:09:08.820Z",
+      "updated_at": "2026-06-02T06:09:28.089Z",
+      "description": "국 방 부"
+    },
+    {
+      "id": 10150,
+      "color": "#3B82F6",
+      "endAt": "2026-06-09T17:00",
+      "title": "[국방부] 프리뉴 현장 실사 평가 (15시 ~ )",
+      "author": "황인학M",
+      "startAt": "2026-06-09T15:00",
+      "created_at": "2026-06-05T07:28:29.803Z",
+      "updated_at": "2026-06-11T07:01:46.263Z",
+      "description": "장소: 인탑스 구미공장"
+    },
+    {
+      "id": 10151,
+      "color": "#3B82F6",
+      "endAt": "2026-06-08T15:30",
+      "title": "AI관련 교육 (대회의실_정재철팀장)",
+      "author": "황인학M",
+      "startAt": "2026-06-08T15:00",
+      "created_at": "2026-06-08T00:46:11.752Z",
+      "updated_at": "2026-06-08T00:46:30.906Z",
+      "description": ""
+    },
+    {
+      "id": 10175,
+      "color": "#3B82F6",
+      "endAt": "2026-06-19T15:00",
+      "title": "ISO13485 인증심사",
+      "author": "황인학M",
+      "startAt": "2026-06-15T09:00",
+      "created_at": "2026-06-11T04:25:58.977Z",
+      "description": "1. 심사일정: 2026.06.15. ~ 2026.06.18. (4 DAY)\n2. 심사원: K-인증원 김연성 위원 / 4일차 김동규 위원\n3. 심사범위 : 면역 크로마토그래피 진단키트에 대한 체외진단의료기기의 협력생산 (사출)"
+    },
+    {
+      "id": 10260,
+      "color": "#EF4444",
+      "endAt": "2026-06-26T15:30",
+      "title": "X-BLE 멕시코 크레임 관련 회의 (황)",
+      "author": "황인학M",
+      "startAt": "2026-06-26T13:00",
+      "created_at": "2026-06-23T00:40:39.083Z",
+      "updated_at": "2026-06-24T04:20:11.850Z",
+      "description": "13시 의왕 연구소"
+    },
+    {
+      "id": 10261,
+      "color": "#3B82F6",
+      "endAt": "2026-06-30T10:00",
+      "title": "2분기 재고조사",
+      "author": "황인학M",
+      "startAt": "2026-06-30T09:00",
+      "created_at": "2026-06-23T00:41:26.008Z",
+      "updated_at": "2026-06-23T00:41:26.008Z",
+      "description": ""
+    },
+    {
+      "id": 10273,
+      "color": "#3B82F6",
+      "endAt": "2026-07-03T10:00",
+      "title": "VN하노이법인 출장 (김현석팀장)",
+      "author": "김현석팀장",
+      "startAt": "2026-06-21T09:00",
+      "created_at": "2026-06-24T04:19:18.584Z",
+      "updated_at": "2026-06-30T05:19:52.164Z",
+      "description": "2주예상"
+    },
+    {
+      "id": 10284,
+      "color": "#3B82F6",
+      "endAt": "2026-07-13T17:00",
+      "title": "모빌린트 NPU 7대 시생산",
+      "author": "황인학M",
+      "startAt": "2026-07-13T09:00",
+      "created_at": "2026-06-24T23:11:24.985Z",
+      "updated_at": "2026-06-24T23:11:24.985Z",
+      "description": "3층 베어로보틱스 라인"
     }
   ],
-  "memoUpdatedAt": {
-    "10088": "2026-05-22T08:07:01.867Z"
+  "checklists": {
+    "1": [
+      {
+        "id": 10022,
+        "note": "",
+        "order": 0,
+        "title": "공정/출하 검사 및 COA 작성",
+        "detail": "가동현황 모니터링 및 COA 누락 방지",
+        "status": "in_progress",
+        "dueDate": "2026-12-31"
+      }
+    ],
+    "2": [],
+    "3": [],
+    "4": [],
+    "5": [],
+    "6": [],
+    "10001": [],
+    "10007": [],
+    "10013": [],
+    "10032": [],
+    "10040": [],
+    "10087": [],
+    "10089": [],
+    "10091": [],
+    "10099": [],
+    "10111": [],
+    "10144": [],
+    "10161": [],
+    "10178": [],
+    "10253": []
   },
-  "schedules": []
+  "milestones": {
+    "1": [
+      {
+        "id": 10020,
+        "note": "생산계획 참조",
+        "title": "생산계획",
+        "author": "황인학M",
+        "status": "in_progress",
+        "dueDate": "2026-04-01",
+        "ngCount": null,
+        "okCount": null,
+        "sortOrder": 0,
+        "subItemId": null,
+        "dueDateEnd": "2026-07-31",
+        "description": "4월: 195대\n5월: 90대\n6월: 100대\n7월: 50대",
+        "requestCount": null
+      },
+      {
+        "id": 10021,
+        "note": "고객사 내부 사정에 의한 협의 지연",
+        "title": "멕시코 시장 크레임 분담율 협의",
+        "author": "황인학M",
+        "status": "completed",
+        "dueDate": "2026-05-06",
+        "ngCount": null,
+        "okCount": null,
+        "sortOrder": 3,
+        "subItemId": null,
+        "dueDateEnd": "2026-06-30",
+        "description": "고객사(현대차) 요청에 의한 분담율 협의\n(현대차:인탑스 = 65 : 35)",
+        "requestCount": null
+      },
+      {
+        "id": 10023,
+        "note": "",
+        "title": "커버  SET시 단차 관련 검증",
+        "author": "황인학M",
+        "status": "completed",
+        "dueDate": "2026-05-08",
+        "ngCount": null,
+        "okCount": null,
+        "sortOrder": 4,
+        "subItemId": null,
+        "dueDateEnd": "2026-05-20",
+        "description": "단품 사출치수간 편차에 따른 셋트시 단차\n- 욱일 사출 (250 톤) - 5/8 -> 검증결과 양호 (치수/단차 OK)\n- 사내사출 (350 톤) - 5/14 -> 검증결과 양호 (갭/단차 OK)",
+        "requestCount": null
+      },
+      {
+        "id": 10076,
+        "note": "",
+        "title": "X-ble COVER 류 금형 사내이관 4M 변경",
+        "author": "황인학M",
+        "status": "completed",
+        "dueDate": "2026-05-20",
+        "ngCount": null,
+        "okCount": null,
+        "sortOrder": 5,
+        "subItemId": null,
+        "dueDateEnd": "2026-06-12",
+        "description": "X-BLE SHOULDER COVER 금형 욱일전자 → 사내사출 이관\n사전 사출 및 NC 후 치수 및 조립검증 완료 (도장X)\n이관 관련 고객사 공유 (5/20),4M 신고서 제출 요청\n영업 박종민M 각 100EA 샘플 진행 일정 확인 4M 신고서 제출 예정\n100EA 샘플 도장까지 검증 후 고객사 컨펌 4M 완결 예정",
+        "requestCount": null
+      },
+      {
+        "id": 10153,
+        "note": "",
+        "title": "정기 신뢰성 관련 점검회의",
+        "author": "황인학M",
+        "status": "completed",
+        "dueDate": "2026-06-08",
+        "ngCount": null,
+        "okCount": null,
+        "sortOrder": 6,
+        "subItemId": null,
+        "updatedAt": "2026-06-09T04:33:38.168Z",
+        "dueDateEnd": null,
+        "description": "1년주기 정기 신뢰성 시험예정일 도래 (기존 25년 06월 시행)\n- 시험항목 지정관련 고객사 내부 컨펌 지연\n- 자체(내부)검사 항목들에 대해 우선 진행논의 (개발/영업/품질)\n- 6/8 16시 현장 회의실에서 논의",
+        "requestCount": null
+      },
+      {
+        "id": 10171,
+        "note": "",
+        "title": "정기신뢰성 관련 (현대차 권석령 책임 요청 메일 접수)",
+        "author": "황인학M",
+        "status": "in_progress",
+        "dueDate": "2026-06-10",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-06-10T06:19:57.294Z",
+        "sortOrder": 2,
+        "subItemId": null,
+        "updatedAt": "2026-06-10T06:20:08.386Z",
+        "dueDateEnd": "2026-08-31",
+        "description": "안녕하세요. \n금일 사업실장님께 신뢰성 관련하여 보고드렸고, 보내주신 현실화 방안 중 MS633-01 촉진내후성(아노다이징) 제외하고 나머지는 수량 3EA로 해서 평가 진행부탁드립니다.\n그리고 MS 655-15 도장표면처리 관련 내후성 / 내수성은 현재 재고가 있으므로, 차기 생산할때 사출 도장하여 외부 시험 및 자체 시험 진행 부탁드립니다.\n문의사항 있으시면 연락주세요\n감사합니다.\n권석령 드림",
+        "requestCount": null
+      },
+      {
+        "id": 10213,
+        "note": "",
+        "title": "X-BLE SHOULDER 크레임 분담율 협의",
+        "author": "황인학M",
+        "status": "completed",
+        "dueDate": "2026-06-26",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-06-17T23:08:52.284Z",
+        "sortOrder": 1,
+        "subItemId": null,
+        "updatedAt": "2026-06-29T08:12:04.055Z",
+        "dueDateEnd": null,
+        "description": "현대차 의왕 연구소 방문 (13시 회의)\n- LINK A PIN 빠짐불량관련 \n- 시장불량 재발 (2회)\n- 추후 동일건에 대한 처리방안 협의\n- 영업 장우진 팀장 동행",
+        "requestCount": null
+      },
+      {
+        "id": 10350,
+        "note": "",
+        "title": "LINK PIN 빠짐 관련 오버랩양 기준 설정(최종) TEST",
+        "author": "황인학M",
+        "status": "completed",
+        "dueDate": "2026-07-03",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-07-02T22:46:08.542Z",
+        "sortOrder": -1,
+        "subItemId": null,
+        "updatedAt": "2026-07-07T06:39:58.681Z",
+        "dueDateEnd": "2026-07-04",
+        "description": "PIN 4.02\nLINK A HOLE 3.97 ~ 3.90 \n체결력 (푸시풀게이지) TEST",
+        "requestCount": null
+      },
+      {
+        "id": 10399,
+        "author": "황인학M",
+        "title": "EU 규제 포장재 환경유해물질 자료 작성",
+        "description": "- 서환전자 리스트 정리 전달. 성적서 및 재질정보 확인중\n- 성적서 X품목 시료 현대전달 예정\n- 서환전자 자료 접수 시 포장재 포맷 및 선언서 작성 (~7/9)",
+        "note": "",
+        "subItemId": null,
+        "dueDate": "2026-07-06",
+        "dueDateEnd": "2026-07-10",
+        "status": "in_progress",
+        "requestCount": null,
+        "okCount": null,
+        "ngCount": null,
+        "sortOrder": -2,
+        "createdAt": "2026-07-07T23:01:23.234Z",
+        "updatedAt": "2026-07-07T23:01:28.067Z"
+      }
+    ],
+    "2": [
+      {
+        "id": 10029,
+        "note": "내화장품 및 Set 내화장품 Test : OK,\n  참고 : Set 내화장품 한계test시 17Hr 후 Crack 발생 ( 기준 4Hr)",
+        "title": "SET 내화장품 Test 크랙 개선 SPL Test",
+        "status": "completed",
+        "dueDate": "2026-05-21",
+        "subItemId": null,
+        "dueDateEnd": null,
+        "description": ". Set 내화장품 도막두께 줄임 샘플에 대한 내화장품 Test시 얼룩 발생으로 도료 개선"
+      },
+      {
+        "id": 10352,
+        "note": "",
+        "title": "R14 초도 양산",
+        "author": "황인학M",
+        "status": "completed",
+        "dueDate": "2026-07-02",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-07-02T22:50:16.743Z",
+        "sortOrder": -1,
+        "subItemId": null,
+        "updatedAt": "2026-07-02T22:50:20.119Z",
+        "dueDateEnd": null,
+        "description": "조립: 7/2 ~ (1K)",
+        "requestCount": null
+      }
+    ],
+    "3": [],
+    "4": [
+      {
+        "id": 10038,
+        "note": "",
+        "title": "생산 라인 및 검사 라인 SET UP",
+        "author": "황인학M",
+        "status": "completed",
+        "dueDate": "2026-05-18",
+        "ngCount": null,
+        "okCount": null,
+        "subItemId": null,
+        "dueDateEnd": "2026-05-22",
+        "description": "고객사 담당 내방",
+        "requestCount": null
+      },
+      {
+        "id": 10039,
+        "note": "대회의실\n- 위로봇 WOEE REE 완성품 1대씩 전시를 준비(다과는 준비하면 않된다고함, 물만 준비)\n- 대회의실 및 제조현장 입구 배치\n(외부 비행현장에서 작용할 안전모 2개 준비)\n2 제조현장 리얼타임 보드 준비 8 출력 및 리딩 구현)\n- 포장공정 사진활영 SETUP\n- 검사대기, 검사 완료 등 현장 AL 교제(프리뉴 공급분)\n- 작업대 및 자재류 정리이 외에도 금일 고객사 내방하여 여러\n가지 준비가 진행될 예정입니다)",
+        "title": "국방부 실사",
+        "author": "황인학M",
+        "status": "completed",
+        "dueDate": "2026-06-09",
+        "ngCount": null,
+        "okCount": null,
+        "subItemId": null,
+        "updatedAt": "2026-06-12T04:02:02.602Z",
+        "dueDateEnd": "2026-06-10",
+        "description": "국방부 내방 현장 실사",
+        "requestCount": null
+      },
+      {
+        "id": 10251,
+        "note": "",
+        "title": "수주 확정 (3개사_프리뉴,에이럭스,AD시스템즈)",
+        "author": "황인학M",
+        "status": "completed",
+        "dueDate": "2026-06-23",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-06-23T00:32:45.086Z",
+        "sortOrder": -1,
+        "subItemId": null,
+        "updatedAt": "2026-06-23T00:32:47.993Z",
+        "dueDateEnd": null,
+        "description": "- 7~8월 프리뉴 (수주발주 완료)\n(3개사 _ 프리뉴, 에이럭스, AD시스템즈)\n- 최종 검증후 계약 체결 확정\n- 9월 초도양산 100대 진행\n- 자재 발주시 9월경 자재 입고\n- 본격생산 _10월 예상 (10~12월 4K 목표 /3개월)",
+        "requestCount": null
+      }
+    ],
+    "5": [
+      {
+        "id": 10030,
+        "note": "",
+        "title": "현장실사",
+        "status": "completed",
+        "dueDate": "2026-05-15",
+        "subItemId": null,
+        "dueDateEnd": null,
+        "description": "승인평가 실사 추가 진행 예정"
+      },
+      {
+        "id": 10031,
+        "note": "",
+        "title": "WIMS 이관 및 신규모델 EX 진행 검토중",
+        "author": "황인학M",
+        "status": "in_progress",
+        "dueDate": "2026-06-01",
+        "ngCount": null,
+        "okCount": null,
+        "subItemId": null,
+        "dueDateEnd": "2026-06-30",
+        "description": "WIMS 이관 및 신규모델 EX 진행 검토중",
+        "requestCount": null
+      }
+    ],
+    "6": [
+      {
+        "id": 10196,
+        "note": "",
+        "title": "모빌린트 업무 진행사항",
+        "author": "황인학M",
+        "status": "in_progress",
+        "dueDate": "2026-07-01",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-06-15T05:14:59.924Z",
+        "sortOrder": -1,
+        "subItemId": null,
+        "updatedAt": "2026-06-15T05:15:04.062Z",
+        "dueDateEnd": "2026-08-31",
+        "description": "- 외장 프레스 부품 송정 하이테크 (인천 계양구 소재) 턴키 진행\n  . 프레스 + 분체도장 外 _ 본사 F/U\n\n- 7월 SPL 5~10대 TEST / 모빌린트 컨펌이후 1K 진행 목표",
+        "requestCount": null
+      },
+      {
+        "id": 10252,
+        "note": "",
+        "title": "양산일정",
+        "author": "황인학M",
+        "status": "completed",
+        "dueDate": "2026-06-23",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-06-23T00:33:23.051Z",
+        "sortOrder": -2,
+        "subItemId": null,
+        "updatedAt": "2026-07-02T22:49:09.552Z",
+        "dueDateEnd": null,
+        "description": "- 계약체결 완료\n- 투자비 1.1억 협의완료 (금형,지그 ,MEX구축, 현장구축)\n- 장납기 회로부품 (보드,NPU,GPU) 1000대분 구미 입고예정 (7월초)\n- 보드 _ 봇핏 현장 내 보관예정 (항온항습 시설 완비시 자재 이동)\n- 7월중순 DV 10대",
+        "requestCount": null
+      },
+      {
+        "id": 10283,
+        "note": "",
+        "title": "시생산 (7대)",
+        "author": "황인학M",
+        "status": "in_progress",
+        "dueDate": "2026-07-13",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-06-24T23:10:32.280Z",
+        "sortOrder": -3,
+        "subItemId": null,
+        "updatedAt": "2026-07-02T22:47:44.958Z",
+        "dueDateEnd": null,
+        "description": "완조립 검증 \n- 3층 베어로보틱스 생산라인\n. 현장 공사 6/26일 ~\n. 바닥세척 및 ESD 왁스 도포 (7/2)\n. 분사방식 가습기 설치_차주 (W28)\n. 산업용 가습기 공사 7/7일\n. 사출 범상  (T0_ 7/2 ~ 이중사출 1종, 단사출 1종)\n   외장 케이스 (부천 _ 송정 하이텍) (프레스 , 절곡 , 용접 , 분체도장 턴키) → 실사 필요 (품질/개발)",
+        "requestCount": null
+      }
+    ],
+    "10001": [
+      {
+        "id": 10055,
+        "note": "금형수리 및 전산화 검토중 → 코어 신작 결정",
+        "title": "R14 #PV1 전차수 CPK 측정",
+        "author": null,
+        "status": "completed",
+        "dueDate": null,
+        "ngCount": null,
+        "okCount": null,
+        "sortOrder": 24,
+        "subItemId": null,
+        "updatedAt": "2026-06-18T06:42:50.561Z",
+        "dueDateEnd": null,
+        "description": "측정 완료 - 16 point NG",
+        "requestCount": null
+      },
+      {
+        "id": 10056,
+        "note": "NM4 측정 완료 / NM3 측정중 (~5/22)",
+        "title": "NM3·NM4 Cam BRK 변화량 / KMD 치수 측정",
+        "author": null,
+        "status": "completed",
+        "dueDate": "2026-05-22",
+        "ngCount": null,
+        "okCount": null,
+        "sortOrder": 25,
+        "subItemId": null,
+        "dueDateEnd": null,
+        "description": "Cam BRK 변화량 및 KMD 치수 측정",
+        "requestCount": null
+      },
+      {
+        "id": 10070,
+        "note": "",
+        "title": "5월 Q7 JELLY COVER 초중종 치수측정",
+        "author": "황인학M",
+        "status": "completed",
+        "dueDate": "2026-05-01",
+        "ngCount": null,
+        "okCount": null,
+        "sortOrder": 26,
+        "subItemId": null,
+        "updatedAt": "2026-06-18T06:50:04.718Z",
+        "dueDateEnd": "2026-05-30",
+        "description": "5월 Q7 JELLY COVER 초중종 치수측정",
+        "requestCount": null
+      },
+      {
+        "id": 10218,
+        "note": "",
+        "title": "6월 Q7 JELLY COVER 주,야 초중종 치수측정",
+        "author": "김민호M",
+        "status": "completed",
+        "dueDate": "2026-06-01",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-06-18T06:50:36.284Z",
+        "sortOrder": 23,
+        "subItemId": null,
+        "updatedAt": "2026-07-06T00:51:52.683Z",
+        "dueDateEnd": "2026-06-30",
+        "description": "",
+        "requestCount": null
+      },
+      {
+        "id": 10220,
+        "note": "",
+        "title": "6/18 수입검사 치수측정",
+        "author": "김민호M",
+        "status": "completed",
+        "dueDate": "2026-06-18",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-06-18T06:51:35.411Z",
+        "sortOrder": 22,
+        "subItemId": null,
+        "updatedAt": "2026-06-19T00:43:32.770Z",
+        "dueDateEnd": null,
+        "description": "",
+        "requestCount": null
+      },
+      {
+        "id": 10223,
+        "note": "",
+        "title": "NM4 #DV1 Cam Deco Lower 전치수 측정",
+        "author": "김민호M",
+        "status": "completed",
+        "dueDate": "2026-06-18",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-06-18T06:56:46.404Z",
+        "sortOrder": 21,
+        "subItemId": null,
+        "updatedAt": "2026-06-18T06:59:09.603Z",
+        "dueDateEnd": null,
+        "description": "개발 이성근책임 측정의뢰 2cavit  2shot",
+        "requestCount": null
+      },
+      {
+        "id": 10232,
+        "note": "",
+        "title": "6/19 수입검사 치수측정",
+        "author": "김민호M",
+        "status": "completed",
+        "dueDate": "2026-06-19",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-06-19T00:43:20.845Z",
+        "sortOrder": 20,
+        "subItemId": null,
+        "updatedAt": "2026-06-22T02:18:21.162Z",
+        "dueDateEnd": null,
+        "description": "",
+        "requestCount": null
+      },
+      {
+        "id": 10238,
+        "note": "",
+        "title": "6/22 수입검사 치수측정",
+        "author": "김민호M",
+        "status": "completed",
+        "dueDate": "2026-06-22",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-06-22T02:18:15.830Z",
+        "sortOrder": 19,
+        "subItemId": null,
+        "updatedAt": "2026-06-22T23:05:14.011Z",
+        "dueDateEnd": null,
+        "description": "",
+        "requestCount": null
+      },
+      {
+        "id": 10250,
+        "note": "",
+        "title": "6/23 수입검사 치수측정",
+        "author": "김민호M",
+        "status": "completed",
+        "dueDate": "2026-06-23",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-06-22T23:36:26.469Z",
+        "sortOrder": 18,
+        "subItemId": null,
+        "updatedAt": "2026-06-24T03:48:23.047Z",
+        "dueDateEnd": null,
+        "description": "",
+        "requestCount": null
+      },
+      {
+        "id": 10268,
+        "note": "",
+        "title": "6/24 수입검사 치수측정",
+        "author": "김민호M",
+        "status": "completed",
+        "dueDate": "2026-06-24",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-06-24T03:48:18.687Z",
+        "sortOrder": 17,
+        "subItemId": null,
+        "updatedAt": "2026-06-24T06:31:56.112Z",
+        "dueDateEnd": null,
+        "description": "",
+        "requestCount": null
+      },
+      {
+        "id": 10271,
+        "note": "",
+        "title": "KOHLER SPECTRA  Cover, Battery Module 치수측정",
+        "author": "김민호M",
+        "status": "completed",
+        "dueDate": null,
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-06-24T03:52:02.984Z",
+        "sortOrder": 16,
+        "subItemId": null,
+        "updatedAt": "2026-06-24T03:54:30.252Z",
+        "dueDateEnd": null,
+        "description": "백승화책임 의뢰 2cavit 2shot",
+        "requestCount": null
+      },
+      {
+        "id": 10274,
+        "note": "",
+        "title": "R14 SET 전장,전폭 치수측정",
+        "author": "김민호M",
+        "status": "completed",
+        "dueDate": "2026-06-24",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-06-24T04:27:35.836Z",
+        "sortOrder": 15,
+        "subItemId": null,
+        "updatedAt": "2026-06-24T04:28:19.525Z",
+        "dueDateEnd": null,
+        "description": "9EA 장,폭 치수측정",
+        "requestCount": null
+      },
+      {
+        "id": 10285,
+        "note": "",
+        "title": "6/25 수입검사 치수측정",
+        "author": "김민호M",
+        "status": "completed",
+        "dueDate": "2026-06-25",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-06-24T23:24:30.731Z",
+        "sortOrder": 14,
+        "subItemId": null,
+        "updatedAt": "2026-06-25T07:37:40.622Z",
+        "dueDateEnd": null,
+        "description": "",
+        "requestCount": null
+      },
+      {
+        "id": 10291,
+        "note": "",
+        "title": "Q8 FRONT MAIN  치수측정",
+        "author": "김민호M",
+        "status": "completed",
+        "dueDate": "2026-06-25",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-06-25T05:54:49.567Z",
+        "sortOrder": 13,
+        "subItemId": null,
+        "updatedAt": "2026-06-25T23:37:03.378Z",
+        "dueDateEnd": "2026-06-26",
+        "description": "이동광책임 의뢰 7개사양 2cavit \nFLASH BURR 측정",
+        "requestCount": null
+      },
+      {
+        "id": 10293,
+        "note": "",
+        "title": "6/26 수입검사 치수측정",
+        "author": "김민호M",
+        "status": "completed",
+        "dueDate": "2026-06-26",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-06-25T23:07:36.944Z",
+        "sortOrder": 12,
+        "subItemId": null,
+        "updatedAt": "2026-06-26T06:14:40.554Z",
+        "dueDateEnd": null,
+        "description": "",
+        "requestCount": null
+      },
+      {
+        "id": 10295,
+        "note": "",
+        "title": "R14 CRADLE 전치수 측정",
+        "author": "김민호M",
+        "status": "completed",
+        "dueDate": "2026-06-26",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-06-26T01:32:55.015Z",
+        "sortOrder": 11,
+        "subItemId": null,
+        "updatedAt": "2026-06-26T02:32:42.236Z",
+        "dueDateEnd": null,
+        "description": "백승화책임 의뢰 2ea",
+        "requestCount": null
+      },
+      {
+        "id": 10314,
+        "note": "",
+        "title": "6/29 수입검사 치수측정",
+        "author": "김민호M",
+        "status": "completed",
+        "dueDate": "2026-06-29",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-06-29T01:25:15.275Z",
+        "sortOrder": 10,
+        "subItemId": null,
+        "updatedAt": "2026-06-29T06:28:41.489Z",
+        "dueDateEnd": null,
+        "description": "",
+        "requestCount": null
+      },
+      {
+        "id": 10331,
+        "note": "",
+        "title": "6/30 수입검사 치수측정",
+        "author": "김민호M",
+        "status": "completed",
+        "dueDate": "2026-06-30",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-06-30T07:53:09.852Z",
+        "sortOrder": 9,
+        "subItemId": null,
+        "updatedAt": "2026-06-30T07:53:12.673Z",
+        "dueDateEnd": null,
+        "description": "",
+        "requestCount": null
+      },
+      {
+        "id": 10361,
+        "note": "",
+        "title": "7월 Q7 JELLY COVER 주,야 초중종 치수측정",
+        "author": "김민호M",
+        "status": "in_progress",
+        "dueDate": "2026-07-01",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-07-06T00:52:41.157Z",
+        "sortOrder": 8,
+        "subItemId": null,
+        "updatedAt": "2026-07-06T00:59:39.021Z",
+        "dueDateEnd": "2026-07-31",
+        "description": "",
+        "requestCount": null
+      },
+      {
+        "id": 10363,
+        "note": "",
+        "title": "7/1 수입검사 치수측정",
+        "author": "김민호M",
+        "status": "completed",
+        "dueDate": "2026-07-01",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-07-06T00:53:16.210Z",
+        "sortOrder": 7,
+        "subItemId": null,
+        "updatedAt": "2026-07-06T00:55:38.725Z",
+        "dueDateEnd": null,
+        "description": "",
+        "requestCount": null
+      },
+      {
+        "id": 10367,
+        "note": "",
+        "title": "7/2 수입검사 치수측정",
+        "author": "김민호M",
+        "status": "completed",
+        "dueDate": "2026-07-02",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-07-06T00:55:25.506Z",
+        "sortOrder": 6,
+        "subItemId": null,
+        "updatedAt": "2026-07-06T00:55:40.285Z",
+        "dueDateEnd": null,
+        "description": "",
+        "requestCount": null
+      },
+      {
+        "id": 10372,
+        "note": "",
+        "title": "7/3 수입검사 치수측정",
+        "author": "김민호M",
+        "status": "completed",
+        "dueDate": "2026-07-03",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-07-06T00:58:26.283Z",
+        "sortOrder": 5,
+        "subItemId": null,
+        "updatedAt": "2026-07-06T00:58:30.850Z",
+        "dueDateEnd": null,
+        "description": "",
+        "requestCount": null
+      },
+      {
+        "id": 10376,
+        "note": "",
+        "title": "7/6 수입검사 치수측정",
+        "author": "김민호M",
+        "status": "completed",
+        "dueDate": null,
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-07-06T00:59:14.891Z",
+        "sortOrder": 4,
+        "subItemId": null,
+        "updatedAt": "2026-07-07T02:45:25.084Z",
+        "dueDateEnd": null,
+        "description": "",
+        "requestCount": null
+      },
+      {
+        "id": 10379,
+        "note": "",
+        "title": "Q8 FRONT MAIN 치수측정 (FLASH BURR)",
+        "author": "김민호M",
+        "status": "completed",
+        "dueDate": "2026-07-06",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-07-06T01:51:08.802Z",
+        "sortOrder": 3,
+        "subItemId": null,
+        "updatedAt": "2026-07-07T23:40:01.222Z",
+        "dueDateEnd": "2026-07-10",
+        "description": "이동광 책임 7개사양 2cavit 측정의뢰 (도장후 BURR 측정)",
+        "requestCount": null
+      },
+      {
+        "id": 10385,
+        "note": "",
+        "title": "7/7 수입검사 치수측정",
+        "author": "김민호M",
+        "status": "completed",
+        "dueDate": "2026-07-07",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-07-07T03:48:21.870Z",
+        "sortOrder": 2,
+        "subItemId": null,
+        "updatedAt": "2026-07-07T05:07:54.989Z",
+        "dueDateEnd": null,
+        "description": "",
+        "requestCount": null
+      },
+      {
+        "id": 10392,
+        "note": "",
+        "title": "TAOS LOGO LENS_레이져 에칭부 초중종물 치추측정",
+        "author": "김민호M",
+        "status": "completed",
+        "dueDate": "2026-07-07",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-07-07T05:05:04.792Z",
+        "sortOrder": 1,
+        "subItemId": null,
+        "updatedAt": "2026-07-07T05:05:24.130Z",
+        "dueDateEnd": null,
+        "description": "코팅팀 박진수M 측정의뢰",
+        "requestCount": null
+      },
+      {
+        "id": 10412,
+        "author": "김민호M",
+        "title": "7/8 수입검사 치수측정",
+        "description": "",
+        "note": "",
+        "subItemId": null,
+        "dueDate": "2026-07-08",
+        "dueDateEnd": null,
+        "status": "completed",
+        "requestCount": null,
+        "okCount": null,
+        "ngCount": null,
+        "sortOrder": 0,
+        "createdAt": "2026-07-07T23:41:12.463Z",
+        "updatedAt": "2026-07-08T06:40:42.237Z"
+      },
+      {
+        "id": 10424,
+        "author": "김민호M",
+        "title": "7/9 수입검사 치수측정",
+        "description": "",
+        "note": "",
+        "subItemId": null,
+        "dueDate": "2026-07-09",
+        "dueDateEnd": null,
+        "status": "completed",
+        "requestCount": null,
+        "okCount": null,
+        "ngCount": null,
+        "sortOrder": -1,
+        "createdAt": "2026-07-09T03:51:06.393Z",
+        "updatedAt": "2026-07-10T06:22:37.396Z"
+      },
+      {
+        "id": 10433,
+        "author": "김민호M",
+        "title": "7/10 수입검사 치수측정",
+        "description": "",
+        "note": "",
+        "subItemId": null,
+        "dueDate": "2026-07-10",
+        "dueDateEnd": null,
+        "status": "completed",
+        "requestCount": null,
+        "okCount": null,
+        "ngCount": null,
+        "sortOrder": -2,
+        "createdAt": "2026-07-10T06:22:50.366Z",
+        "updatedAt": "2026-07-10T06:22:53.789Z"
+      }
+    ],
+    "10007": [
+      {
+        "id": 10057,
+        "note": "Mint 단면 내하강 NG (1/5ea) → 도막 축소 개선 검토중",
+        "title": "R14 #PV1 단기 OK / 장기 NG",
+        "author": null,
+        "status": "completed",
+        "dueDate": null,
+        "ngCount": null,
+        "okCount": null,
+        "subItemId": null,
+        "dueDateEnd": null,
+        "description": "단기 시험 OK, 장기 시험 NG",
+        "requestCount": null,
+        "sortOrder": 21
+      },
+      {
+        "id": 10058,
+        "note": "5/16 시험 완료",
+        "title": "RS4 Display 고온고습 168Hr",
+        "status": "completed",
+        "dueDate": "2026-05-16",
+        "subItemId": null,
+        "dueDateEnd": null,
+        "description": "고온고습 시험 168시간",
+        "sortOrder": 22
+      },
+      {
+        "id": 10059,
+        "note": "내하강도 NG (2/5ea) → 개선 SPL Test (~5/19)",
+        "title": "R14 신뢰성 개선자재 Test",
+        "author": null,
+        "status": "completed",
+        "dueDate": "2026-05-19",
+        "ngCount": null,
+        "okCount": null,
+        "subItemId": null,
+        "dueDateEnd": null,
+        "description": "신뢰성 개선자재 Test 진행",
+        "requestCount": null,
+        "sortOrder": 23
+      },
+      {
+        "id": 10117,
+        "note": "",
+        "title": "AR GLASS 사내 노루",
+        "author": "배홍연",
+        "status": "completed",
+        "dueDate": "2026-06-02",
+        "ngCount": null,
+        "okCount": null,
+        "subItemId": null,
+        "updatedAt": "2026-06-22T00:48:40.218Z",
+        "dueDateEnd": "2026-06-05",
+        "description": "",
+        "requestCount": null,
+        "sortOrder": 24
+      },
+      {
+        "id": 10154,
+        "note": "",
+        "title": "Q8 FRONT DECO MAIN",
+        "author": "배홍연",
+        "status": "completed",
+        "dueDate": "2026-06-08",
+        "ngCount": null,
+        "okCount": null,
+        "subItemId": null,
+        "updatedAt": "2026-06-11T05:46:58.284Z",
+        "dueDateEnd": "2026-06-12",
+        "description": "도장라인변경(다쿠버 →  XY)",
+        "requestCount": null,
+        "sortOrder": 25
+      },
+      {
+        "id": 10158,
+        "note": "",
+        "title": "Q8 FRONT DECO",
+        "author": "배홍연",
+        "status": "completed",
+        "dueDate": "2026-06-08",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-06-08T07:58:07.961Z",
+        "sortOrder": 26,
+        "subItemId": null,
+        "updatedAt": "2026-06-10T23:45:20.361Z",
+        "dueDateEnd": "2026-06-09",
+        "description": "인쇄",
+        "requestCount": null
+      },
+      {
+        "id": 10176,
+        "note": "",
+        "title": "AR GLASS",
+        "author": "배홍연",
+        "status": "completed",
+        "dueDate": "2026-06-11",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-06-11T05:47:47.411Z",
+        "sortOrder": 27,
+        "subItemId": null,
+        "updatedAt": "2026-06-19T05:15:56.231Z",
+        "dueDateEnd": "2026-06-18",
+        "description": "사내 악조",
+        "requestCount": null
+      },
+      {
+        "id": 10201,
+        "note": "",
+        "title": "M3 CRADLE VL",
+        "author": "배홍연",
+        "status": "completed",
+        "dueDate": "2026-06-12",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-06-16T01:19:53.064Z",
+        "sortOrder": 20,
+        "subItemId": null,
+        "updatedAt": "2026-06-19T05:15:49.848Z",
+        "dueDateEnd": "2026-06-19",
+        "description": "24W 정기T",
+        "requestCount": null
+      },
+      {
+        "id": 10203,
+        "note": "",
+        "title": "AR GLASS 태동",
+        "author": "배홍연",
+        "status": "completed",
+        "dueDate": "2026-06-15",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-06-16T01:22:00.831Z",
+        "sortOrder": 19,
+        "subItemId": null,
+        "updatedAt": "2026-06-19T05:15:46.551Z",
+        "dueDateEnd": "2026-06-19",
+        "description": "악조",
+        "requestCount": null
+      },
+      {
+        "id": 10205,
+        "note": "",
+        "title": "AR GLASS 태동",
+        "author": "배홍연",
+        "status": "completed",
+        "dueDate": "2026-06-15",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-06-16T01:22:39.377Z",
+        "sortOrder": 18,
+        "subItemId": null,
+        "updatedAt": "2026-06-19T05:15:43.550Z",
+        "dueDateEnd": "2026-06-19",
+        "description": "노루",
+        "requestCount": null
+      },
+      {
+        "id": 10207,
+        "note": "",
+        "title": "R14 CRADLE B/K",
+        "author": "배홍연",
+        "status": "completed",
+        "dueDate": "2026-06-15",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-06-16T01:23:33.738Z",
+        "sortOrder": 17,
+        "subItemId": null,
+        "updatedAt": "2026-06-19T05:18:30.298Z",
+        "dueDateEnd": "2026-06-19",
+        "description": "",
+        "requestCount": null
+      },
+      {
+        "id": 10208,
+        "note": "",
+        "title": "R14 CRADLE V/L",
+        "author": "배홍연",
+        "status": "completed",
+        "dueDate": "2026-06-16",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-06-17T01:52:17.669Z",
+        "sortOrder": 16,
+        "subItemId": null,
+        "updatedAt": "2026-06-22T07:41:47.866Z",
+        "dueDateEnd": "2026-06-22",
+        "description": "",
+        "requestCount": null
+      },
+      {
+        "id": 10209,
+        "note": "",
+        "title": "M3 CRADLE M/T",
+        "author": "배홍연",
+        "status": "completed",
+        "dueDate": "2026-06-18",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-06-17T01:52:43.999Z",
+        "sortOrder": 15,
+        "subItemId": null,
+        "updatedAt": "2026-06-25T01:59:02.548Z",
+        "dueDateEnd": "2026-06-24",
+        "description": "",
+        "requestCount": null
+      },
+      {
+        "id": 10247,
+        "note": "",
+        "title": "X-BLE SHOULDER 정기신뢰성 테스트",
+        "author": "배홍연",
+        "status": "in_progress",
+        "dueDate": "2026-06-22",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-06-22T06:37:19.250Z",
+        "sortOrder": 14,
+        "subItemId": null,
+        "updatedAt": "2026-06-23T00:48:20.466Z",
+        "dueDateEnd": "2026-07-31",
+        "description": "",
+        "requestCount": null
+      },
+      {
+        "id": 10280,
+        "note": "",
+        "title": "M3 CRADLE B/K",
+        "author": "배홍연",
+        "status": "completed",
+        "dueDate": "2026-06-24",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-06-24T05:44:59.357Z",
+        "sortOrder": 13,
+        "subItemId": null,
+        "updatedAt": "2026-07-02T05:58:40.480Z",
+        "dueDateEnd": "2026-07-02",
+        "description": "W26",
+        "requestCount": null
+      },
+      {
+        "id": 10308,
+        "note": "",
+        "title": "Q8 FRONT DECO",
+        "author": "배홍연",
+        "status": "completed",
+        "dueDate": "2026-06-26",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-06-26T08:00:07.126Z",
+        "sortOrder": 12,
+        "subItemId": null,
+        "updatedAt": "2026-06-26T08:00:36.012Z",
+        "dueDateEnd": null,
+        "description": "신규 도장 2타입 내약품",
+        "requestCount": null
+      },
+      {
+        "id": 10311,
+        "note": "",
+        "title": "R14 CRADLE B/K (초도)",
+        "author": "배홍연",
+        "status": "completed",
+        "dueDate": "2026-06-29",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-06-26T08:01:38.236Z",
+        "sortOrder": 11,
+        "subItemId": null,
+        "updatedAt": "2026-07-06T05:03:57.455Z",
+        "dueDateEnd": "2026-07-03",
+        "description": "",
+        "requestCount": null
+      },
+      {
+        "id": 10317,
+        "note": "",
+        "title": "Q8 FRONT DECO",
+        "author": "배홍연",
+        "status": "completed",
+        "dueDate": "2026-06-29",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-06-29T05:18:33.215Z",
+        "sortOrder": 10,
+        "subItemId": null,
+        "updatedAt": "2026-06-29T05:20:27.182Z",
+        "dueDateEnd": null,
+        "description": "내약품",
+        "requestCount": null
+      },
+      {
+        "id": 10320,
+        "note": "",
+        "title": "AR GLASS",
+        "author": "배홍연",
+        "status": "completed",
+        "dueDate": "2026-06-29",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-06-29T05:19:51.041Z",
+        "sortOrder": 9,
+        "subItemId": null,
+        "updatedAt": "2026-07-06T05:03:54.637Z",
+        "dueDateEnd": "2026-07-06",
+        "description": "태동 노루 듀얼",
+        "requestCount": null
+      },
+      {
+        "id": 10325,
+        "note": "",
+        "title": "R14 CRADLE B/K (초도2)",
+        "author": "배홍연",
+        "status": "completed",
+        "dueDate": "2026-06-29",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-06-29T08:00:55.375Z",
+        "sortOrder": 8,
+        "subItemId": null,
+        "updatedAt": "2026-07-06T05:12:51.268Z",
+        "dueDateEnd": "2026-07-06",
+        "description": "",
+        "requestCount": null
+      },
+      {
+        "id": 10344,
+        "note": "구상 2EA, 코팅 2EA",
+        "title": "Q8 FRONT DECO",
+        "author": "배홍연",
+        "status": "completed",
+        "dueDate": "2026-07-02",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-07-01T23:35:11.992Z",
+        "sortOrder": 7,
+        "subItemId": null,
+        "updatedAt": "2026-07-02T02:42:39.700Z",
+        "dueDateEnd": null,
+        "description": "기존 도장-> 인쇄로 변경하여 내약품test",
+        "requestCount": null
+      },
+      {
+        "id": 10345,
+        "note": "",
+        "title": "R14 CRADLE B/K (초도3)",
+        "author": "배홍연",
+        "status": "completed",
+        "dueDate": "2026-07-02",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-07-02T00:50:30.021Z",
+        "sortOrder": 6,
+        "subItemId": null,
+        "updatedAt": "2026-07-09T05:49:06.938Z",
+        "dueDateEnd": "2026-07-10",
+        "description": "",
+        "requestCount": null
+      },
+      {
+        "id": 10348,
+        "note": "",
+        "title": "DAB",
+        "author": "배홍연",
+        "status": "in_progress",
+        "dueDate": "2026-07-06",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-07-02T07:49:10.836Z",
+        "sortOrder": 5,
+        "subItemId": null,
+        "updatedAt": "2026-07-06T00:38:10.284Z",
+        "dueDateEnd": "2026-08-03",
+        "description": "내습성, 내열성, 내열CYCLE성",
+        "requestCount": null
+      },
+      {
+        "id": 10378,
+        "note": "",
+        "title": "S-PEN COVER",
+        "author": "배홍연",
+        "status": "completed",
+        "dueDate": "2026-07-02",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-07-06T01:26:16.764Z",
+        "sortOrder": 3,
+        "subItemId": null,
+        "updatedAt": "2026-07-06T01:26:42.837Z",
+        "dueDateEnd": "2026-07-06",
+        "description": "",
+        "requestCount": null
+      },
+      {
+        "id": 10381,
+        "note": "",
+        "title": "H8 차폐시트",
+        "author": "배홍연",
+        "status": "completed",
+        "dueDate": "2026-07-06",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-07-06T04:19:08.753Z",
+        "sortOrder": 2,
+        "subItemId": null,
+        "updatedAt": "2026-07-09T04:33:03.112Z",
+        "dueDateEnd": "2026-07-09",
+        "description": "5095, 열충격",
+        "requestCount": null
+      },
+      {
+        "id": 10382,
+        "note": "레진별 신뢰성 검토(7종)",
+        "title": "Q8 FRONT DECO",
+        "author": "배홍연",
+        "status": "completed",
+        "dueDate": "2026-07-06",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-07-06T04:21:21.786Z",
+        "sortOrder": 1,
+        "subItemId": null,
+        "updatedAt": "2026-07-09T04:34:46.561Z",
+        "dueDateEnd": "2026-07-07",
+        "description": "내약품, 내화장, 내열탕",
+        "requestCount": null
+      },
+      {
+        "id": 10395,
+        "note": "",
+        "title": "R14 CRADLE M/T",
+        "author": "배홍연",
+        "status": "in_progress",
+        "dueDate": "2026-07-08",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-07-07T05:38:53.448Z",
+        "sortOrder": 0,
+        "subItemId": null,
+        "updatedAt": "2026-07-09T04:35:03.244Z",
+        "dueDateEnd": "2026-07-17",
+        "description": "초도1 (260702)",
+        "requestCount": null
+      },
+      {
+        "id": 10427,
+        "author": "배홍연",
+        "title": "R14 CRADLE M/T",
+        "description": "초도2 (260703)",
+        "note": "",
+        "subItemId": null,
+        "dueDate": "2026-07-10",
+        "dueDateEnd": "2026-07-17",
+        "status": "in_progress",
+        "requestCount": null,
+        "okCount": null,
+        "ngCount": null,
+        "sortOrder": -1,
+        "createdAt": "2026-07-09T04:35:29.775Z",
+        "updatedAt": "2026-07-09T23:35:06.981Z"
+      },
+      {
+        "id": 10429,
+        "author": "배홍연",
+        "title": "Q9 차폐시트",
+        "description": "",
+        "note": "",
+        "subItemId": null,
+        "dueDate": "2026-07-10",
+        "dueDateEnd": "2026-07-30",
+        "status": "in_progress",
+        "requestCount": null,
+        "okCount": null,
+        "ngCount": null,
+        "sortOrder": -2,
+        "createdAt": "2026-07-09T04:36:38.274Z",
+        "updatedAt": "2026-07-10T06:14:36.505Z"
+      },
+      {
+        "id": 10432,
+        "author": "배홍연",
+        "title": "R14 CRADLE B/K",
+        "description": "28WT",
+        "note": "",
+        "subItemId": null,
+        "dueDate": "2026-07-10",
+        "dueDateEnd": "2026-07-17",
+        "status": "in_progress",
+        "requestCount": null,
+        "okCount": null,
+        "ngCount": null,
+        "sortOrder": -3,
+        "createdAt": "2026-07-09T23:34:36.964Z",
+        "updatedAt": "2026-07-10T05:11:00.591Z"
+      }
+    ],
+    "10013": [
+      {
+        "id": 10054,
+        "note": "R14 #PV1 측정 OK",
+        "title": "R14 #PV1 측정 OK",
+        "author": "강도희",
+        "status": "completed",
+        "dueDate": "2026-04-30",
+        "ngCount": null,
+        "okCount": null,
+        "subItemId": null,
+        "updatedAt": "2026-06-26T05:43:04.217Z",
+        "dueDateEnd": null,
+        "description": "",
+        "requestCount": null
+      },
+      {
+        "id": 10074,
+        "note": "",
+        "title": "[일일] XRF 측정현황",
+        "author": "황인학M",
+        "status": "completed",
+        "dueDate": "2026-05-01",
+        "ngCount": null,
+        "okCount": null,
+        "subItemId": null,
+        "updatedAt": "2026-06-10T06:37:33.742Z",
+        "dueDateEnd": "2026-06-30",
+        "description": "[일일] XFR , 프탈레이트 측정현황",
+        "requestCount": null
+      },
+      {
+        "id": 10172,
+        "note": "(개발)R14\n XRF,프탈레이트 측정완료",
+        "title": "일일)XRF측정 현황",
+        "author": "강도희",
+        "status": "completed",
+        "dueDate": "2026-06-09",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-06-10T06:37:29.472Z",
+        "sortOrder": 2,
+        "subItemId": null,
+        "updatedAt": "2026-06-10T06:38:01.151Z",
+        "dueDateEnd": null,
+        "description": "",
+        "requestCount": null
+      },
+      {
+        "id": 10173,
+        "note": "6월 부자재측정",
+        "title": "일일)XRF측정 현황",
+        "author": "강도희",
+        "status": "completed",
+        "dueDate": "2026-06-01",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-06-10T06:39:54.693Z",
+        "sortOrder": 3,
+        "subItemId": null,
+        "updatedAt": "2026-06-11T23:30:59.153Z",
+        "dueDateEnd": "2026-06-12",
+        "description": "",
+        "requestCount": null
+      },
+      {
+        "id": 10199,
+        "note": "I260610-1 Q8 JELLY CASE 50,000EA 측정완료",
+        "title": "XRF,프탈레이트 측정",
+        "author": "강도희",
+        "status": "completed",
+        "dueDate": "2026-06-15",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-06-15T07:25:49.901Z",
+        "sortOrder": -1,
+        "subItemId": null,
+        "updatedAt": "2026-06-15T07:25:56.117Z",
+        "dueDateEnd": null,
+        "description": "",
+        "requestCount": null
+      },
+      {
+        "id": 10300,
+        "note": "M3 INNER PAD 3.520EA 측정완료",
+        "title": "XRF,프탈레이트 측정",
+        "author": "강도희",
+        "status": "completed",
+        "dueDate": "2026-06-17",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-06-26T05:42:02.862Z",
+        "sortOrder": -2,
+        "subItemId": null,
+        "updatedAt": "2026-06-26T05:42:50.161Z",
+        "dueDateEnd": null,
+        "description": "",
+        "requestCount": null
+      },
+      {
+        "id": 10301,
+        "note": "컴파운드(회색,살색)테스트\n광천(PR)\n개발)BK PC SHEET,BL PC SHEET,NY PC SHEET\n 측정완료",
+        "title": "XRF,프탈레이트 측정",
+        "author": "강도희",
+        "status": "completed",
+        "dueDate": "2026-06-23",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-06-26T05:46:25.317Z",
+        "sortOrder": -3,
+        "subItemId": null,
+        "updatedAt": "2026-06-26T05:46:38.800Z",
+        "dueDateEnd": null,
+        "description": "",
+        "requestCount": null
+      },
+      {
+        "id": 10302,
+        "note": "개발)BK  CRADLE, BL  CRADLE, NY  CRADLE\n측정 완료",
+        "title": "XRF,프탈레이트 측정",
+        "author": "강도희",
+        "status": "completed",
+        "dueDate": "2026-06-24",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-06-26T06:12:52.779Z",
+        "sortOrder": -4,
+        "subItemId": null,
+        "updatedAt": "2026-06-26T06:16:05.803Z",
+        "dueDateEnd": null,
+        "description": "",
+        "requestCount": null
+      },
+      {
+        "id": 10307,
+        "note": "불스원 컴파운드(테스트)\n개발)BK,BL,NY패키지,보증서,마그넷\nJELLY CASE I260622-1 50.000EA",
+        "title": "일일)XRF측정 현황",
+        "author": "강도희",
+        "status": "completed",
+        "dueDate": "2026-06-25",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-06-26T06:20:13.942Z",
+        "sortOrder": -5,
+        "subItemId": null,
+        "updatedAt": "2026-06-30T06:35:20.529Z",
+        "dueDateEnd": "2026-06-26",
+        "description": "",
+        "requestCount": null
+      },
+      {
+        "id": 10329,
+        "note": "R14 멕시코향 XRF 의뢰건 측정완료",
+        "title": "XRF,프탈레이트 측정",
+        "author": "강도희",
+        "status": "completed",
+        "dueDate": "2026-06-30",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-06-30T07:50:00.769Z",
+        "sortOrder": -6,
+        "subItemId": null,
+        "updatedAt": "2026-06-30T07:50:04.149Z",
+        "dueDateEnd": null,
+        "description": "",
+        "requestCount": null
+      },
+      {
+        "id": 10341,
+        "note": "양품)JELLY CASE I260629-1 50.000EA\nBK PC SHEET 3.400EA, BL PC SHEET 3.000EA, VL PC SHEET 3.000EA, 행거 패드 1.723EA, BL 유닛박스 7.260EA, VL 유닛박스3.420EA 측정완료",
+        "title": "XRF,프탈레이트 측정",
+        "author": "강도희",
+        "status": "completed",
+        "dueDate": "2026-06-30",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-07-01T01:00:27.093Z",
+        "sortOrder": -7,
+        "subItemId": null,
+        "updatedAt": "2026-07-06T02:32:29.481Z",
+        "dueDateEnd": "2026-07-01",
+        "description": "",
+        "requestCount": null
+      },
+      {
+        "id": 10380,
+        "note": "7월 부자재측정",
+        "title": "XRF,프탈레이트 측정",
+        "author": "강도희",
+        "status": "completed",
+        "dueDate": "2026-07-01",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-07-06T02:34:24.212Z",
+        "sortOrder": -8,
+        "subItemId": null,
+        "updatedAt": "2026-07-06T07:48:05.713Z",
+        "dueDateEnd": "2026-07-08",
+        "description": "",
+        "requestCount": null
+      },
+      {
+        "id": 10383,
+        "note": "JELLY CASE I260703-1 50.000EA\nBL 유닛박스 5.998EA",
+        "title": "XRF,프탈레이트 측정",
+        "author": "강도희",
+        "status": "completed",
+        "dueDate": "2026-07-06",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-07-06T07:49:17.561Z",
+        "sortOrder": -9,
+        "subItemId": null,
+        "updatedAt": "2026-07-07T00:18:11.763Z",
+        "dueDateEnd": null,
+        "description": "",
+        "requestCount": null
+      },
+      {
+        "id": 10419,
+        "author": "강도희",
+        "title": "XRF,프탈레이트 측정",
+        "description": "",
+        "note": "JELLY CASE I260707-1 50.000EA",
+        "subItemId": null,
+        "dueDate": "2026-07-08",
+        "dueDateEnd": null,
+        "status": "completed",
+        "requestCount": null,
+        "okCount": null,
+        "ngCount": null,
+        "sortOrder": -10,
+        "createdAt": "2026-07-08T00:31:29.884Z",
+        "updatedAt": "2026-07-08T00:32:05.175Z"
+      }
+    ],
+    "10032": [
+      {
+        "id": 10050,
+        "note": "~5/12 협력생산분까지 용산으로 직납",
+        "title": "GN1 PE 협력 생산 및 INTOPS OQC",
+        "author": "황인학M",
+        "status": "completed",
+        "dueDate": "2026-05-12",
+        "ngCount": null,
+        "okCount": null,
+        "sortOrder": 1,
+        "subItemId": null,
+        "dueDateEnd": null,
+        "description": "트리코트 1종 / 스페이드 3종",
+        "requestCount": null
+      },
+      {
+        "id": 10051,
+        "note": "",
+        "title": "정상 납품 & 검사 의뢰",
+        "author": null,
+        "status": "completed",
+        "dueDate": "2026-05-13",
+        "ngCount": null,
+        "okCount": null,
+        "sortOrder": 2,
+        "subItemId": null,
+        "dueDateEnd": null,
+        "description": "5/13부터 정상 납품 시작",
+        "requestCount": null
+      },
+      {
+        "id": 10053,
+        "note": "N측 부 길이/폭 증가 & 깊이 깊음 → 신검 결과 대응 추후 수리예정",
+        "title": "공정 출고",
+        "author": "황인학M",
+        "status": "completed",
+        "dueDate": "2026-05-28",
+        "ngCount": null,
+        "okCount": null,
+        "sortOrder": 3,
+        "subItemId": null,
+        "dueDateEnd": null,
+        "description": "400 set/일 약 / 출고 ~5/28 계획",
+        "requestCount": null
+      },
+      {
+        "id": 10190,
+        "note": "",
+        "title": "GN7 심재 한보 입고검사 및 자공정 수율현황 (누적)",
+        "author": "황인학M",
+        "status": "completed",
+        "dueDate": "2026-06-08",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-06-15T01:51:41.827Z",
+        "sortOrder": 0,
+        "subItemId": null,
+        "updatedAt": "2026-06-15T05:15:30.086Z",
+        "dueDateEnd": "2026-06-12",
+        "description": "ㅁ 입고검사 불량현황 (~06/12 누적)\n- 불량율: 0.78%\n- 불량현황: 304 / 38,892ea\n- 불량세부\n. 사출burr: 79ea , 오염 :73ea , 자석 부착불량 :152ea\n\nㅁ 한보 자공정 불량현황 (~06/12 누적)\n- 불량율: 1.97%\n- 불량현황: 751 / 38,141ea\n- 불량세부\n. 작업불량: 199ea , 오염: 158ea , 자력불량: 94ea 外",
+        "requestCount": null
+      },
+      {
+        "id": 10357,
+        "note": "",
+        "title": "단가 협상 난항",
+        "author": "황인학M",
+        "status": "pending",
+        "dueDate": "2026-07-06",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-07-02T22:53:05.716Z",
+        "sortOrder": -1,
+        "subItemId": null,
+        "updatedAt": "2026-07-02T22:53:05.716Z",
+        "dueDateEnd": "2026-07-31",
+        "description": ".용산/인탑스 양사간 단가 차이 2배이상\n.장인호/이시은/박종민 _ 한보공정 합리화 점검 (7월)",
+        "requestCount": null
+      }
+    ],
+    "10040": [
+      {
+        "id": 10046,
+        "note": "",
+        "title": "ISO 13485 심사",
+        "status": "in_progress",
+        "dueDate": "2026-07-23",
+        "subItemId": null,
+        "dueDateEnd": "2026-07-27",
+        "description": "ISO 13485 신규심사예정\n(사내:분주 _ 태산:조립)",
+        "author": "황인학M",
+        "requestCount": null,
+        "okCount": null,
+        "ngCount": null,
+        "updatedAt": "2026-07-07T23:03:30.298Z"
+      },
+      {
+        "id": 10214,
+        "note": "",
+        "title": "SPL 제작 (Dropper tube 및 분주공정 진행)",
+        "author": "황인학M",
+        "status": "completed",
+        "dueDate": "2026-06-23",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-06-18T00:16:32.243Z",
+        "sortOrder": -1,
+        "subItemId": null,
+        "updatedAt": "2026-06-29T05:29:28.836Z",
+        "dueDateEnd": null,
+        "description": "TUBE 사출 및 용액 조제 (가루+증류수 일정비율) / 분주공정 진행\n시험용 SPL 제작\n - obm 김상우E 내방",
+        "requestCount": null
+      }
+    ],
+    "10087": [
+      {
+        "id": 10088,
+        "note": "",
+        "title": "ISO13485 인증심사",
+        "author": "황인학M",
+        "status": "in_progress",
+        "dueDate": "2026-06-15",
+        "ngCount": null,
+        "okCount": null,
+        "subItemId": null,
+        "updatedAt": "2026-06-16T00:18:38.673Z",
+        "dueDateEnd": "2026-06-19",
+        "description": "1. 심사일정: 2026.06.15. ~ 2026.06.18. ( 4 DAY)\n2. 심사원: K-인증원 김연성 위원 1人/ 4일차 김동규 위원\n3. 심사범위 : 면역 크로마토그래피 진단키트에 대한 체외진단의료기기의 협력생산 (사출)",
+        "requestCount": null
+      }
+    ],
+    "10089": [
+      {
+        "id": 10090,
+        "note": "",
+        "title": "ISO13485 인증심사",
+        "author": "황인학M",
+        "status": "pending",
+        "dueDate": "2026-07-24",
+        "ngCount": null,
+        "okCount": null,
+        "subItemId": null,
+        "dueDateEnd": "2026-07-27",
+        "description": "OBM",
+        "requestCount": null
+      }
+    ],
+    "10091": [
+      {
+        "id": 10092,
+        "note": "",
+        "title": "용산 JG1 공정감사 (문제점)",
+        "author": "황인학M",
+        "status": "completed",
+        "dueDate": "2026-06-02",
+        "ngCount": null,
+        "okCount": null,
+        "subItemId": null,
+        "dueDateEnd": null,
+        "description": "■ JG1 미러커버 공정감사 문제점 (260602)\n1. 수입검사\n-검사 한도견본 비치 불량\n-원단 수입검사 색상 마스터 진행\n-수입검사 성저서 베트남 접수 필요\n-수입검사 유무검사 기준 (용산기준 접수)\n-수입검사 완료 레이아웃 추가\n-원단 폭,규격 관리계획서 추가 필요\n-플레이트 실치수 기준 확인\n-핫멜트 두꼐 검사항목 추가\n2.제단공정\n-제단규격 추가 필요\n-다이얼 유압게이지 기준설정\n3.각 공정별 최종 공정  레이아웃 투입전,투입후,부적합품 \n  보관 구역,  부적합 시건장치 추가\n4.각 공정별 실리콘패드 안착 작업 표준서상 내용 추가\n5.원단 끝단 프레스 공정 추가\n6. 타발프레스 공정 별도로 분리 및 추가(1-3차)\n7.설비점검표 온도 압력 이상 -이력관리방안 \n   관리계획서에 설비점검표로 수정\n8.완성타발 도면기준이 아닌 규격 별도로 추가\n-도면기준으로 된 부분들을 실측 치수 기준으로 변경\n9.최종검사 공정에 불량현물 비치 나 사진 q-point 설정\n10.자력검사는 400±100으로 수정 /\n   상한은 없애도 됨 300 가우스 이상\n11. 포장규격 설정, 포장사양승인서 작성 \n     한보-인탑스-용산 (양식 및 예시 접수예정)",
+        "requestCount": null
+      }
+    ],
+    "10099": [],
+    "10111": [],
+    "10144": [],
+    "10161": [
+      {
+        "id": 10286,
+        "note": "",
+        "title": "사출 금형 정리 (7/11)",
+        "author": "황인학M",
+        "status": "in_progress",
+        "dueDate": "2026-07-11",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-06-24T23:54:02.817Z",
+        "sortOrder": -1,
+        "subItemId": null,
+        "updatedAt": "2026-07-02T22:43:26.286Z",
+        "dueDateEnd": null,
+        "description": "100여벌 금형 폐기\n30여벌 잔류",
+        "requestCount": null
+      }
+    ],
+    "10178": [],
+    "10253": [
+      {
+        "id": 10259,
+        "note": "",
+        "title": "하이텍엔솔 (전자식 원격 수도 계량기)",
+        "author": "황인학M",
+        "status": "in_progress",
+        "dueDate": null,
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-06-23T00:34:23.811Z",
+        "sortOrder": -1,
+        "subItemId": null,
+        "updatedAt": "2026-06-23T00:34:27.435Z",
+        "dueDateEnd": null,
+        "description": "제조 ST 산출 및 원가 산출 진행중",
+        "requestCount": null
+      },
+      {
+        "id": 10354,
+        "note": "",
+        "title": "차이그래픽스 (체험킷)",
+        "author": "황인학M",
+        "status": "in_progress",
+        "dueDate": "2026-07-09",
+        "ngCount": null,
+        "okCount": null,
+        "createdAt": "2026-07-02T22:51:15.675Z",
+        "sortOrder": -2,
+        "subItemId": null,
+        "updatedAt": "2026-07-07T23:02:24.069Z",
+        "dueDateEnd": "2026-07-31",
+        "description": "7/9~ 대화 생산",
+        "requestCount": null
+      },
+      {
+        "id": 10400,
+        "author": "황인학M",
+        "title": "EMS 통합품질데이터 시스템 구현",
+        "description": "- 공정별 DATA 접수 및 DB 전산 구현 와료\n- 포스트모텀 및 개선 우수사례 프로그램 구현중\n- 차후 DB자동연계(MES,ERP,PLM) 구축,검색 쳇봇,서버화\n  ,메일발송 기능 등 정보기술팀 연계 개발",
+        "note": "",
+        "subItemId": null,
+        "dueDate": "2026-07-07",
+        "dueDateEnd": "2026-07-31",
+        "status": "in_progress",
+        "requestCount": null,
+        "okCount": null,
+        "ngCount": null,
+        "sortOrder": -3,
+        "createdAt": "2026-07-07T23:02:09.380Z",
+        "updatedAt": "2026-07-07T23:02:21.799Z"
+      }
+    ]
+  },
+  "memoEntries": {
+    "1": [],
+    "10178": []
+  },
+  "dashboardMemo": "",
+  "memoUpdatedAt": {
+    "1": "2026-06-02T05:38:02.338Z"
+  },
+  "dashboardPosts": [],
+  "dashboardMemoUpdatedAt": "2026-05-21T01:12:16.397Z",
+  "dashboardMemoUpdatedBy": "관리자"
 }
