@@ -2,18 +2,19 @@ services:
   - type: web
     name: intops-fms-tracker
     runtime: node
-    region: singapore
     plan: free
+    region: singapore
     branch: main
     buildCommand: npm install
-    startCommand: npm start
-    autoDeploy: true   # GitHub push 시 자동 재배포
-    healthCheckPath: /
+    startCommand: node server.js
     envVars:
       - key: NODE_ENV
         value: production
-    # 데이터 영구 보존을 위한 디스크 (Free 플랜은 disk 미지원 - 유료 전환 시 사용)
-    # disk:
-    #   name: data
-    #   mountPath: /opt/render/project/src
-    #   sizeGB: 1
+      # 아래 3개는 Render 대시보드에서 직접 값 입력 (보안상 여기 적지 않음)
+      # - GIST_ID       : 비공개 Gist ID (데이터 자동 복원/백업)
+      # - GITHUB_TOKEN  : gist 권한 Personal Access Token
+      # - GIST_FILENAME : data.json (기본값이라 생략 가능)
+      - key: GIST_ID
+        sync: false
+      - key: GITHUB_TOKEN
+        sync: false
