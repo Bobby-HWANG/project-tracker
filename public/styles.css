@@ -42,13 +42,42 @@
 }
 .top-print-btn:active { transform: translateY(0); }
 
+/* 백업 버튼 — 인쇄 버튼 왼쪽, 녹색 계열로 구분 */
+.top-backup-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 14px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform .15s, box-shadow .15s, opacity .15s;
+  box-shadow: 0 2px 4px rgba(16,185,129,.3);
+}
+.top-backup-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(16,185,129,.4);
+}
+.top-backup-btn:active { transform: translateY(0); }
+.top-backup-btn:disabled {
+  opacity: .6;
+  cursor: wait;
+  transform: none;
+}
+
 /* 모바일: 모바일 헤더 아래로 이동 */
 @media (max-width: 768px) {
   .top-print-box  { top: 64px; right: 10px; padding: 3px; }
   .top-print-btn  { padding: 4px 10px; font-size: 12px; }
+  .top-backup-btn { padding: 4px 10px; font-size: 12px; }
 }
 @media (max-width: 480px) {
   .top-print-box  { right: 8px; }
+  .top-backup-btn { padding: 3px 8px; font-size: 10.5px; }
 }
 
 /* 인쇄 시 — 사이드바/툴바 등 숨기고 콘텐츠만 출력 */

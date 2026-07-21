@@ -3700,6 +3700,43 @@ function attachPrintHandler() {
   document.getElementById('btn-print')?.addEventListener('click', () => window.print());
 }
 
+// 전체 데이터 JSON 백업 다운로드
+function attachBackupHandler() {
+  const btn = document.getElementById('btn-backup');
+  if (!btn) return;
+  btn.addEventListener('click', async () => {
+    const orig = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span style="font-size:15px">⏳</span><span>백업중</span>';
+    try {
+      const res = await fetch('/api/export');
+      if (!res.ok) throw new Error(`서버 오류 (${res.status})`);
+      const blob = await res.blob();
+
+      // 파일명: tracker_YYYY-MM-DD_HHMM.json
+      const d = new Date();
+      const pad = n => String(n).padStart(2, '0');
+      const fname = `tracker_${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}_${pad(d.getHours())}${pad(d.getMinutes())}.json`;
+
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fname;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+      toast(`💾 백업 완료: ${fname}`, 'success');
+    } catch (e) {
+      toast(e.message || '백업 실패', 'error');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = orig;
+    }
+  });
+}
+
 // ════════════════════════════════════════════════════════════
 //  주요 일정 점검 (Schedule View)
 // ════════════════════════════════════════════════════════════
@@ -4478,6 +4515,7 @@ function attachCalDrag(container, onPrev, onNext) {
 document.addEventListener('DOMContentLoaded', async () => {
   startClock();
   attachPrintHandler();
+  attachBackupHandler();
   // eye-care 모드 흔적 제거 (기존 사용자 localStorage 정리)
   localStorage.removeItem('eye-care');
   document.body.classList.remove('eye-care');
